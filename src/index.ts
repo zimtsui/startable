@@ -19,7 +19,7 @@ abstract class Autonomous {
     private _stopping: Stopping = () => { };
 
     protected abstract _start(): Promise<void>;
-    protected abstract _stop(err?: Error): Promise<void>;
+    protected abstract _stop(): Promise<void>;
     protected _reusable = false;
 
     private _started!: Promise<void>;
@@ -57,7 +57,7 @@ abstract class Autonomous {
         this.lifePeriod = LifePeriod.STOPPING;
         this._stopping(err);
 
-        this._stopped = this._stop(err);
+        this._stopped = this._stop();
         return this._stopped
             .then(() => {
                 this.lifePeriod = LifePeriod.STOPPED;

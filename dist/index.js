@@ -48,7 +48,7 @@ class Autonomous {
                 .catch((err) => this.stop(err));
         this.lifePeriod = LifePeriod.STOPPING;
         this._stopping(err);
-        this._stopped = this._stop(err);
+        this._stopped = this._stop();
         return this._stopped
             .then(() => {
             this.lifePeriod = LifePeriod.STOPPED;
