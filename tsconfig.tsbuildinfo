@@ -129,9 +129,13 @@
         "version": "63b66918290d794f73832a6d0325be5026236674fe8c0cb0b68d162000d7bbe8",
         "signature": "63b66918290d794f73832a6d0325be5026236674fe8c0cb0b68d162000d7bbe8"
       },
+      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": {
+        "version": "3c10804e3bd90aa404eefbc300c362b0ebbd23b34eb03ae592717ac111889f34",
+        "signature": "3c10804e3bd90aa404eefbc300c362b0ebbd23b34eb03ae592717ac111889f34"
+      },
       "/home/zim/autonomous/src/index.ts": {
-        "version": "62da0fcef3b84773c683b16250c647425e133acfe1e6a257db035430f0342073",
-        "signature": "e9189cdb158b4cd2bb397bb2f3980ed9f35a87895430cde97260381a251ada6f"
+        "version": "dfda9fb565920b1821d35d2a814c20a75c879c0bc96ce0af467975ad7925c8c4",
+        "signature": "3bc0a6bcc746bc82a1d8f400390f95ba4308cbf34d08946caac24d738a84894f"
       },
       "/home/zim/autonomous/node_modules/@types/node/globals.d.ts": {
         "version": "e4461b72726848da76a31153b6b01af5e0be3b08dbfa2ec5741ad302eb20f2ed",
@@ -459,8 +463,13 @@
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
       "/home/zim/autonomous/src/index.ts": [
         "/home/zim/autonomous/node_modules/@types/node/assert.d.ts",
+        "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
@@ -868,6 +877,207 @@
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "/home/zim/autonomous/node_modules/@types/node/async_hooks.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/buffer.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/child_process.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/cluster.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/child_process.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/console.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/constants.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/crypto.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/dgram.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/dns.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/dns.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/domain.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/events.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/fs.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/url.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/http.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/url.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/http2.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/fs.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/tls.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/url.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/http.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/https.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/tls.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/http.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/url.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/inspector.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/module.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/net.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/dns.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/os.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/path.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/perf_hooks.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/async_hooks.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/process.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/punycode.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/querystring.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/readline.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/repl.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/readline.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/vm.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/stream.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/string_decoder.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/timers.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/tls.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/crypto.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/dns.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/trace_events.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/tty.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/url.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/querystring.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/util.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/v8.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/vm.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/worker_threads.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/vm.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/node/zlib.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
       "/home/zim/autonomous/node_modules/@types/node/base.d.ts": [
         "/home/zim/autonomous/node_modules/@types/node/globals.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/assert.d.ts",
@@ -911,218 +1121,21 @@
         "/home/zim/autonomous/node_modules/@types/node/zlib.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/base.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/globals.d.ts",
+      "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts": [
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/async_hooks.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/perf_hooks.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/async_hooks.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/buffer.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/child_process.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/cluster.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/child_process.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/console.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/constants.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/crypto.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/tls.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/crypto.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/dns.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/https.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/tls.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/http.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/url.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/http2.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/fs.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/tls.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/url.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/http.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/dgram.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/dns.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/dns.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/net.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/dns.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/tty.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/http.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/url.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/net.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/domain.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/events.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/worker_threads.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/vm.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/stream.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/zlib.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/v8.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/readline.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/repl.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/readline.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/vm.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/fs.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/stream.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/url.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/inspector.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/module.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/os.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/path.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/process.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/punycode.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/querystring.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/url.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/querystring.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/string_decoder.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/timers.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/trace_events.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/node_modules/@types/node/util.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "/home/zim/autonomous/node_modules/@types/node/ts3.2/globals.d.ts": [
         "/home/zim/autonomous/node_modules/@types/node/globals.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts": [
+      "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/base.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/globals.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts"
       ],
-      "/home/zim/autonomous/node_modules/@types/node/vm.d.ts": [
+      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": [
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ]
@@ -1160,7 +1173,6 @@
       "/home/zim/autonomous/node_modules/typescript/lib/lib.es2019.symbol.d.ts",
       "/home/zim/autonomous/node_modules/typescript/lib/lib.esnext.intl.d.ts",
       "/home/zim/autonomous/node_modules/typescript/lib/lib.esnext.bigint.d.ts",
-      "/home/zim/autonomous/src/index.ts",
       "/home/zim/autonomous/node_modules/@types/node/globals.d.ts",
       "/home/zim/autonomous/node_modules/@types/node/assert.d.ts",
       "/home/zim/autonomous/node_modules/@types/node/async_hooks.d.ts",
@@ -1204,7 +1216,9 @@
       "/home/zim/autonomous/node_modules/@types/node/base.d.ts",
       "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts",
       "/home/zim/autonomous/node_modules/@types/node/ts3.2/globals.d.ts",
-      "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts"
+      "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts",
+      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts",
+      "/home/zim/autonomous/src/index.ts"
     ]
   },
   "version": "3.5.3"

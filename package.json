@@ -22,6 +22,8 @@
         "typescript": "^3.5.3"
     },
     "dependencies": {
-        "@types/node": "^12.6.8"
+        "@types/bluebird": "^3.5.27",
+        "@types/node": "^12.6.8",
+        "bluebird": "^3.5.5"
     }
 }

@@ -1,9 +1,10 @@
 declare enum LifePeriod {
     CONSTRUCTED = 0,
     STARTING = 1,
-    STARTED = 2,
-    STOPPING = 3,
-    STOPPED = 4
+    FAILED = 2,
+    STARTED = 3,
+    STOPPING = 4,
+    STOPPED = 5
 }
 interface Stopping {
     (err?: Error): void;
@@ -11,8 +12,8 @@ interface Stopping {
 declare abstract class Autonomous {
     lifePeriod: LifePeriod;
     private _stopping;
-    abstract _start(): Promise<void>;
-    abstract _stop(err?: Error): Promise<void>;
+    protected abstract _start(): Promise<void>;
+    protected abstract _stop(err?: Error): Promise<void>;
     protected _reusable: boolean;
     private _started;
     start(stopping?: Stopping): Promise<void>;
