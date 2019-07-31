@@ -1,5 +1,6 @@
 import assert from 'assert';
 import Bluebird from 'bluebird';
+import { boundMethod } from 'autobind-decorator';
 
 enum LifePeriod {
     CONSTRUCTED,
@@ -23,6 +24,7 @@ abstract class Autonomous {
     protected _reusable = false;
 
     private _started!: Promise<void>;
+    @boundMethod
     start(stopping?: Stopping): Promise<void> {
         assert(
             this.lifePeriod === LifePeriod.CONSTRUCTED
@@ -43,6 +45,7 @@ abstract class Autonomous {
     }
 
     private _stopped!: Promise<void>;
+    @boundMethod
     stop(err?: Error): Promise<void> {
         assert(this.lifePeriod !== LifePeriod.CONSTRUCTED);
         if (this.lifePeriod === LifePeriod.STOPPED)
