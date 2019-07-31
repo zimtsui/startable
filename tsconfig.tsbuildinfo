@@ -134,8 +134,20 @@
         "signature": "3c10804e3bd90aa404eefbc300c362b0ebbd23b34eb03ae592717ac111889f34"
       },
       "/home/zim/autonomous/src/index.ts": {
-        "version": "dfda9fb565920b1821d35d2a814c20a75c879c0bc96ce0af467975ad7925c8c4",
+        "version": "5a12c8a4c8e0d64c9ab18310d827095d2695948638cd837c98f8af3c2612c47f",
         "signature": "3bc0a6bcc746bc82a1d8f400390f95ba4308cbf34d08946caac24d738a84894f"
+      },
+      "/home/zim/autonomous/node_modules/@types/chai/index.d.ts": {
+        "version": "c465afa89ac28f74167a2ee7c3c6eb8dd1245c2b3bdaa4704d58d35b932de4b7",
+        "signature": "c465afa89ac28f74167a2ee7c3c6eb8dd1245c2b3bdaa4704d58d35b932de4b7"
+      },
+      "/home/zim/autonomous/node_modules/@types/chai-as-promised/index.d.ts": {
+        "version": "88e89bb32640978ab8652234e0ecf50a3e7b999a34f8e674a6d4ce37a9c0be07",
+        "signature": "88e89bb32640978ab8652234e0ecf50a3e7b999a34f8e674a6d4ce37a9c0be07"
+      },
+      "/home/zim/autonomous/node_modules/@types/events/index.d.ts": {
+        "version": "400db42c3a46984118bff14260d60cec580057dc1ab4c2d7310beb643e4f5935",
+        "signature": "400db42c3a46984118bff14260d60cec580057dc1ab4c2d7310beb643e4f5935"
       },
       "/home/zim/autonomous/node_modules/@types/node/globals.d.ts": {
         "version": "e4461b72726848da76a31153b6b01af5e0be3b08dbfa2ec5741ad302eb20f2ed",
@@ -312,6 +324,14 @@
       "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts": {
         "version": "765fc34423b93c2ab763670d8d11d99e5f47387c13c161d6f1640dd6d91b7d1c",
         "signature": "765fc34423b93c2ab763670d8d11d99e5f47387c13c161d6f1640dd6d91b7d1c"
+      },
+      "/home/zim/autonomous/node_modules/@types/minimatch/index.d.ts": {
+        "version": "1d1e6bd176eee5970968423d7e215bfd66828b6db8d54d17afec05a831322633",
+        "signature": "1d1e6bd176eee5970968423d7e215bfd66828b6db8d54d17afec05a831322633"
+      },
+      "/home/zim/autonomous/node_modules/@types/glob/index.d.ts": {
+        "version": "d852d6282c8dc8156d26d6bda83ab4bde51fee05ba2fe0ecdc165ddda009d3ee",
+        "signature": "d852d6282c8dc8156d26d6bda83ab4bde51fee05ba2fe0ecdc165ddda009d3ee"
       }
     },
     "options": {
@@ -473,6 +493,19 @@
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "/home/zim/autonomous/node_modules/@types/chai/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/chai-as-promised/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/chai/index.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/events/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
       "/home/zim/autonomous/node_modules/@types/node/globals.d.ts": [
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
@@ -738,6 +771,17 @@
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/globals.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/minimatch/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/glob/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/minimatch/index.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ]
     },
     "exportedModulesMap": {
@@ -869,6 +913,14 @@
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/events/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
       "/home/zim/autonomous/node_modules/@types/node/globals.d.ts": [
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
@@ -1135,7 +1187,23 @@
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/globals.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts"
       ],
-      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": [
+      "/home/zim/autonomous/node_modules/@types/minimatch/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/glob/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/events.d.ts",
+        "/home/zim/autonomous/node_modules/@types/minimatch/index.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/chai/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/chai-as-promised/index.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/chai/index.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ]
@@ -1173,6 +1241,11 @@
       "/home/zim/autonomous/node_modules/typescript/lib/lib.es2019.symbol.d.ts",
       "/home/zim/autonomous/node_modules/typescript/lib/lib.esnext.intl.d.ts",
       "/home/zim/autonomous/node_modules/typescript/lib/lib.esnext.bigint.d.ts",
+      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts",
+      "/home/zim/autonomous/src/index.ts",
+      "/home/zim/autonomous/node_modules/@types/chai/index.d.ts",
+      "/home/zim/autonomous/node_modules/@types/chai-as-promised/index.d.ts",
+      "/home/zim/autonomous/node_modules/@types/events/index.d.ts",
       "/home/zim/autonomous/node_modules/@types/node/globals.d.ts",
       "/home/zim/autonomous/node_modules/@types/node/assert.d.ts",
       "/home/zim/autonomous/node_modules/@types/node/async_hooks.d.ts",
@@ -1217,8 +1290,8 @@
       "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts",
       "/home/zim/autonomous/node_modules/@types/node/ts3.2/globals.d.ts",
       "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts",
-      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts",
-      "/home/zim/autonomous/src/index.ts"
+      "/home/zim/autonomous/node_modules/@types/minimatch/index.d.ts",
+      "/home/zim/autonomous/node_modules/@types/glob/index.d.ts"
     ]
   },
   "version": "3.5.3"

@@ -37,6 +37,7 @@ class Autonomous {
         });
     }
     stop(err) {
+        assert_1.default(this.lifePeriod !== LifePeriod.CONSTRUCTED);
         if (this.lifePeriod === LifePeriod.STOPPED)
             return Promise.resolve();
         if (this.lifePeriod === LifePeriod.STOPPING)

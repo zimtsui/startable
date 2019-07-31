@@ -44,6 +44,7 @@ abstract class Autonomous {
 
     private _stopped!: Promise<void>;
     stop(err?: Error): Promise<void> {
+        assert(this.lifePeriod !== LifePeriod.CONSTRUCTED);
         if (this.lifePeriod === LifePeriod.STOPPED)
             return Promise.resolve();
         if (this.lifePeriod === LifePeriod.STOPPING)
