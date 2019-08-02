@@ -17,7 +17,7 @@ interface Stopping {
 
 abstract class Autonomous {
     lifePeriod: LifePeriod = LifePeriod.CONSTRUCTED;
-    private _stopping: Stopping = () => { };
+    private _stopping!: Stopping;
 
     protected abstract _start(): Promise<void>;
     protected abstract _stop(): Promise<void>;
@@ -25,23 +25,23 @@ abstract class Autonomous {
 
     private _started!: Promise<void>;
     @boundMethod
-    start(stopping?: Stopping): Promise<void> {
+    start(stopping: Stopping = () => { }): Promise<void> {
         assert(
             this.lifePeriod === LifePeriod.CONSTRUCTED
             || this._reusable && this.lifePeriod === LifePeriod.STOPPED,
         );
         this.lifePeriod = LifePeriod.STARTING;
 
-        if (stopping) this._stopping = stopping;
+        this._stopping = stopping;
 
-        this._started = this._start();
-        return Bluebird.resolve(this._started)
+        this._started = Bluebird.resolve(this._start())
             .then(() => {
                 this.lifePeriod = LifePeriod.STARTED;
-            }).tapCatch((err: Error) => {
+            }).tapCatch(() => {
                 this.lifePeriod = LifePeriod.FAILED;
-                return this.stop(err);
             });
+        return Bluebird.resolve(this._started)
+            .tapCatch(this.stop);
     }
 
     private _stopped!: Promise<void>;
@@ -55,13 +55,12 @@ abstract class Autonomous {
         if (this.lifePeriod === LifePeriod.STARTING)
             return this._started!
                 .then(() => this.stop())
-                .catch((err: Error) => this.stop(err));
-
+                .catch(this.stop);
         this.lifePeriod = LifePeriod.STOPPING;
+
         this._stopping(err);
 
-        this._stopped = this._stop();
-        return this._stopped
+        return this._stopped = this._stop()
             .then(() => {
                 this.lifePeriod = LifePeriod.STOPPED;
             });

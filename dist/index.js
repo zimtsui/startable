@@ -25,23 +25,21 @@ exports.LifePeriod = LifePeriod;
 class Autonomous {
     constructor() {
         this.lifePeriod = LifePeriod.CONSTRUCTED;
-        this._stopping = () => { };
         this._reusable = false;
     }
-    start(stopping) {
+    start(stopping = () => { }) {
         assert_1.default(this.lifePeriod === LifePeriod.CONSTRUCTED
             || this._reusable && this.lifePeriod === LifePeriod.STOPPED);
         this.lifePeriod = LifePeriod.STARTING;
-        if (stopping)
-            this._stopping = stopping;
-        this._started = this._start();
-        return bluebird_1.default.resolve(this._started)
+        this._stopping = stopping;
+        this._started = bluebird_1.default.resolve(this._start())
             .then(() => {
             this.lifePeriod = LifePeriod.STARTED;
-        }).tapCatch((err) => {
+        }).tapCatch(() => {
             this.lifePeriod = LifePeriod.FAILED;
-            return this.stop(err);
         });
+        return bluebird_1.default.resolve(this._started)
+            .tapCatch(this.stop);
     }
     stop(err) {
         assert_1.default(this.lifePeriod !== LifePeriod.CONSTRUCTED);
@@ -52,11 +50,10 @@ class Autonomous {
         if (this.lifePeriod === LifePeriod.STARTING)
             return this._started
                 .then(() => this.stop())
-                .catch((err) => this.stop(err));
+                .catch(this.stop);
         this.lifePeriod = LifePeriod.STOPPING;
         this._stopping(err);
-        this._stopped = this._stop();
-        return this._stopped
+        return this._stopped = this._stop()
             .then(() => {
             this.lifePeriod = LifePeriod.STOPPED;
         });
