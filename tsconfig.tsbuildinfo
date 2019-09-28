@@ -129,17 +129,17 @@
         "version": "63b66918290d794f73832a6d0325be5026236674fe8c0cb0b68d162000d7bbe8",
         "signature": "63b66918290d794f73832a6d0325be5026236674fe8c0cb0b68d162000d7bbe8"
       },
-      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": {
-        "version": "3c10804e3bd90aa404eefbc300c362b0ebbd23b34eb03ae592717ac111889f34",
-        "signature": "3c10804e3bd90aa404eefbc300c362b0ebbd23b34eb03ae592717ac111889f34"
-      },
       "/home/zim/autonomous/node_modules/autobind-decorator/index.d.ts": {
         "version": "2de69362c6be41535d58884c066a2b104c9e0e5aab709f35aed8d4e08ead4c95",
         "signature": "2de69362c6be41535d58884c066a2b104c9e0e5aab709f35aed8d4e08ead4c95"
       },
       "/home/zim/autonomous/src/index.ts": {
-        "version": "4351bfbe448e146ab34da8363c831074f2ba6fb21846eb05f0e406e343bfdbc4",
+        "version": "3b1860df657caeab71ff5d5c699abfbca93eebb3facfe83cb0568f68a6766afc",
         "signature": "eca05e7064f6ee2dd974dd53e3ef508ada76029dca6ac3f3beb48a08d44b4273"
+      },
+      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": {
+        "version": "3c10804e3bd90aa404eefbc300c362b0ebbd23b34eb03ae592717ac111889f34",
+        "signature": "3c10804e3bd90aa404eefbc300c362b0ebbd23b34eb03ae592717ac111889f34"
       },
       "/home/zim/autonomous/node_modules/@types/chai/index.d.ts": {
         "version": "c465afa89ac28f74167a2ee7c3c6eb8dd1245c2b3bdaa4704d58d35b932de4b7",
@@ -487,18 +487,17 @@
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": [
-        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
-        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
       "/home/zim/autonomous/node_modules/autobind-decorator/index.d.ts": [
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "/home/zim/autonomous/src/index.ts": [
         "/home/zim/autonomous/node_modules/@types/node/assert.d.ts",
-        "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts",
         "/home/zim/autonomous/node_modules/autobind-decorator/index.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": [
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
@@ -922,11 +921,11 @@
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": [
+      "/home/zim/autonomous/node_modules/autobind-decorator/index.d.ts": [
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "/home/zim/autonomous/node_modules/autobind-decorator/index.d.ts": [
+      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": [
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
@@ -1254,8 +1253,8 @@
       "/home/zim/autonomous/node_modules/typescript/lib/lib.es2019.symbol.d.ts",
       "/home/zim/autonomous/node_modules/typescript/lib/lib.esnext.intl.d.ts",
       "/home/zim/autonomous/node_modules/typescript/lib/lib.esnext.bigint.d.ts",
-      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts",
       "/home/zim/autonomous/node_modules/autobind-decorator/index.d.ts",
+      "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts",
       "/home/zim/autonomous/node_modules/@types/chai/index.d.ts",
       "/home/zim/autonomous/node_modules/@types/chai-as-promised/index.d.ts",
       "/home/zim/autonomous/node_modules/@types/events/index.d.ts",

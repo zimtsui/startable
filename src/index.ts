@@ -1,5 +1,4 @@
 import assert from 'assert';
-import Bluebird from 'bluebird';
 import { boundMethod } from 'autobind-decorator';
 
 enum LifePeriod {
@@ -17,7 +16,7 @@ interface Stopping {
 
 abstract class Autonomous {
     lifePeriod: LifePeriod = LifePeriod.CONSTRUCTED;
-    private _stopping!: Stopping;
+    private _stopping!: Stopping | undefined;
 
     protected abstract _start(): Promise<void>;
     protected abstract _stop(): Promise<void>;
@@ -25,7 +24,7 @@ abstract class Autonomous {
 
     private _started!: Promise<void>;
     @boundMethod
-    start(stopping: Stopping = () => { }): Promise<void> {
+    start(stopping?: Stopping): Promise<void> {
         assert(
             this.lifePeriod === LifePeriod.CONSTRUCTED
             || this._reusable && this.lifePeriod === LifePeriod.STOPPED,
@@ -34,14 +33,18 @@ abstract class Autonomous {
 
         this._stopping = stopping;
 
-        this._started = Bluebird.resolve(this._start())
+        this._started = this._start()
             .then(() => {
                 this.lifePeriod = LifePeriod.STARTED;
-            }).tapCatch(() => {
+            }).catch(err => {
                 this.lifePeriod = LifePeriod.FAILED;
+                throw err;
             });
-        return Bluebird.resolve(this._started)
-            .tapCatch(this.stop);
+        return this._started
+            .catch(async err => {
+                await this.stop();
+                throw err;
+            });
     }
 
     private _stopped!: Promise<void>;
@@ -51,14 +54,14 @@ abstract class Autonomous {
         if (this.lifePeriod === LifePeriod.STOPPED)
             return Promise.resolve();
         if (this.lifePeriod === LifePeriod.STOPPING)
-            return this._stopped!;
+            return this._stopped;
         if (this.lifePeriod === LifePeriod.STARTING)
-            return this._started!
+            return this._started
                 .then(() => this.stop())
-                .catch(this.stop);
+                .catch(() => this.stop());
         this.lifePeriod = LifePeriod.STOPPING;
 
-        this._stopping(err);
+        this._stopping && this._stopping(err);
 
         return this._stopped = this._stop()
             .then(() => {
