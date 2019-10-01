@@ -32,11 +32,11 @@ exports.LifePeriod = LifePeriod;
 class Autonomous {
     constructor() {
         this.lifePeriod = LifePeriod.CONSTRUCTED;
-        this._reusable = false;
+        this.reusable = false;
     }
     start(stopping) {
         assert_1.default(this.lifePeriod === LifePeriod.CONSTRUCTED
-            || this._reusable && this.lifePeriod === LifePeriod.STOPPED);
+            || this.reusable && this.lifePeriod === LifePeriod.STOPPED);
         this.lifePeriod = LifePeriod.STARTING;
         this._stopping = stopping;
         this._started = this._start()

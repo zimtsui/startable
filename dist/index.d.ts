@@ -14,7 +14,7 @@ declare abstract class Autonomous {
     private _stopping;
     protected abstract _start(): Promise<void>;
     protected abstract _stop(): Promise<void>;
-    protected _reusable: boolean;
+    protected reusable: boolean;
     private _started;
     start(stopping?: Stopping): Promise<void>;
     private _stopped;

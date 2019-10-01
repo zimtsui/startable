@@ -20,14 +20,14 @@ abstract class Autonomous {
 
     protected abstract _start(): Promise<void>;
     protected abstract _stop(): Promise<void>;
-    protected _reusable = false;
+    protected reusable = false;
 
     private _started!: Promise<void>;
     @boundMethod
     start(stopping?: Stopping): Promise<void> {
         assert(
             this.lifePeriod === LifePeriod.CONSTRUCTED
-            || this._reusable && this.lifePeriod === LifePeriod.STOPPED,
+            || this.reusable && this.lifePeriod === LifePeriod.STOPPED,
         );
         this.lifePeriod = LifePeriod.STARTING;
 
