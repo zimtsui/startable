@@ -19,9 +19,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert_1 = __importDefault(require("assert"));
 const autobind_decorator_1 = require("autobind-decorator");
-const timers_1 = __importDefault(require("timers"));
-const process_1 = __importDefault(require("process"));
-const DEFAULT_EXIT_DELAY = 3000;
 var LifePeriod;
 (function (LifePeriod) {
     LifePeriod[LifePeriod["CONSTRUCTED"] = 0] = "CONSTRUCTED";
@@ -57,7 +54,7 @@ class Autonomous {
             }));
         });
     }
-    stop(arg) {
+    stop(err) {
         return __awaiter(this, void 0, void 0, function* () {
             assert_1.default(this.lifePeriod !== LifePeriod.CONSTRUCTED);
             if (this.lifePeriod === LifePeriod.STOPPED)
@@ -69,12 +66,8 @@ class Autonomous {
                     .then(() => this.stop())
                     .catch(() => this.stop());
             this.lifePeriod = LifePeriod.STOPPING;
-            // 如果有 this._stopping，那么 arg 要么没有要么是 Error
-            // 如果没有 this._stopping，那么 arg 要么没有要么是 number
             if (this._stopping)
-                arg instanceof Error ? this._stopping(arg) : this._stopping();
-            else
-                timers_1.default.setTimeout(() => process_1.default.exit(-1), typeof arg === 'number' ? arg : DEFAULT_EXIT_DELAY).unref();
+                this._stopping(err);
             return this._stopped = this._stop()
                 .then(() => {
                 this.lifePeriod = LifePeriod.STOPPED;
