@@ -3,6 +3,8 @@ import { boundMethod } from 'autobind-decorator';
 import Timer from 'timers';
 import process from 'process';
 
+const DEFAULT_EXIT_DELAY = 3000;
+
 enum LifePeriod {
     CONSTRUCTED,
     STARTING,
@@ -63,10 +65,14 @@ abstract class Autonomous {
                 .catch(() => this.stop());
         this.lifePeriod = LifePeriod.STOPPING;
 
-        if (arg instanceof Error)
-            this._stopping && this._stopping(arg);
-        if (typeof arg === 'number')
-            Timer.setTimeout(() => process.exit(-1), arg).unref();
+        // 如果有 this._stopping，那么 arg 要么没有要么是 Error
+        // 如果没有 this._stopping，那么 arg 要么没有要么是 number
+        if (this._stopping)
+            arg instanceof Error ? this._stopping(arg) : this._stopping();
+        else Timer.setTimeout(
+            () => process.exit(-1),
+            typeof arg === 'number' ? arg : DEFAULT_EXIT_DELAY
+        ).unref();
 
         return this._stopped = this._stop()
             .then(() => {

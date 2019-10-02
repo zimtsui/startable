@@ -21,6 +21,7 @@ const assert_1 = __importDefault(require("assert"));
 const autobind_decorator_1 = require("autobind-decorator");
 const timers_1 = __importDefault(require("timers"));
 const process_1 = __importDefault(require("process"));
+const DEFAULT_EXIT_DELAY = 3000;
 var LifePeriod;
 (function (LifePeriod) {
     LifePeriod[LifePeriod["CONSTRUCTED"] = 0] = "CONSTRUCTED";
@@ -68,10 +69,12 @@ class Autonomous {
                     .then(() => this.stop())
                     .catch(() => this.stop());
             this.lifePeriod = LifePeriod.STOPPING;
-            if (arg instanceof Error)
-                this._stopping && this._stopping(arg);
-            if (typeof arg === 'number')
-                timers_1.default.setTimeout(() => process_1.default.exit(-1), arg).unref();
+            // 如果有 this._stopping，那么 arg 要么没有要么是 Error
+            // 如果没有 this._stopping，那么 arg 要么没有要么是 number
+            if (this._stopping)
+                arg instanceof Error ? this._stopping(arg) : this._stopping();
+            else
+                timers_1.default.setTimeout(() => process_1.default.exit(-1), typeof arg === 'number' ? arg : DEFAULT_EXIT_DELAY).unref();
             return this._stopped = this._stop()
                 .then(() => {
                 this.lifePeriod = LifePeriod.STOPPED;
