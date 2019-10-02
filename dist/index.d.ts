@@ -18,7 +18,7 @@ declare abstract class Autonomous {
     private _started;
     start(stopping?: Stopping): Promise<void>;
     private _stopped;
-    stop(err?: Error): Promise<void>;
+    stop(arg?: Error | number): Promise<void>;
 }
 export default Autonomous;
 export { Autonomous, LifePeriod, Stopping, };

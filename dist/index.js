@@ -19,6 +19,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert_1 = __importDefault(require("assert"));
 const autobind_decorator_1 = require("autobind-decorator");
+const timers_1 = __importDefault(require("timers"));
+const process_1 = __importDefault(require("process"));
 var LifePeriod;
 (function (LifePeriod) {
     LifePeriod[LifePeriod["CONSTRUCTED"] = 0] = "CONSTRUCTED";
@@ -35,38 +37,45 @@ class Autonomous {
         this.reusable = false;
     }
     start(stopping) {
-        assert_1.default(this.lifePeriod === LifePeriod.CONSTRUCTED
-            || this.reusable && this.lifePeriod === LifePeriod.STOPPED);
-        this.lifePeriod = LifePeriod.STARTING;
-        this._stopping = stopping;
-        this._started = this._start()
-            .then(() => {
-            this.lifePeriod = LifePeriod.STARTED;
-        }).catch(err => {
-            this.lifePeriod = LifePeriod.FAILED;
-            throw err;
-        });
-        return this._started
-            .catch((err) => __awaiter(this, void 0, void 0, function* () {
-            yield this.stop();
-            throw err;
-        }));
-    }
-    stop(err) {
-        assert_1.default(this.lifePeriod !== LifePeriod.CONSTRUCTED);
-        if (this.lifePeriod === LifePeriod.STOPPED)
-            return Promise.resolve();
-        if (this.lifePeriod === LifePeriod.STOPPING)
-            return this._stopped;
-        if (this.lifePeriod === LifePeriod.STARTING)
+        return __awaiter(this, void 0, void 0, function* () {
+            assert_1.default(this.lifePeriod === LifePeriod.CONSTRUCTED
+                || this.reusable && this.lifePeriod === LifePeriod.STOPPED);
+            this.lifePeriod = LifePeriod.STARTING;
+            this._stopping = stopping;
+            this._started = this._start()
+                .then(() => {
+                this.lifePeriod = LifePeriod.STARTED;
+            }).catch(err => {
+                this.lifePeriod = LifePeriod.FAILED;
+                throw err;
+            });
             return this._started
-                .then(() => this.stop())
-                .catch(() => this.stop());
-        this.lifePeriod = LifePeriod.STOPPING;
-        this._stopping && this._stopping(err);
-        return this._stopped = this._stop()
-            .then(() => {
-            this.lifePeriod = LifePeriod.STOPPED;
+                .catch((err) => __awaiter(this, void 0, void 0, function* () {
+                yield this.stop();
+                throw err;
+            }));
+        });
+    }
+    stop(arg) {
+        return __awaiter(this, void 0, void 0, function* () {
+            assert_1.default(this.lifePeriod !== LifePeriod.CONSTRUCTED);
+            if (this.lifePeriod === LifePeriod.STOPPED)
+                return Promise.resolve();
+            if (this.lifePeriod === LifePeriod.STOPPING)
+                return this._stopped;
+            if (this.lifePeriod === LifePeriod.STARTING)
+                return this._started
+                    .then(() => this.stop())
+                    .catch(() => this.stop());
+            this.lifePeriod = LifePeriod.STOPPING;
+            if (arg instanceof Error)
+                this._stopping && this._stopping(arg);
+            if (typeof arg === 'number')
+                timers_1.default.setTimeout(() => process_1.default.exit(-1), arg).unref();
+            return this._stopped = this._stop()
+                .then(() => {
+                this.lifePeriod = LifePeriod.STOPPED;
+            });
         });
     }
 }

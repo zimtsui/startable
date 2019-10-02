@@ -134,8 +134,8 @@
         "signature": "2de69362c6be41535d58884c066a2b104c9e0e5aab709f35aed8d4e08ead4c95"
       },
       "/home/zim/autonomous/src/index.ts": {
-        "version": "d7628470813f4d956a04a239105b15b726e97a2789c0235c377ef7e30ddb3924",
-        "signature": "38aa01cd11a854f749357868fd010255555588552d0295bb2836d4c088667782"
+        "version": "8a7ec923a7fd8918541dcc12e926825a2be9cdc1397eb1e1ccbea853e4621e8a",
+        "signature": "4f98c6105900a3d984860d48ca7f3bef772c4638029cf4f4a6a5fcf2e56567f4"
       },
       "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": {
         "version": "3c10804e3bd90aa404eefbc300c362b0ebbd23b34eb03ae592717ac111889f34",
@@ -494,6 +494,8 @@
       "/home/zim/autonomous/src/index.ts": [
         "/home/zim/autonomous/node_modules/@types/node/assert.d.ts",
         "/home/zim/autonomous/node_modules/autobind-decorator/index.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/timers.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/process.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],

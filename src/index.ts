@@ -1,5 +1,7 @@
 import assert from 'assert';
 import { boundMethod } from 'autobind-decorator';
+import Timer from 'timers';
+import process from 'process';
 
 enum LifePeriod {
     CONSTRUCTED,
@@ -24,7 +26,7 @@ abstract class Autonomous {
 
     private _started!: Promise<void>;
     @boundMethod
-    start(stopping?: Stopping): Promise<void> {
+    async start(stopping?: Stopping): Promise<void> {
         assert(
             this.lifePeriod === LifePeriod.CONSTRUCTED
             || this.reusable && this.lifePeriod === LifePeriod.STOPPED,
@@ -49,7 +51,7 @@ abstract class Autonomous {
 
     private _stopped!: Promise<void>;
     @boundMethod
-    stop(err?: Error): Promise<void> {
+    async stop(arg?: Error | number): Promise<void> {
         assert(this.lifePeriod !== LifePeriod.CONSTRUCTED);
         if (this.lifePeriod === LifePeriod.STOPPED)
             return Promise.resolve();
@@ -61,7 +63,10 @@ abstract class Autonomous {
                 .catch(() => this.stop());
         this.lifePeriod = LifePeriod.STOPPING;
 
-        this._stopping && this._stopping(err);
+        if (arg instanceof Error)
+            this._stopping && this._stopping(arg);
+        if (typeof arg === 'number')
+            Timer.setTimeout(() => process.exit(-1), arg).unref();
 
         return this._stopped = this._stop()
             .then(() => {
