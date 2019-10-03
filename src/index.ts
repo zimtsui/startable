@@ -16,7 +16,7 @@ interface Stopping {
 
 abstract class Autonomous {
     lifePeriod: LifePeriod = LifePeriod.CONSTRUCTED;
-    private _stopping!: Stopping | undefined;
+    private _stopping: Stopping | undefined;
 
     protected abstract _start(): Promise<void>;
     protected abstract _stop(): Promise<void>;
@@ -24,7 +24,7 @@ abstract class Autonomous {
 
     private _started!: Promise<void>;
     @boundMethod
-    async start(stopping?: Stopping): Promise<void> {
+    public async start(stopping?: Stopping): Promise<void> {
         assert(
             this.lifePeriod === LifePeriod.CONSTRUCTED
             || this.reusable && this.lifePeriod === LifePeriod.STOPPED,
@@ -49,7 +49,7 @@ abstract class Autonomous {
 
     private _stopped!: Promise<void>;
     @boundMethod
-    async stop(err?: Error): Promise<void> {
+    public async stop(err?: Error): Promise<void> {
         assert(this.lifePeriod !== LifePeriod.CONSTRUCTED);
         if (this.lifePeriod === LifePeriod.STOPPED)
             return Promise.resolve();

@@ -129,12 +129,16 @@
         "version": "63b66918290d794f73832a6d0325be5026236674fe8c0cb0b68d162000d7bbe8",
         "signature": "63b66918290d794f73832a6d0325be5026236674fe8c0cb0b68d162000d7bbe8"
       },
+      "/home/zim/autonomous/src/auto-exit-decorator.ts": {
+        "version": "e694abb168d976fcf1d705f59936cfe85ec8730f400484d9aad25fa291e07a72",
+        "signature": "79e264690ff58964afee23e9c17f74160ac7e63baf7127964cd1590a6449caf8"
+      },
       "/home/zim/autonomous/node_modules/autobind-decorator/index.d.ts": {
         "version": "2de69362c6be41535d58884c066a2b104c9e0e5aab709f35aed8d4e08ead4c95",
         "signature": "2de69362c6be41535d58884c066a2b104c9e0e5aab709f35aed8d4e08ead4c95"
       },
       "/home/zim/autonomous/src/index.ts": {
-        "version": "9c639232543e55c369fb629cafb0f84c28063a10bc551befe66179f3994a2b0c",
+        "version": "7cd8580f13e366e66f4d448f99195892aded6680e9292806600475e0a3a5208d",
         "signature": "38aa01cd11a854f749357868fd010255555588552d0295bb2836d4c088667782"
       },
       "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": {
@@ -484,6 +488,12 @@
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "/home/zim/autonomous/node_modules/typescript/lib/lib.esnext.bigint.d.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/src/auto-exit-decorator.ts": [
+        "/home/zim/autonomous/node_modules/@types/node/timers.d.ts",
+        "/home/zim/autonomous/node_modules/@types/node/process.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
@@ -1253,7 +1263,9 @@
       "/home/zim/autonomous/node_modules/typescript/lib/lib.es2019.symbol.d.ts",
       "/home/zim/autonomous/node_modules/typescript/lib/lib.esnext.intl.d.ts",
       "/home/zim/autonomous/node_modules/typescript/lib/lib.esnext.bigint.d.ts",
+      "/home/zim/autonomous/src/auto-exit-decorator.ts",
       "/home/zim/autonomous/node_modules/autobind-decorator/index.d.ts",
+      "/home/zim/autonomous/src/index.ts",
       "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts",
       "/home/zim/autonomous/node_modules/@types/chai/index.d.ts",
       "/home/zim/autonomous/node_modules/@types/chai-as-promised/index.d.ts",
@@ -1303,8 +1315,7 @@
       "/home/zim/autonomous/node_modules/@types/node/ts3.2/globals.d.ts",
       "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts",
       "/home/zim/autonomous/node_modules/@types/minimatch/index.d.ts",
-      "/home/zim/autonomous/node_modules/@types/glob/index.d.ts",
-      "/home/zim/autonomous/src/index.ts"
+      "/home/zim/autonomous/node_modules/@types/glob/index.d.ts"
     ]
   },
   "version": "3.5.3"
