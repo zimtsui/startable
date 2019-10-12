@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { boundMethod } from 'autobind-decorator';
+import autoExitDecorator from './auto-exit-decorator';
 
 enum LifePeriod {
     CONSTRUCTED,
@@ -75,4 +76,5 @@ export {
     Autonomous,
     LifePeriod,
     Stopping,
+    autoExitDecorator,
 };

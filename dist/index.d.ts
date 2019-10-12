@@ -1,3 +1,4 @@
+import autoExitDecorator from './auto-exit-decorator';
 declare enum LifePeriod {
     CONSTRUCTED = 0,
     STARTING = 1,
@@ -21,4 +22,4 @@ declare abstract class Autonomous {
     stop(err?: Error): Promise<void>;
 }
 export default Autonomous;
-export { Autonomous, LifePeriod, Stopping, };
+export { Autonomous, LifePeriod, Stopping, autoExitDecorator, };

@@ -19,6 +19,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert_1 = __importDefault(require("assert"));
 const autobind_decorator_1 = require("autobind-decorator");
+const auto_exit_decorator_1 = __importDefault(require("./auto-exit-decorator"));
+exports.autoExitDecorator = auto_exit_decorator_1.default;
 var LifePeriod;
 (function (LifePeriod) {
     LifePeriod[LifePeriod["CONSTRUCTED"] = 0] = "CONSTRUCTED";

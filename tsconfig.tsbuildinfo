@@ -138,8 +138,8 @@
         "signature": "2de69362c6be41535d58884c066a2b104c9e0e5aab709f35aed8d4e08ead4c95"
       },
       "/home/zim/autonomous/src/index.ts": {
-        "version": "7cd8580f13e366e66f4d448f99195892aded6680e9292806600475e0a3a5208d",
-        "signature": "38aa01cd11a854f749357868fd010255555588552d0295bb2836d4c088667782"
+        "version": "67cfe556f94cf966b0288bf348fa8c4ddbad2e679235cb792d7f19e16e1246fb",
+        "signature": "a80e21f89e4c892da1a5c2d4dfeef5c3110f0a11b9ee781ac84331debed4c0ad"
       },
       "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": {
         "version": "3c10804e3bd90aa404eefbc300c362b0ebbd23b34eb03ae592717ac111889f34",
@@ -504,6 +504,7 @@
       "/home/zim/autonomous/src/index.ts": [
         "/home/zim/autonomous/node_modules/@types/node/assert.d.ts",
         "/home/zim/autonomous/node_modules/autobind-decorator/index.d.ts",
+        "/home/zim/autonomous/src/auto-exit-decorator.ts",
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
@@ -1228,6 +1229,9 @@
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "/home/zim/autonomous/src/index.ts": [
+        "/home/zim/autonomous/src/auto-exit-decorator.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -1265,7 +1269,6 @@
       "/home/zim/autonomous/node_modules/typescript/lib/lib.esnext.bigint.d.ts",
       "/home/zim/autonomous/src/auto-exit-decorator.ts",
       "/home/zim/autonomous/node_modules/autobind-decorator/index.d.ts",
-      "/home/zim/autonomous/src/index.ts",
       "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts",
       "/home/zim/autonomous/node_modules/@types/chai/index.d.ts",
       "/home/zim/autonomous/node_modules/@types/chai-as-promised/index.d.ts",
@@ -1315,7 +1318,8 @@
       "/home/zim/autonomous/node_modules/@types/node/ts3.2/globals.d.ts",
       "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts",
       "/home/zim/autonomous/node_modules/@types/minimatch/index.d.ts",
-      "/home/zim/autonomous/node_modules/@types/glob/index.d.ts"
+      "/home/zim/autonomous/node_modules/@types/glob/index.d.ts",
+      "/home/zim/autonomous/src/index.ts"
     ]
   },
   "version": "3.5.3"
