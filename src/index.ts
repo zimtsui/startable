@@ -44,6 +44,11 @@ abstract class Autonomous {
         return this._started
             .catch(async (errStart: Error) => {
                 await this.stop();
+                /* 
+                如果 stop 也出错就忽略掉 errStart
+                之所以不把两个错误合在一起是因为这不符合
+                sourcemap 插件的接口
+                */
                 throw errStart;
             });
     }
