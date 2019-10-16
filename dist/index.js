@@ -51,11 +51,7 @@ class Autonomous {
             });
             return this._started
                 .catch((errStart) => __awaiter(this, void 0, void 0, function* () {
-                yield this.stop()
-                    .catch((errStop) => {
-                    errStop.stack = `${errStart.stack}\n${errStop.stack}`;
-                    throw errStop;
-                });
+                yield this.stop();
                 throw errStart;
             }));
         });

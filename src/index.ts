@@ -43,11 +43,7 @@ abstract class Autonomous {
             });
         return this._started
             .catch(async (errStart: Error) => {
-                await this.stop()
-                    .catch((errStop: Error) => {
-                        errStop.stack = `${errStart.stack}\n${errStop.stack}`;
-                        throw errStop;
-                    });
+                await this.stop();
                 throw errStart;
             });
     }
