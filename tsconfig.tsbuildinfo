@@ -138,7 +138,7 @@
         "signature": "2de69362c6be41535d58884c066a2b104c9e0e5aab709f35aed8d4e08ead4c95"
       },
       "/home/zim/autonomous/src/index.ts": {
-        "version": "67cfe556f94cf966b0288bf348fa8c4ddbad2e679235cb792d7f19e16e1246fb",
+        "version": "6197fe4b99187c92fbd1e0f78876a6d6bcf8e4e016e266d9cde977230d7b6f70",
         "signature": "a80e21f89e4c892da1a5c2d4dfeef5c3110f0a11b9ee781ac84331debed4c0ad"
       },
       "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": {
@@ -936,6 +936,9 @@
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "/home/zim/autonomous/src/index.ts": [
+        "/home/zim/autonomous/src/auto-exit-decorator.ts"
+      ],
       "/home/zim/autonomous/node_modules/@types/bluebird/index.d.ts": [
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
@@ -1229,9 +1232,6 @@
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/index.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/util.d.ts",
         "/home/zim/autonomous/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "/home/zim/autonomous/src/index.ts": [
-        "/home/zim/autonomous/src/auto-exit-decorator.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
