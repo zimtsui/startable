@@ -35,3 +35,4 @@ const autoExitDecorator = (stopTimeout: number) =>
     }
 
 export default autoExitDecorator;
+export { autoExitDecorator };

@@ -45,5 +45,6 @@ const autoExitDecorator = (stopTimeout) => function (Original) {
     }
     return AutoExit;
 };
+exports.autoExitDecorator = autoExitDecorator;
 exports.default = autoExitDecorator;
 //# sourceMappingURL=auto-exit-decorator.js.map
