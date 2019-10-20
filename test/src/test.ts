@@ -1,5 +1,5 @@
 import test from 'ava';
-import Autonomous from '../..';
+import { Autonomous } from '../..';
 import Bluebird from 'bluebird';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';

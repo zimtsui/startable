@@ -1,2 +1,2 @@
-declare const autoExitDecorator: (delay: number) => (Original: any) => any;
+declare const autoExitDecorator: (stopTimeout: number) => (Original: any) => any;
 export default autoExitDecorator;
