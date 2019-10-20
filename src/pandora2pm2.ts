@@ -32,8 +32,9 @@ async function pandora2Pm2(Services: ServiceCtor[]): Promise<void> {
 
         let stopping: Promise<void>;
         async function stop(): Promise<void> {
+            if (stopping) return stopping;
             if (DEV) console.log(`${label} stopping`);
-            if (!stopping) stopping = services
+            stopping = services
                 .reverse()
                 .reduce(
                     (stopped, service) => stopped

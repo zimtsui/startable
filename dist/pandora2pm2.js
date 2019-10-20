@@ -32,13 +32,14 @@ function pandora2Pm2(Services) {
             let stopping;
             function stop() {
                 return __awaiter(this, void 0, void 0, function* () {
+                    if (stopping)
+                        return stopping;
                     if (DEV)
                         console.log(`${label} stopping`);
-                    if (!stopping)
-                        stopping = services
-                            .reverse()
-                            .reduce((stopped, service) => stopped
-                            .then(() => service.stop()), Promise.resolve());
+                    stopping = services
+                        .reverse()
+                        .reduce((stopped, service) => stopped
+                        .then(() => service.stop()), Promise.resolve());
                     const timer = timers_1.setTimeout(() => {
                         console_error_sync_1.consoleErrorSync(`${label} stop times out`);
                         process_1.default.exit(1);
