@@ -27,63 +27,66 @@ const label = '[pandora2pm2]';
 */
 function pandora2Pm2(Services) {
     return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const services = Services.map(Services => new Services());
-            let stopping;
-            function stop() {
-                return __awaiter(this, void 0, void 0, function* () {
-                    if (stopping)
-                        return stopping;
-                    if (DEV)
-                        console.log(`${label} stopping`);
-                    stopping = services
-                        .reverse()
-                        .reduce((stopped, service) => stopped
-                        .then(() => service.stop()), Promise.resolve());
-                    const timer = timers_1.setTimeout(() => {
-                        console_error_sync_1.consoleErrorSync(`${label} stop times out`);
-                        process_1.default.exit(1);
-                    }, process_1.default.env.STOP_TIMEOUT
-                        ? Number.parseInt(process_1.default.env.STOP_TIMEOUT)
-                        : DEFAULT_STOP_TIMEOUT);
-                    yield stopping.catch(err => {
-                        console_error_sync_1.consoleErrorSync(err);
-                        process_1.default.exit(1);
-                    });
-                    timers_1.clearTimeout(timer);
-                    if (DEV)
-                        console.log(`${label} stopped`);
-                    timers_1.setTimeout(() => {
-                        console_error_sync_1.consoleErrorSync(`${label} exit times out`);
-                        process_1.default.exit(0);
-                    }, process_1.default.env.EXIT_TIMEOUT
-                        ? Number.parseInt(process_1.default.env.EXIT_TIMEOUT)
-                        : DEFAULT_EXIT_TIMEOUT).unref();
-                });
-            }
-            process_1.default.once('SIGINT', () => __awaiter(this, void 0, void 0, function* () {
-                process_1.default.once('SIGINT', () => {
-                    console_error_sync_1.consoleErrorSync(`${label} forced to exit`);
+        const services = Services.map(Services => new Services());
+        let stopping = undefined;
+        function stop() {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (stopping)
+                    return stopping;
+                if (DEV)
+                    console.log(`${label} stopping`);
+                stopping = services
+                    .reverse()
+                    .reduce((stopped, service) => stopped
+                    .then(() => service.stop()), Promise.resolve());
+                const timer = timers_1.setTimeout(() => {
+                    console_error_sync_1.consoleErrorSync(`${label} stop times out`);
+                    process_1.default.exit(1);
+                }, process_1.default.env.STOP_TIMEOUT
+                    ? Number.parseInt(process_1.default.env.STOP_TIMEOUT)
+                    : DEFAULT_STOP_TIMEOUT);
+                yield stopping.catch(err => {
+                    console_error_sync_1.consoleErrorSync(err);
                     process_1.default.exit(1);
                 });
-                yield stop();
-            }));
-            if (DEV)
-                console.log(`${label} starting`);
-            for (const service of services)
+                timers_1.clearTimeout(timer);
+                if (DEV)
+                    console.log(`${label} stopped`);
+                timers_1.setTimeout(() => {
+                    console_error_sync_1.consoleErrorSync(`${label} exit times out`);
+                    process_1.default.exit(0);
+                }, process_1.default.env.EXIT_TIMEOUT
+                    ? Number.parseInt(process_1.default.env.EXIT_TIMEOUT)
+                    : DEFAULT_EXIT_TIMEOUT).unref();
+            });
+        }
+        process_1.default.once('SIGINT', () => __awaiter(this, void 0, void 0, function* () {
+            process_1.default.once('SIGINT', () => {
+                console_error_sync_1.consoleErrorSync(`${label} forced to exit`);
+                process_1.default.exit(1);
+            });
+            yield stop();
+        }));
+        if (DEV)
+            console.log(`${label} starting`);
+        try {
+            for (const service of services) {
+                if (stopping)
+                    break;
                 if (service instanceof autonomous_1.Autonomous)
                     yield service.start(stop);
                 else
                     yield service.start();
-            if (DEV)
-                console.log(`${label} started`);
-            else
-                process_1.default.send('ready');
+            }
         }
         catch (err) {
-            console_error_sync_1.consoleErrorSync(err);
-            process_1.default.exit(1);
+            console.error(err);
+            stop();
         }
+        if (DEV)
+            console.log(`${label} started`);
+        else
+            process_1.default.send('ready');
     });
 }
 exports.pandora2Pm2 = pandora2Pm2;
