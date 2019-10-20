@@ -18,6 +18,8 @@ interface ServiceCtor {
     new(): Service;
 }
 
+const label = '[pandora2pm2]';
+
 /*
     几个问题
     1. stop 总不结束怎么办
@@ -30,7 +32,7 @@ async function pandora2Pm2(Services: ServiceCtor[]): Promise<void> {
 
         let stopping: Promise<void>;
         async function stop(): Promise<void> {
-            if (DEV) console.log('stopping');
+            if (DEV) console.log(`${label} stopping`);
             if (!stopping) stopping = services
                 .reverse()
                 .reduce(
@@ -40,7 +42,7 @@ async function pandora2Pm2(Services: ServiceCtor[]): Promise<void> {
                 );
 
             const timer = setTimeout(() => {
-                consoleErrorSync('stop times out');
+                consoleErrorSync(`${label} stop times out`);
                 process.exit(1);
             }, process.env.STOP_TIMEOUT
                 ? Number.parseInt(process.env.STOP_TIMEOUT)
@@ -53,10 +55,10 @@ async function pandora2Pm2(Services: ServiceCtor[]): Promise<void> {
             });
 
             clearTimeout(timer);
-            if (DEV) console.log('stopped');
+            if (DEV) console.log(`${label} stopped`);
 
             setTimeout(() => {
-                consoleErrorSync('exit times out');
+                consoleErrorSync(`${label} exit times out`);
                 process.exit(0);
             }, process.env.EXIT_TIMEOUT
                 ? Number.parseInt(process.env.EXIT_TIMEOUT)
@@ -66,20 +68,20 @@ async function pandora2Pm2(Services: ServiceCtor[]): Promise<void> {
 
         process.once('SIGINT', async () => {
             process.once('SIGINT', () => {
-                consoleErrorSync('forced to exit');
+                consoleErrorSync(`${label} forced to exit`);
                 process.exit(1);
             });
             await stop();
         });
 
-        if (DEV) console.log('starting');
+        if (DEV) console.log(`${label} starting`);
 
         for (const service of services)
             if (service instanceof Autonomous)
                 await service.start(stop);
             else await service.start();
 
-        if (DEV) console.log('started');
+        if (DEV) console.log(`${label} started`);
         else process.send!('ready');
     } catch (err) {
         consoleErrorSync(err);

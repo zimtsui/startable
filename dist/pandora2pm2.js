@@ -19,6 +19,7 @@ const console_error_sync_1 = require("./console-error-sync");
 const DEV = !process_1.default.send;
 const DEFAULT_EXIT_TIMEOUT = 1000;
 const DEFAULT_STOP_TIMEOUT = 5000;
+const label = '[pandora2pm2]';
 /*
     几个问题
     1. stop 总不结束怎么办
@@ -32,14 +33,14 @@ function pandora2Pm2(Services) {
             function stop() {
                 return __awaiter(this, void 0, void 0, function* () {
                     if (DEV)
-                        console.log('stopping');
+                        console.log(`${label} stopping`);
                     if (!stopping)
                         stopping = services
                             .reverse()
                             .reduce((stopped, service) => stopped
                             .then(() => service.stop()), Promise.resolve());
                     const timer = timers_1.setTimeout(() => {
-                        console_error_sync_1.consoleErrorSync('stop times out');
+                        console_error_sync_1.consoleErrorSync(`${label} stop times out`);
                         process_1.default.exit(1);
                     }, process_1.default.env.STOP_TIMEOUT
                         ? Number.parseInt(process_1.default.env.STOP_TIMEOUT)
@@ -50,9 +51,9 @@ function pandora2Pm2(Services) {
                     });
                     timers_1.clearTimeout(timer);
                     if (DEV)
-                        console.log('stopped');
+                        console.log(`${label} stopped`);
                     timers_1.setTimeout(() => {
-                        console_error_sync_1.consoleErrorSync('exit times out');
+                        console_error_sync_1.consoleErrorSync(`${label} exit times out`);
                         process_1.default.exit(0);
                     }, process_1.default.env.EXIT_TIMEOUT
                         ? Number.parseInt(process_1.default.env.EXIT_TIMEOUT)
@@ -61,20 +62,20 @@ function pandora2Pm2(Services) {
             }
             process_1.default.once('SIGINT', () => __awaiter(this, void 0, void 0, function* () {
                 process_1.default.once('SIGINT', () => {
-                    console_error_sync_1.consoleErrorSync('forced to exit');
+                    console_error_sync_1.consoleErrorSync(`${label} forced to exit`);
                     process_1.default.exit(1);
                 });
                 yield stop();
             }));
             if (DEV)
-                console.log('starting');
+                console.log(`${label} starting`);
             for (const service of services)
                 if (service instanceof autonomous_1.Autonomous)
                     yield service.start(stop);
                 else
                     yield service.start();
             if (DEV)
-                console.log('started');
+                console.log(`${label} started`);
             else
                 process_1.default.send('ready');
         }
