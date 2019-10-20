@@ -11,8 +11,8 @@ import { consoleErrorSync } from './console-error-sync'
 
 const DEV = !process.send;
 
-const DEFAULT_EXIT_TIMEOUT = 1000;
-const DEFAULT_STOP_TIMEOUT = 5000;
+const DEFAULT_STOP_TIMEOUT = 10000;
+const DEFAULT_EXIT_TIMEOUT = 3000;
 
 interface ServiceCtor {
     new(): Service;

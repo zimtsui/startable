@@ -17,8 +17,8 @@ const timers_1 = require("timers");
 const process_1 = __importDefault(require("process"));
 const console_error_sync_1 = require("./console-error-sync");
 const DEV = !process_1.default.send;
-const DEFAULT_EXIT_TIMEOUT = 1000;
-const DEFAULT_STOP_TIMEOUT = 5000;
+const DEFAULT_STOP_TIMEOUT = 10000;
+const DEFAULT_EXIT_TIMEOUT = 3000;
 const label = '[pandora2pm2]';
 /*
     几个问题

@@ -154,7 +154,7 @@
         "signature": "e163f08a9934d11debcc3629aff2b0c58234dad5481438254257fb405e6a73c4"
       },
       "./src/pandora2pm2.ts": {
-        "version": "6b09e097298e0e2d82833a52b9532df535d9ba34103cdd73a8e801246f93395d",
+        "version": "75f924fc658ea819fc4081ac866195d53a8f2f83d5bb9a022ed00e02e20ac8bd",
         "signature": "fa96a646f4eefc6b42dce2160bef1d53378aba357b3bf5c72350f00629af47ff"
       },
       "./src/index.ts": {
