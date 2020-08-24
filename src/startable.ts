@@ -1,34 +1,35 @@
-import { assert } from 'chai';
-import { boundMethod } from 'autobind-decorator';
+import chai from 'chai';
+const { assert } = chai;
 
-enum LifePeriod {
+const enum LifePeriod {
     CONSTRUCTED,
     STARTING,
-    FAILED,
     STARTED,
+    FAILED,
     STOPPING,
     STOPPED,
+    BROKEN,
 }
 
-interface Service {
-    start(): Promise<void>;
-    stop(): Promise<void>;
+interface StartableLike {
+    start(stopping?: Stopping): Promise<void>;
+    stop(err?: Error): Promise<void>;
 }
 
+// sync function
 interface Stopping {
     (err?: Error): void
 }
 
-abstract class Autonomous implements Service {
+abstract class Startable implements StartableLike {
     lifePeriod: LifePeriod = LifePeriod.CONSTRUCTED;
-    private _stopping: Stopping | undefined;
+    private _stopping?: Stopping;
 
     protected abstract _start(): Promise<void>;
     protected abstract _stop(): Promise<void>;
     protected reusable = false;
 
-    private _started!: Promise<void>;
-    @boundMethod
+    private started!: Promise<void>;
     public async start(stopping?: Stopping): Promise<void> {
         assert(
             this.lifePeriod === LifePeriod.CONSTRUCTED
@@ -38,52 +39,56 @@ abstract class Autonomous implements Service {
 
         this._stopping = stopping;
 
-        this._started = this._start()
+        const _started = this._start()
             .then(() => {
                 this.lifePeriod = LifePeriod.STARTED;
-            }).catch(err => {
+            }, (err: Error) => {
                 this.lifePeriod = LifePeriod.FAILED;
                 throw err;
             });
-        return this._started
+        return this.started = _started
             .catch(async (errStart: Error) => {
                 await this.stop();
                 /* 
-                如果 stop 也出错就忽略掉 errStart
-                之所以不把两个错误合在一起是因为这不符合
-                sourcemap 插件的接口
+                    如果 stop 也出错就忽略掉 errStart
+                    之所以不把两个错误合在一起是因为这不符合
+                    sourcemap 插件的接口
                 */
                 throw errStart;
             });
     }
 
-    private _stopped!: Promise<void>;
-    @boundMethod
+    public stopped!: Promise<void>;
     public async stop(err?: Error): Promise<void> {
         assert(this.lifePeriod !== LifePeriod.CONSTRUCTED);
-        if (this.lifePeriod === LifePeriod.STOPPED)
-            return Promise.resolve();
-        if (this.lifePeriod === LifePeriod.STOPPING)
-            return this._stopped;
+        if (
+            this.lifePeriod === LifePeriod.STOPPING ||
+            this.lifePeriod === LifePeriod.STOPPED ||
+            this.lifePeriod === LifePeriod.BROKEN
+        ) return this.stopped;
         if (this.lifePeriod === LifePeriod.STARTING)
-            return this._started
-                .then(() => this.stop())
-                .catch(() => this.stop());
+            return this.started
+                .catch(() => { })
+                .then(() => this.stop());
         this.lifePeriod = LifePeriod.STOPPING;
 
-        if (this._stopping) this._stopping(err);
-
-        return this._stopped = this._stop()
+        this.stopped = this._stop()
             .then(() => {
                 this.lifePeriod = LifePeriod.STOPPED;
+            }, (err: Error) => {
+                this.lifePeriod = LifePeriod.BROKEN;
+                throw err;
             });
+        if (this._stopping) this._stopping(err);
+
+        return this.stopped;
     }
 }
 
-export default Autonomous;
 export {
-    Autonomous,
+    Startable as default,
+    Startable,
+    StartableLike,
     LifePeriod,
     Stopping,
-    Service,
 };

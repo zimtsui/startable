@@ -1,39 +1,32 @@
 {
-    "name": "autonomous",
+    "name": "startable",
     "version": "0.0.1",
     "description": "",
+    "type": "module",
     "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
     "scripts": {
-        "test": "tsc -b ./test/ && ava",
-        "build": "tsc -b"
+        "build": "tsc -b",
+        "test": "tsc -b ./test/ && ava"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/zimtsui/autonomous.git"
+        "url": "git+https://github.com/zimtsui/startable.git"
     },
     "author": "Zim",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/zimtsui/autonomous/issues"
+        "url": "https://github.com/zimtsui/startable/issues"
     },
-    "homepage": "https://github.com/zimtsui/autonomous#readme",
-    "devDependencies": {
-        "@types/bluebird": "^3.5.28",
-        "@types/chai-as-promised": "^7.1.0",
-        "ava": "^2.2.0",
-        "bluebird": "^3.7.1",
-        "chai-as-promised": "^7.1.1",
-        "typescript": "^3.6.4"
-    },
+    "homepage": "https://github.com/zimtsui/startable#readme",
     "dependencies": {
-        "@types/chai": "^4.2.3",
-        "@types/node": "^12.11.1",
-        "autobind-decorator": "^2.4.0",
+        "@types/chai": "^4.2.12",
         "chai": "^4.2.0"
     },
-    "ava": {
-        "failWithoutAssertions": false,
-        "verbose": true
+    "devDependencies": {
+        "@types/chai-as-promised": "^7.1.3",
+        "@types/sinon": "^9.0.5",
+        "ava": "^3.11.1",
+        "chai-as-promised": "^7.1.1",
+        "sinon": "^9.0.3"
     }
 }

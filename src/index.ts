@@ -1,3 +1,2 @@
-export * from './auto-exit-decorator';
-export * from './autonomous';
-export * from './pandora2pm2';
+export { default } from './startable';
+export * from './startable';

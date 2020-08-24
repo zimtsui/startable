@@ -1,74 +1,86 @@
+import Startable from '../../dist/index';
+import sinon from 'sinon';
 import test from 'ava';
-import { Autonomous } from '../..';
-import Bluebird from 'bluebird';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+const { fake } = sinon;
 chai.use(chaiAsPromised);
 const { assert } = chai;
 
-class TimerSuccessful extends Autonomous {
-    protected _start() {
-        return Bluebird.delay(100);
-    }
 
-    protected _stop() {
-        return Bluebird.delay(100);
-    }
-}
 
-class TimerFailed extends Autonomous {
-    protected _start() {
-        return Bluebird.delay(100).throw(new Error());
-    }
-
-    protected _stop() {
-        return Bluebird.delay(100);
-    }
-}
-
-test.serial('successful & started', async t => {
-    const timer = new TimerSuccessful();
-    const timeStarting = Date.now();
-
-    await timer.start();
-
-    const timeStarted = Date.now();
-
-    await timer.stop();
-
-    const timeStopped = Date.now();
-    t.log(timeStarted - timeStarting);
-    t.log(timeStopped - timeStarted);
+test('start succ stop succ', async t => {
+    const f = fake();
+    class Service extends Startable {
+        protected _start() {
+            f();
+            return Promise.resolve();
+        }
+        protected _stop() {
+            f();
+            return Promise.resolve();
+        }
+    };
+    const service = new Service();
+    await service.start();
+    service.stop().catch(() => { });
+    await service.stop();
+    assert(f.callCount === 2);
 });
 
-test.serial('successful & starting', async t => {
-    const timer = new TimerSuccessful();
-
-    const timeStarting = Date.now();
-    let timeStarted: number | undefined;
-
-    timer.start().then(() => {
-        timeStarted = Date.now();
-    });
-    await timer.stop();
-
-    const timeStopped = Date.now();
-
-    assert.strictEqual(typeof timeStarted, 'number');
-    t.log(timeStopped - timeStarted!);
-    t.log(timeStarted! - timeStarting);
+test('start succ stop fail', async t => {
+    const f = fake();
+    class Service extends Startable {
+        protected _start() {
+            f();
+            return Promise.resolve();
+        }
+        protected _stop() {
+            f();
+            return Promise.reject(new Error('stop'));
+        }
+    };
+    const service = new Service();
+    await service.start();
+    service.stop().catch(() => { });
+    await assert.isRejected(service.stop(), /^stop$/);
+    assert(f.callCount === 2);
 });
 
-test.serial('failed', async t => {
-    const timer = new TimerFailed();
+test('start fail stop succ', async t => {
+    const f = fake();
+    class Service extends Startable {
+        protected _start() {
+            f();
+            return Promise.reject(new Error('start'));
+        }
+        protected _stop() {
+            f();
+            return Promise.resolve();
+        }
+    };
+    const service = new Service();
+    await assert.isRejected(service.start(), /^start$/);
+    service.stop().catch(() => { });
+    await service.stop();
+    assert(f.callCount === 2);
+});
 
-    const timeStarting = Date.now();
-
-    const assertion = assert.isRejected(timer.start());
-
-    await timer.stop();
-    const timeStopped = Date.now();
-    t.log(timeStopped - timeStarting);
-
-    await assertion;
+test('start fail stop fail', async t => {
+    const f = fake();
+    class Service extends Startable {
+        protected _start() {
+            f();
+            return Promise.reject(new Error('start'));
+        }
+        protected _stop() {
+            f();
+            return Promise.reject(new Error('stop'));
+        }
+    };
+    const service = new Service();
+    await assert.isRejected(service.start(), /^stop$/);
+    service.stop().catch(() => { });
+    await assert.isRejected(service.stop(), /^stop$/);
+    assert(f.callCount === 2);
 });
