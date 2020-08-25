@@ -23,7 +23,7 @@ interface Stopping {
 
 abstract class Startable implements StartableLike {
     lifePeriod: LifePeriod = LifePeriod.CONSTRUCTED;
-    private _stopping?: Stopping;
+    private stopping?: Stopping;
 
     protected abstract _start(): Promise<void>;
     protected abstract _stop(): Promise<void>;
@@ -37,7 +37,7 @@ abstract class Startable implements StartableLike {
         );
         this.lifePeriod = LifePeriod.STARTING;
 
-        this._stopping = stopping;
+        this.stopping = stopping;
 
         const _started = this._start()
             .then(() => {
@@ -79,7 +79,7 @@ abstract class Startable implements StartableLike {
                 this.lifePeriod = LifePeriod.BROKEN;
                 throw err;
             });
-        if (this._stopping) this._stopping(err);
+        if (this.stopping) this.stopping(err);
 
         return this.stopped;
     }

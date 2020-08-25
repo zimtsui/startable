@@ -16,7 +16,7 @@ interface Stopping {
 }
 declare abstract class Startable implements StartableLike {
     lifePeriod: LifePeriod;
-    private _stopping?;
+    private stopping?;
     protected abstract _start(): Promise<void>;
     protected abstract _stop(): Promise<void>;
     protected reusable: boolean;

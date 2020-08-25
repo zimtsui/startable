@@ -9,7 +9,7 @@ class Startable {
         assert(this.lifePeriod === 0 /* CONSTRUCTED */
             || this.reusable && this.lifePeriod === 5 /* STOPPED */);
         this.lifePeriod = 1 /* STARTING */;
-        this._stopping = stopping;
+        this.stopping = stopping;
         const _started = this._start()
             .then(() => {
             this.lifePeriod = 2 /* STARTED */;
@@ -46,8 +46,8 @@ class Startable {
             this.lifePeriod = 6 /* BROKEN */;
             throw err;
         });
-        if (this._stopping)
-            this._stopping(err);
+        if (this.stopping)
+            this.stopping(err);
         return this.stopped;
     }
 }
