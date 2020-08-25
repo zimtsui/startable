@@ -26,7 +26,7 @@ abstract class Startable implements StartableLike {
     private stopping?: Stopping;
 
     protected abstract _start(): Promise<void>;
-    protected abstract _stop(): Promise<void>;
+    protected abstract _stop(err?: Error): Promise<void>;
     protected reusable = false;
 
     private started!: Promise<void>;
@@ -72,7 +72,7 @@ abstract class Startable implements StartableLike {
                 .then(() => this.stop());
         this.lifePeriod = LifePeriod.STOPPING;
 
-        this.stopped = this._stop()
+        this.stopped = this._stop(err)
             .then(() => {
                 this.lifePeriod = LifePeriod.STOPPED;
             }, (err: Error) => {

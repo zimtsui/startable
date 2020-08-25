@@ -18,7 +18,7 @@ declare abstract class Startable implements StartableLike {
     lifePeriod: LifePeriod;
     private stopping?;
     protected abstract _start(): Promise<void>;
-    protected abstract _stop(): Promise<void>;
+    protected abstract _stop(err?: Error): Promise<void>;
     protected reusable: boolean;
     private started;
     start(stopping?: Stopping): Promise<void>;

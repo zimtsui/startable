@@ -39,7 +39,7 @@ class Startable {
                 .catch(() => { })
                 .then(() => this.stop());
         this.lifePeriod = 4 /* STOPPING */;
-        this.stopped = this._stop()
+        this.stopped = this._stop(err)
             .then(() => {
             this.lifePeriod = 5 /* STOPPED */;
         }, (err) => {
