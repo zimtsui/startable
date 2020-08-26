@@ -54,11 +54,11 @@ abstract class PrimitiveStartable implements StartableLike {
             this.lifePeriod === LifePeriod.STOPPED ||
             this.lifePeriod === LifePeriod.BROKEN
         ) return Promise.resolve()
-            // prevent _stop() calling stop() syncly
+            // in case _stop() calls stop() syncly
             .then(() => this.stopped);
         if (this.lifePeriod === LifePeriod.STARTING)
             return Promise.resolve()
-                // prevent _start() calling stop() syncly
+                // in case _start() calls stop() syncly
                 .then(() => this.started)
                 .catch(() => { })
                 .then(() => this.stop());
