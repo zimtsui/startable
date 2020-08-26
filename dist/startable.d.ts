@@ -20,7 +20,7 @@ declare abstract class Startable implements StartableLike {
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
     protected reusable: boolean;
-    private started;
+    started: Promise<void>;
     start(stopping?: Stopping): Promise<void>;
     stopped: Promise<void>;
     stop(err?: Error): Promise<void>;

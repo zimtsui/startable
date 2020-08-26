@@ -29,7 +29,7 @@ abstract class Startable implements StartableLike {
     protected abstract _stop(err?: Error): Promise<void>;
     protected reusable = false;
 
-    private started!: Promise<void>;
+    public started!: Promise<void>;
     public async start(stopping?: Stopping): Promise<void> {
         assert(
             this.lifePeriod === LifePeriod.CONSTRUCTED
