@@ -22,9 +22,13 @@ class PrimitiveStartable {
         if (this.lifePeriod === 4 /* STOPPING */ ||
             this.lifePeriod === 5 /* STOPPED */ ||
             this.lifePeriod === 6 /* BROKEN */)
-            return this.stopped;
+            return Promise.resolve()
+                // prevent _stop() calling stop() syncly
+                .then(() => this.stopped);
         if (this.lifePeriod === 1 /* STARTING */)
-            return this.started
+            return Promise.resolve()
+                // prevent _start() calling stop() syncly
+                .then(() => this.started)
                 .catch(() => { })
                 .then(() => this.stop());
         this.lifePeriod = 4 /* STOPPING */;
