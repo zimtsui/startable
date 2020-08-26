@@ -10,7 +10,7 @@ class Startable extends PrimitiveStartable {
     }
     async start(stopping) {
         assert(this.reusable || this.lifePeriod !== 5 /* STOPPED */);
-        super.start(stopping);
+        super.start(stopping).catch(() => { });
         if (this.autoStopAfterFailed) {
             const stoppedIffailed = this.started
                 .catch(async (errStart) => {
@@ -22,6 +22,7 @@ class Startable extends PrimitiveStartable {
                 */
                 throw errStart;
             });
+            stoppedIffailed.catch(() => { });
             return this.startRejectedAfterStopIfFailed ? stoppedIffailed : this.started;
         }
         else
