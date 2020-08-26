@@ -58,6 +58,7 @@ abstract class PrimitiveStartable implements StartableLike {
             return this.started
                 .catch(() => { })
                 .then(() => this.stop());
+
         this.lifePeriod = LifePeriod.STOPPING;
 
         this.stopped = this._stop(err)

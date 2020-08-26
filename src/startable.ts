@@ -13,7 +13,7 @@ abstract class Startable extends PrimitiveStartable {
 
     public async start(stopping?: Stopping): Promise<void> {
         assert(this.reusable || this.lifePeriod !== LifePeriod.STOPPED);
-        super.start(stopping).catch(() => { });
+        super.start(stopping);
 
         if (this.autoStopAfterFailed) {
             const stoppedIffailed = this.started
@@ -26,7 +26,6 @@ abstract class Startable extends PrimitiveStartable {
                     */
                     throw errStart;
                 });
-            stoppedIffailed.catch(() => { });
             return this.startRejectedAfterStopIfFailed ? stoppedIffailed : this.started;
         } else return this.started;
     }
