@@ -19,7 +19,7 @@ class Startable {
         });
         return this.started = _started
             .catch(async (errStart) => {
-            await this.stop();
+            await this.stop(errStart);
             /*
                 如果 stop 也出错就忽略掉 errStart
                 之所以不把两个错误合在一起是因为这不符合
