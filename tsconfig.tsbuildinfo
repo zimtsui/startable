@@ -206,9 +206,14 @@
         "signature": "2fc02febc18eb7df45ce134505a190daeb2fad54c71d12f41a741d47c0cc5549",
         "affectsGlobalScope": true
       },
+      "./src/primitive.ts": {
+        "version": "25648583b90bb5f7b3163ec76d0c3b520643624a42e425e571d0895eefe98ae3",
+        "signature": "7720c476bbd88dbac29bd4decba6f94e8e2a78618c97aa1b2201efd23597d3d9",
+        "affectsGlobalScope": false
+      },
       "./src/startable.ts": {
-        "version": "4ff6a01af2d9144f4fdfe275bf839e4644f207fc17f5eb90d57414091bf8659e",
-        "signature": "e51547ef051614ccce874eecaf85572e6c6977014c35f90945c4160067f2f216",
+        "version": "ad1b3478ca26a1cd12c5792abbe4db7944dd930b674908c91e4420180a83ec88",
+        "signature": "328d27b2b3bfdae55356c0682b5f8c7dbde435b87f364eb8abed4cf8922a516a",
         "affectsGlobalScope": false
       },
       "./src/index.ts": {
@@ -1118,7 +1123,7 @@
         "./node_modules/@types/node/util.d.ts",
         "./src/startable.ts"
       ],
-      "./src/startable.ts": [
+      "./src/primitive.ts": [
         "./node_modules/@types/chai/index.d.ts",
         "./node_modules/@types/node/fs.d.ts",
         "./node_modules/@types/node/process.d.ts",
@@ -1126,6 +1131,16 @@
         "./node_modules/@types/node/ts3.2/process.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts",
         "./node_modules/@types/node/util.d.ts"
+      ],
+      "./src/startable.ts": [
+        "./node_modules/@types/chai/index.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/process.d.ts",
+        "./node_modules/@types/node/ts3.2/fs.d.ts",
+        "./node_modules/@types/node/ts3.2/process.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./src/primitive.ts"
       ],
       "../../../../usr/local/lib/node_modules/typescript/lib/lib.es2015.collection.d.ts": [
         "./node_modules/@types/node/fs.d.ts",
@@ -2022,6 +2037,9 @@
       ],
       "./src/index.ts": [
         "./src/startable.ts"
+      ],
+      "./src/startable.ts": [
+        "./src/primitive.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -2086,6 +2104,7 @@
       "./node_modules/@types/sinon/index.d.ts",
       "./node_modules/@types/sinonjs__fake-timers/index.d.ts",
       "./src/index.ts",
+      "./src/primitive.ts",
       "./src/startable.ts",
       "../../../../usr/local/lib/node_modules/typescript/lib/lib.es2015.collection.d.ts",
       "../../../../usr/local/lib/node_modules/typescript/lib/lib.es2015.core.d.ts",
