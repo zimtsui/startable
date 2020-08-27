@@ -16,7 +16,7 @@ abstract class Startable extends PrimitiveStartable {
         super.start(stopping).catch(() => { });
 
         if (this.autoStopAfterFailed) {
-            const stoppedIffailed = this.started
+            const stoppedIffailed = this.started!
                 .catch(async (errStart: Error) => {
                     await this.stop(errStart);
                     /* 

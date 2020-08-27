@@ -19,9 +19,9 @@ declare abstract class PrimitiveStartable implements StartableLike {
     private stopping?;
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
-    started: Promise<void>;
+    started?: Promise<void>;
     start(stopping?: Stopping): Promise<void>;
-    stopped: Promise<void>;
+    stopped?: Promise<void>;
     stop(err?: Error): Promise<void>;
 }
 export { PrimitiveStartable as default, PrimitiveStartable, StartableLike, LifePeriod, Stopping, };

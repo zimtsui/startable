@@ -27,7 +27,7 @@ abstract class PrimitiveStartable implements StartableLike {
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
 
-    public started!: Promise<void>;
+    public started?: Promise<void>;
     public async start(stopping?: Stopping): Promise<void> {
         assert(
             this.lifePeriod === LifePeriod.CONSTRUCTED
@@ -46,7 +46,7 @@ abstract class PrimitiveStartable implements StartableLike {
             });
     }
 
-    public stopped!: Promise<void>;
+    public stopped?: Promise<void>;
     public async stop(err?: Error): Promise<void> {
         assert(this.lifePeriod !== LifePeriod.CONSTRUCTED);
         if (
