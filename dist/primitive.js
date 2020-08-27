@@ -30,7 +30,7 @@ class PrimitiveStartable {
                 // in case _start() calls stop() syncly
                 .then(() => this.started)
                 .catch(() => { })
-                .then(() => this.stop());
+                .then(() => this.stop(err));
         this.lifePeriod = 4 /* STOPPING */;
         this.stopped = this._stop(err)
             .then(() => {
