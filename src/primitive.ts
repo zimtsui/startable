@@ -12,30 +12,30 @@ const enum LifePeriod {
 }
 
 interface StartableLike {
-    start(stopping?: Stopping): Promise<void>;
+    start(stopping?: OnStopping): Promise<void>;
     stop(err?: Error): Promise<void>;
 }
 
-interface Stopping {
+interface OnStopping {
     (err?: Error): void;
 }
 
 abstract class PrimitiveStartable implements StartableLike {
     public lifePeriod: LifePeriod = LifePeriod.CONSTRUCTED;
-    private stopping?: Stopping;
+    private onStopping?: OnStopping;
 
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
 
     public started?: Promise<void>;
-    public async start(stopping?: Stopping): Promise<void> {
+    public async start(stopping?: OnStopping): Promise<void> {
         assert(
             this.lifePeriod === LifePeriod.CONSTRUCTED
             || this.lifePeriod === LifePeriod.STOPPED,
         );
         this.lifePeriod = LifePeriod.STARTING;
 
-        this.stopping = stopping;
+        this.onStopping = stopping;
 
         return this.started = this._start()
             .then(() => {
@@ -72,7 +72,7 @@ abstract class PrimitiveStartable implements StartableLike {
                 this.lifePeriod = LifePeriod.BROKEN;
                 throw err;
             });
-        if (this.stopping) this.stopping(err);
+        if (this.onStopping) this.onStopping(err);
 
         return this.stopped;
     }
@@ -83,5 +83,5 @@ export {
     PrimitiveStartable,
     StartableLike,
     LifePeriod,
-    Stopping,
+    OnStopping,
 };

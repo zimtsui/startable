@@ -8,20 +8,20 @@ declare const enum LifePeriod {
     BROKEN = 6
 }
 interface StartableLike {
-    start(stopping?: Stopping): Promise<void>;
+    start(stopping?: OnStopping): Promise<void>;
     stop(err?: Error): Promise<void>;
 }
-interface Stopping {
+interface OnStopping {
     (err?: Error): void;
 }
 declare abstract class PrimitiveStartable implements StartableLike {
     lifePeriod: LifePeriod;
-    private stopping?;
+    private onStopping?;
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
     started?: Promise<void>;
-    start(stopping?: Stopping): Promise<void>;
+    start(stopping?: OnStopping): Promise<void>;
     stopped?: Promise<void>;
     stop(err?: Error): Promise<void>;
 }
-export { PrimitiveStartable as default, PrimitiveStartable, StartableLike, LifePeriod, Stopping, };
+export { PrimitiveStartable as default, PrimitiveStartable, StartableLike, LifePeriod, OnStopping, };

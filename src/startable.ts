@@ -1,7 +1,7 @@
 import chai from 'chai';
 import {
     PrimitiveStartable,
-    Stopping,
+    OnStopping,
     LifePeriod,
 } from './primitive';
 const { assert } = chai;
@@ -11,9 +11,9 @@ abstract class Startable extends PrimitiveStartable {
     protected autoStopAfterFailed = true;
     protected startRejectedAfterStopIfFailed = false;
 
-    public async start(stopping?: Stopping): Promise<void> {
+    public async start(onStopping?: OnStopping): Promise<void> {
         assert(this.reusable || this.lifePeriod !== LifePeriod.STOPPED);
-        super.start(stopping).catch(() => { });
+        super.start(onStopping).catch(() => { });
 
         if (this.autoStopAfterFailed) {
             const stoppedIffailed = this.started!

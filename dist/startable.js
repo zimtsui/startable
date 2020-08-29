@@ -8,9 +8,9 @@ class Startable extends PrimitiveStartable {
         this.autoStopAfterFailed = true;
         this.startRejectedAfterStopIfFailed = false;
     }
-    async start(stopping) {
+    async start(onStopping) {
         assert(this.reusable || this.lifePeriod !== 5 /* STOPPED */);
-        super.start(stopping).catch(() => { });
+        super.start(onStopping).catch(() => { });
         if (this.autoStopAfterFailed) {
             const stoppedIffailed = this.started
                 .catch(async (errStart) => {

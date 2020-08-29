@@ -8,7 +8,7 @@ class PrimitiveStartable {
         assert(this.lifePeriod === 0 /* CONSTRUCTED */
             || this.lifePeriod === 5 /* STOPPED */);
         this.lifePeriod = 1 /* STARTING */;
-        this.stopping = stopping;
+        this.onStopping = stopping;
         return this.started = this._start()
             .then(() => {
             this.lifePeriod = 2 /* STARTED */;
@@ -39,8 +39,8 @@ class PrimitiveStartable {
             this.lifePeriod = 6 /* BROKEN */;
             throw err;
         });
-        if (this.stopping)
-            this.stopping(err);
+        if (this.onStopping)
+            this.onStopping(err);
         return this.stopped;
     }
 }
