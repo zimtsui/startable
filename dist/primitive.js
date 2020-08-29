@@ -18,7 +18,6 @@ class PrimitiveStartable {
         });
     }
     async stop(err) {
-        assert(this.lifePeriod !== 0 /* CONSTRUCTED */);
         if (this.lifePeriod === 4 /* STOPPING */ ||
             this.lifePeriod === 5 /* STOPPED */ ||
             this.lifePeriod === 6 /* BROKEN */)
