@@ -48,6 +48,11 @@ abstract class PrimitiveStartable implements StartableLike {
 
     public stopped?: Promise<void>;
     public async stop(err?: Error): Promise<void> {
+        if (this.lifePeriod === LifePeriod.CONSTRUCTED) {
+            this.lifePeriod = LifePeriod.STOPPED;
+            this.stopped = Promise.resolve();
+            return;
+        }
         if (
             this.lifePeriod === LifePeriod.STOPPING ||
             this.lifePeriod === LifePeriod.STOPPED ||

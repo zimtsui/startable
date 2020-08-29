@@ -18,6 +18,11 @@ class PrimitiveStartable {
         });
     }
     async stop(err) {
+        if (this.lifePeriod === 0 /* CONSTRUCTED */) {
+            this.lifePeriod = 5 /* STOPPED */;
+            this.stopped = Promise.resolve();
+            return;
+        }
         if (this.lifePeriod === 4 /* STOPPING */ ||
             this.lifePeriod === 5 /* STOPPED */ ||
             this.lifePeriod === 6 /* BROKEN */)

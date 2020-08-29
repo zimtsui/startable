@@ -207,7 +207,7 @@
         "affectsGlobalScope": true
       },
       "./src/primitive.ts": {
-        "version": "44b66ca8883b7baaf5f4a0d39828cf972d15726a3f641bd5af3ef9a22937c3b3",
+        "version": "662ed15fcc3eb8b3baaf416a1f37979be0f4b2f45bbb755882540b27eb29c967",
         "signature": "614ee0ad8cecd1c8b0d8898c9dd974d1fdc65ece13dc69b238e1aa75c5965617",
         "affectsGlobalScope": false
       },
