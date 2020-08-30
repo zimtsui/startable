@@ -9,7 +9,7 @@ class Startable extends PrimitiveStartable {
         this.startRejectedAfterStopIfFailed = false;
     }
     async start(onStopping) {
-        assert(this.reusable || this.lifePeriod !== 5 /* STOPPED */);
+        assert(this.reusable || this.lifePeriod !== "STOPPED" /* STOPPED */);
         super.start(onStopping).catch(() => { });
         if (this.autoStopAfterFailed) {
             const stoppedIffailed = this.started

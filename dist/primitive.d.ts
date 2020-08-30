@@ -1,11 +1,11 @@
 declare const enum LifePeriod {
-    CONSTRUCTED = 0,
-    STARTING = 1,
-    STARTED = 2,
-    FAILED = 3,
-    STOPPING = 4,
-    STOPPED = 5,
-    BROKEN = 6
+    CONSTRUCTED = "CONSTRUCTED",
+    STARTING = "STARTING",
+    STARTED = "STARTED",
+    FAILED = "FAILED",
+    STOPPING = "STOPPING",
+    STOPPED = "STOPPED",
+    BROKEN = "BROKEN"
 }
 interface StartableLike {
     start(stopping?: OnStopping): Promise<void>;

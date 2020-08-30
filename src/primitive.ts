@@ -2,13 +2,13 @@ import chai from 'chai';
 const { assert } = chai;
 
 const enum LifePeriod {
-    CONSTRUCTED,
-    STARTING,
-    STARTED,
-    FAILED,
-    STOPPING,
-    STOPPED,
-    BROKEN,
+    CONSTRUCTED = 'CONSTRUCTED',
+    STARTING = 'STARTING',
+    STARTED = 'STARTED',
+    FAILED = 'FAILED',
+    STOPPING = 'STOPPING',
+    STOPPED = 'STOPPED',
+    BROKEN = 'BROKEN',
 }
 
 interface StartableLike {
