@@ -1,4 +1,5 @@
 import chai from 'chai';
+import EventEmitter from 'eventemitter3';
 const { assert } = chai;
 
 const enum LifePeriod {
@@ -20,7 +21,7 @@ interface OnStopping {
     (err?: Error): void;
 }
 
-abstract class PrimitiveStartable implements StartableLike {
+abstract class PrimitiveStartable extends EventEmitter implements StartableLike {
     public lifePeriod: LifePeriod = LifePeriod.CONSTRUCTED;
     private onStopping?: OnStopping;
 

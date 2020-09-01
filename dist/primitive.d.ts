@@ -1,3 +1,4 @@
+import EventEmitter from 'eventemitter3';
 declare const enum LifePeriod {
     CONSTRUCTED = "CONSTRUCTED",
     STARTING = "STARTING",
@@ -14,7 +15,7 @@ interface StartableLike {
 interface OnStopping {
     (err?: Error): void;
 }
-declare abstract class PrimitiveStartable implements StartableLike {
+declare abstract class PrimitiveStartable extends EventEmitter implements StartableLike {
     lifePeriod: LifePeriod;
     private onStopping?;
     protected abstract _start(): Promise<void>;

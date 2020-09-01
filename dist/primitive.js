@@ -1,7 +1,9 @@
 import chai from 'chai';
+import EventEmitter from 'eventemitter3';
 const { assert } = chai;
-class PrimitiveStartable {
+class PrimitiveStartable extends EventEmitter {
     constructor() {
+        super(...arguments);
         this.lifePeriod = "CONSTRUCTED" /* CONSTRUCTED */;
     }
     async start(stopping) {

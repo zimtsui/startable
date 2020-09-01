@@ -206,9 +206,14 @@
         "signature": "2fc02febc18eb7df45ce134505a190daeb2fad54c71d12f41a741d47c0cc5549",
         "affectsGlobalScope": true
       },
+      "./node_modules/eventemitter3/index.d.ts": {
+        "version": "b80c780c52524beb13488942543972c8b0e54400e8b59cee0169f38d0fabb968",
+        "signature": "b80c780c52524beb13488942543972c8b0e54400e8b59cee0169f38d0fabb968",
+        "affectsGlobalScope": false
+      },
       "./src/primitive.ts": {
-        "version": "8f965db913ddfa55234ddbc11e38e1bd950fe87d0cd8d4438ea9ad4461f983c8",
-        "signature": "b9997a8d6abf337439e3d1b8f9081a57f6dd85ba0a2252c80ffa8b6213735a97",
+        "version": "ea6edb370939d7bb46bc9a49a2a395b0819cdba41735fe3af1e3b8467a03dea4",
+        "signature": "8886e28cccc19bc2df7c3e46aea8ed105587cede4b054a4e7e9a463052388460",
         "affectsGlobalScope": false
       },
       "./src/startable.ts": {
@@ -1114,6 +1119,14 @@
         "./node_modules/@types/node/ts3.2/util.d.ts",
         "./node_modules/@types/node/util.d.ts"
       ],
+      "./node_modules/eventemitter3/index.d.ts": [
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/process.d.ts",
+        "./node_modules/@types/node/ts3.2/fs.d.ts",
+        "./node_modules/@types/node/ts3.2/process.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts",
+        "./node_modules/@types/node/util.d.ts"
+      ],
       "./src/index.ts": [
         "./node_modules/@types/node/fs.d.ts",
         "./node_modules/@types/node/process.d.ts",
@@ -1130,7 +1143,8 @@
         "./node_modules/@types/node/ts3.2/fs.d.ts",
         "./node_modules/@types/node/ts3.2/process.d.ts",
         "./node_modules/@types/node/ts3.2/util.d.ts",
-        "./node_modules/@types/node/util.d.ts"
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/eventemitter3/index.d.ts"
       ],
       "./src/startable.ts": [
         "./node_modules/@types/chai/index.d.ts",
@@ -2035,8 +2049,19 @@
         "./node_modules/@types/node/ts3.2/util.d.ts",
         "./node_modules/@types/node/util.d.ts"
       ],
+      "./node_modules/eventemitter3/index.d.ts": [
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/process.d.ts",
+        "./node_modules/@types/node/ts3.2/fs.d.ts",
+        "./node_modules/@types/node/ts3.2/process.d.ts",
+        "./node_modules/@types/node/ts3.2/util.d.ts",
+        "./node_modules/@types/node/util.d.ts"
+      ],
       "./src/index.ts": [
         "./src/startable.ts"
+      ],
+      "./src/primitive.ts": [
+        "./node_modules/eventemitter3/index.d.ts"
       ],
       "./src/startable.ts": [
         "./src/primitive.ts"
@@ -2103,6 +2128,7 @@
       "./node_modules/@types/normalize-package-data/index.d.ts",
       "./node_modules/@types/sinon/index.d.ts",
       "./node_modules/@types/sinonjs__fake-timers/index.d.ts",
+      "./node_modules/eventemitter3/index.d.ts",
       "./src/index.ts",
       "./src/primitive.ts",
       "./src/startable.ts",
