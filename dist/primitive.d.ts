@@ -21,7 +21,7 @@ declare abstract class PrimitiveStartable extends EventEmitter implements Starta
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
     started?: Promise<void>;
-    start(stopping?: OnStopping): Promise<void>;
+    start(onStopping?: OnStopping): Promise<void>;
     stopped?: Promise<void>;
     stop(err?: Error): Promise<void>;
 }

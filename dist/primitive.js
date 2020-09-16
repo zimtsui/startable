@@ -6,11 +6,11 @@ class PrimitiveStartable extends EventEmitter {
         super(...arguments);
         this.lifePeriod = "CONSTRUCTED" /* CONSTRUCTED */;
     }
-    async start(stopping) {
+    async start(onStopping) {
         assert(this.lifePeriod === "CONSTRUCTED" /* CONSTRUCTED */
             || this.lifePeriod === "STOPPED" /* STOPPED */);
         this.lifePeriod = "STARTING" /* STARTING */;
-        this.onStopping = stopping;
+        this.onStopping = onStopping;
         return this.started = this._start()
             .then(() => {
             this.lifePeriod = "STARTED" /* STARTED */;

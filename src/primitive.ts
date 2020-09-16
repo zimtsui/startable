@@ -29,14 +29,14 @@ abstract class PrimitiveStartable extends EventEmitter implements StartableLike 
     protected abstract _stop(err?: Error): Promise<void>;
 
     public started?: Promise<void>;
-    public async start(stopping?: OnStopping): Promise<void> {
+    public async start(onStopping?: OnStopping): Promise<void> {
         assert(
             this.lifePeriod === LifePeriod.CONSTRUCTED
             || this.lifePeriod === LifePeriod.STOPPED,
         );
         this.lifePeriod = LifePeriod.STARTING;
 
-        this.onStopping = stopping;
+        this.onStopping = onStopping;
 
         return this.started = this._start()
             .then(() => {
