@@ -1,5 +1,5 @@
 import chai from 'chai';
-import EventEmitter from 'eventemitter3';
+import { EventEmitter } from 'events';
 const { assert } = chai;
 class PrimitiveStartable extends EventEmitter {
     constructor() {

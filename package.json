@@ -20,8 +20,9 @@
     "homepage": "https://github.com/zimtsui/startable#readme",
     "dependencies": {
         "@types/chai": "^4.2.12",
+        "@types/events": "^3.0.0",
         "chai": "^4.2.0",
-        "eventemitter3": "^4.0.7"
+        "events": "^3.2.0"
     },
     "devDependencies": {
         "@types/chai-as-promised": "^7.1.3",
