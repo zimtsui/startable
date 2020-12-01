@@ -1,34 +1,54 @@
-import chai from 'chai';
-import { PrimitiveStartable, } from './primitive';
-const { assert } = chai;
-class Startable extends PrimitiveStartable {
+import { EventEmitter } from 'events';
+class Illegal extends Error {
+}
+class Startable extends EventEmitter {
     constructor() {
         super(...arguments);
-        this.reusable = false;
-        this.autoStopAfterFailed = true;
-        this.startRejectedAfterStopIfFailed = false;
+        this.lifePeriod = "CONSTRUCTED" /* CONSTRUCTED */;
     }
     async start(onStopping) {
-        assert(this.reusable || this.lifePeriod !== "STOPPED" /* STOPPED */);
-        super.start(onStopping).catch(() => { });
-        if (this.autoStopAfterFailed) {
-            const stoppedIffailed = this.started
-                .catch(async (errStart) => {
-                await this.stop(errStart);
-                /*
-                    如果 stop 也出错就忽略掉 errStart
-                    之所以不把两个错误合在一起是因为这不符合
-                    sourcemap 插件的接口
-                */
-                throw errStart;
+        if (this.lifePeriod === "CONSTRUCTED" /* CONSTRUCTED */ ||
+            this.lifePeriod === "STOPPED" /* STOPPED */) {
+            this.lifePeriod = "STARTING" /* STARTING */;
+            this.onStopping = onStopping;
+            return this.started = this._start()
+                .then(() => {
+                this.lifePeriod = "STARTED" /* STARTED */;
+            }, (err) => {
+                this.lifePeriod = "FAILED" /* FAILED */;
+                throw err;
             });
-            stoppedIffailed.catch(() => { });
-            return this.startRejectedAfterStopIfFailed ? stoppedIffailed : this.started;
         }
-        else
-            return this.started;
+        if (this.lifePeriod === "STARTING" /* STARTING */ ||
+            this.lifePeriod === "STARTED" /* STARTED */ ||
+            this.lifePeriod === "FAILED" /* FAILED */)
+            // in case _start() calls start() syncly
+            return Promise.resolve().then(() => this.started);
+        throw new Illegal(this.lifePeriod);
+    }
+    async stop(err) {
+        if (this.lifePeriod === "CONSTRUCTED" /* CONSTRUCTED */) {
+            this.lifePeriod = "STOPPED" /* STOPPED */;
+            return this.stopped = Promise.resolve();
+        }
+        if (this.lifePeriod === "STARTING" /* STARTING */)
+            throw new Illegal(this.lifePeriod);
+        if (this.lifePeriod === "STARTED" /* STARTED */ ||
+            this.lifePeriod === "FAILED" /* FAILED */) {
+            this.lifePeriod = "STOPPING" /* STOPPING */;
+            if (this.onStopping)
+                this.onStopping(err);
+            return this.stopped = this._stop(err)
+                .then(() => {
+                this.lifePeriod = "STOPPED" /* STOPPED */;
+            }, (err) => {
+                this.lifePeriod = "BROKEN" /* BROKEN */;
+                throw err;
+            });
+        }
+        // in case _stop() or onStopping() calls stop() syncly
+        return Promise.resolve().then(() => this.stopped);
     }
 }
-export * from './primitive';
-export { Startable as default, Startable, };
+export { Startable as default, Startable, Illegal, };
 //# sourceMappingURL=startable.js.map

@@ -1,4 +1,4 @@
-import Startable from '../../dist/index';
+import Startable from '../../dist/startable';
 import sinon from 'sinon';
 import test from 'ava';
 import chai from 'chai';
@@ -78,29 +78,6 @@ test('start fail stop fail', async (t) => {
     ;
     const service = new Service();
     await assert.isRejected(service.start(), /^start$/);
-    service.stop().catch(() => { });
-    await assert.isRejected(service.stop(), /^stop$/);
-    assert(f.callCount === 2);
-});
-test('start fail stop fail 2', async (t) => {
-    const f = fake();
-    class Service extends Startable {
-        constructor() {
-            super();
-            this.startRejectedAfterStopIfFailed = true;
-        }
-        _start() {
-            f();
-            return Promise.reject(new Error('start'));
-        }
-        _stop() {
-            f();
-            return Promise.reject(new Error('stop'));
-        }
-    }
-    ;
-    const service = new Service();
-    await assert.isRejected(service.start(), /^stop$/);
     service.stop().catch(() => { });
     await assert.isRejected(service.stop(), /^stop$/);
     assert(f.callCount === 2);
