@@ -25,7 +25,7 @@ const server = new Server();
 2. STARTING：从 `server.listen()` 执行，到 `listening` 事件发生
 3. STARTED：从 `listening` 事件发生，到 `server.close()` 执行
 4. STOPPING：从 `server.close()` 执行，到 `close` 事件发生
-5. STOPPED：从 `close` 事件发生，到对象被 runtime 回收
+5. STOPPED：从 `close` 事件发生，到对象被引擎回收
 
 # 用事件管理 Service 的生命周期
 
@@ -284,52 +284,26 @@ await sleep(SOME_TIME);
 await service.stop();
 ```
 
-Startable 顺便还实现了以下功能
+Startable 扩展到 7 个状态
 
-1. 如果你调用一个 Service 的 stop() 时这个 Service 正处在 STOPPING/STOPPED 状态，你的这次调用没有任何效果，并返回实际正在运行的 stop() 的函数值。
+1. CONSTRUCTED：未开始 start 过程的状态
+2. STARTING：start 过程
+3. STARTED：start 过程成功且未开始 stop 过程的状态，即正在提供服务中的状态
+4. FAILED：start 过程失败且还未开始 stop 过程的状态
+5. STOPPING：stop 过程
+6. STOPPED：stop 过程成功的状态
+7. BROKEN：stop 过程失败的状态
 
-    因此你可以尽情地调用 stop() 而不需要考虑重复 stop 的问题。例如，在实现母 Service 的 _stop() 时，不需要考虑
-    
-    > 这次 stop 是某个子 Service 引起的，那么说明此时我的这个子 Service 他自己已经开始 stop 了，我现在把他的 stop() 和其他子 Service 的 stop() 再一起 call 一遍会不会出乱子？
+## 说明
 
-    这种问题。
+1.  如果你调用一个 Service 的 stop() 时这个 Service 正处在 STOPPING/STOPPED/BROKEN 状态，你的这次调用没有任何效果，并返回实际已经运行的 stop() 的函数值。因此你可以尽情地调用 stop() 而不需要考虑重复 stop 的问题。
 
-2. 如果你调用一个 Service 的 stop() 时这个 Service 正处在 STARTING 状态，那么这个 Service 会在 start() 结束之后立即开始 stop() ，并返回 stop() 的函数值。
-
-3. 如果你调用一个 Service 的 stop() 时这个 Service 正处在 CONSTRUCTED 状态，那么 Service 会经过一个什么都不干的瞬间 stop 过程，直接进入 STOPPED 状态。
+2.  如果你调用一个 Service 的 stop() 时这个 Service 正处在 CONSTRUCTED 状态，那么 Service 会经过一个什么都不干的瞬间 stop 过程，直接进入 STOPPED 状态。
 
     Q：这个瞬间的 stop 过程会不会调用 onStopping？
+
     A：CUNSTRUCTED 状态下 onStopping 还没传进去呢。
 
-4. 如果你实现的 _start() 函数 throw 了，那标志着 start 过程的失败，这个 Service 会进入 FAILED 状态。默认情况下，会自动开始 stop 过程，且 start() 返回时 stop 过程已经开始即已进入 STOPPING 状态，因此 FAILED 状态只有一瞬间。
+3.  如果你实现的 _start() 函数 throw 了，那标志着 start 过程的失败，这个 Service 会进入 FAILED 状态。
 
-    Startable 提供了 `started` 和 `stopped` 两个属性来查询 start 和 stop 过程何时结束，还提供了 `lifePeriod` 属性来查询当前状态。
-
-    ```ts
-        // ...
-        import { LifePeriod } from 'startable';
-        // ...
-        service.start()
-            .catch(err => {
-                console.log('start() failed and stop() has been called automatically.');
-                this.stopped!.then(() => {
-                    console.log('but stop() succeeded.');
-                    console.log(this.lifePeriod === LifePeriod.STOPPED); // true
-                }, () => {
-                    console.log('and stop() failed as well.');
-                    console.log(this.lifePeriod === LifePeriod.BROKEN); // true
-                });
-            });
-    ```
-
-5. 如果你实现的 _stop() 函数 throw 了，那标志着 stop 过程的失败，这个 Service 会进入 BROKEN 状态。BROKEN 状态的 Service 不能重新 start。
-
-    因此 Startable 扩展到 7 个状态
-
-    1. CONSTRUCTED：未开始 start 过程的状态
-    2. STARTING：start 过程
-    3. STARTED：start 过程成功且未开始 stop 过程的状态，即正在提供服务中的状态
-    4. FAILED：start 过程失败且还未开始 stop 过程的状态
-    5. STOPPING：stop 过程
-    6. STOPPED：stop 过程成功的状态
-    7. BROKEN：stop 过程失败的状态
+4.  如果你实现的 _stop() 函数 throw 了，那标志着 stop 过程的失败，这个 Service 会进入 BROKEN 状态。BROKEN 状态的 Service 不能重新 start。
