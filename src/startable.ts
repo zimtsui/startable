@@ -27,7 +27,7 @@ abstract class Startable extends EventEmitter implements StartableLike {
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
 
-    protected started = Promise.resolve();
+    public started = Promise.resolve();
     public async start(onStopping?: OnStopping): Promise<void> {
         if (
             this.lifePeriod === LifePeriod.STOPPED ||
@@ -55,7 +55,7 @@ abstract class Startable extends EventEmitter implements StartableLike {
         throw new Illegal(this.lifePeriod);
     }
 
-    protected stopped = Promise.resolve();
+    public stopped = Promise.resolve();
     public async stop(err?: Error): Promise<void> {
         if (this.lifePeriod === LifePeriod.STARTING)
             throw new Illegal(this.lifePeriod);

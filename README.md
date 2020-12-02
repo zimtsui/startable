@@ -320,4 +320,29 @@ Startable 扩展到 6 个状态
     }
     ```
 
-4.  stop 函数可以传入一个错误，表示 stop 的原因，这个错误会自动传入 onStopping。从语义上说，应当在自己 stop 自己时总是传入，在被从外部 stop 时总是不传入。这样就可以在 stop() 和 onStopping() 中根据参数是否存在来判断是这个 service 自己挂了还是被从外部 stop。
+4.  stop 函数可以传入一个错误，表示 stop 的原因，这个错误会自动传入 onStopping。从语义上说，应当在自己 stop 自己时总是传入，在被从外部 stop 时总是不传入。这样就可以在 stop() 和 onStopping() 中根据参数是否存在来判断是这个 service 是自己挂了还是被从外部关掉的。
+
+    需要注意的是，如果这个错误存在，在语义上只能说明自己挂了，并不能说明没有被从外部关闭，因为可能从外部的调用慢了一点被忽略掉了。
+
+5.  started 和 stopped 属性保存了 start() 和 stop() 的值。以下操作依次发生在同一个事件循环
+
+    1. stop() 第一次调用的第一个事件循环
+    2. 修改 lifePeriod
+    3. onStopping()
+    4. _stop() 的第一个事件循环
+    5. stopped 赋值
+
+    因此在 _stop() 或 onStopping() 中访问 stopped 的值不一定这次 stop() 的值，应当通过 stop() 访问。
+
+6.  你可以在 _start() 和 _stop() 中实现 start 失败自动 stop 和 stop 成功自动重启，即
+
+    ```ts
+    class Service extends Startable {
+        protected async _start(): Promise<void> {
+            this.start().catch(err => this.stop(err));
+        }
+        protected async _stop((err?: Error)): Promise<void> {
+            this.stop().then(err => this.start());
+        }
+    } 
+    ```
