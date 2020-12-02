@@ -1,13 +1,12 @@
 import { EventEmitter } from 'events';
 
 const enum LifePeriod {
-    CONSTRUCTED = 'CONSTRUCTED',
     STARTING = 'STARTING',
     STARTED = 'STARTED',
-    FAILED = 'FAILED',
+    NSTARTED = 'NSTARTED',
     STOPPING = 'STOPPING',
     STOPPED = 'STOPPED',
-    BROKEN = 'BROKEN',
+    NSTOPPED = 'NSTOPPED',
 }
 
 interface StartableLike {
@@ -22,17 +21,17 @@ interface OnStopping {
 class Illegal extends Error { }
 
 abstract class Startable extends EventEmitter implements StartableLike {
-    public lifePeriod: LifePeriod = LifePeriod.CONSTRUCTED;
+    public lifePeriod: LifePeriod = LifePeriod.STOPPED;
     private onStopping?: OnStopping;
 
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
 
-    public started?: Promise<void>;
+    protected started = Promise.resolve();
     public async start(onStopping?: OnStopping): Promise<void> {
         if (
-            this.lifePeriod === LifePeriod.CONSTRUCTED ||
-            this.lifePeriod === LifePeriod.STOPPED
+            this.lifePeriod === LifePeriod.STOPPED ||
+            this.lifePeriod === LifePeriod.NSTOPPED
         ) {
             this.lifePeriod = LifePeriod.STARTING;
             this.onStopping = onStopping;
@@ -40,7 +39,7 @@ abstract class Startable extends EventEmitter implements StartableLike {
                 .then(() => {
                     this.lifePeriod = LifePeriod.STARTED;
                 }, (err: Error) => {
-                    this.lifePeriod = LifePeriod.FAILED;
+                    this.lifePeriod = LifePeriod.NSTARTED;
                     throw err;
                 });
         }
@@ -48,7 +47,7 @@ abstract class Startable extends EventEmitter implements StartableLike {
         if (
             this.lifePeriod === LifePeriod.STARTING ||
             this.lifePeriod === LifePeriod.STARTED ||
-            this.lifePeriod === LifePeriod.FAILED
+            this.lifePeriod === LifePeriod.NSTARTED
         )
             // in case _start() calls start() syncly
             return Promise.resolve().then(() => this.started!);
@@ -56,19 +55,14 @@ abstract class Startable extends EventEmitter implements StartableLike {
         throw new Illegal(this.lifePeriod);
     }
 
-    private stopped?: Promise<void>;
+    protected stopped = Promise.resolve();
     public async stop(err?: Error): Promise<void> {
-        if (this.lifePeriod === LifePeriod.CONSTRUCTED) {
-            this.lifePeriod = LifePeriod.STOPPED;
-            return this.stopped = Promise.resolve();
-        }
-
         if (this.lifePeriod === LifePeriod.STARTING)
             throw new Illegal(this.lifePeriod);
 
         if (
             this.lifePeriod === LifePeriod.STARTED ||
-            this.lifePeriod === LifePeriod.FAILED
+            this.lifePeriod === LifePeriod.NSTARTED
         ) {
             this.lifePeriod = LifePeriod.STOPPING;
             if (this.onStopping) this.onStopping(err);
@@ -76,7 +70,7 @@ abstract class Startable extends EventEmitter implements StartableLike {
                 .then(() => {
                     this.lifePeriod = LifePeriod.STOPPED;
                 }, (err: Error) => {
-                    this.lifePeriod = LifePeriod.BROKEN;
+                    this.lifePeriod = LifePeriod.NSTOPPED;
                     throw err;
                 });
         }

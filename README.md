@@ -287,31 +287,26 @@ await sleep(SOME_TIME);
 await service.stop();
 ```
 
-Startable 扩展到 7 个状态
+Startable 扩展到 6 个状态
 
-1. CONSTRUCTED：未开始 start 过程的状态
-2. STARTING：start 过程
-3. STARTED：start 过程成功且未开始 stop 过程的状态，即正在提供服务中的状态
-4. FAILED：start 过程失败且还未开始 stop 过程的状态
-5. STOPPING：stop 过程
-6. STOPPED：stop 过程成功的状态
-7. BROKEN：stop 过程失败的状态
+1. STARTING：start 过程
+2. STARTED：start 过程成功且未开始 stop 过程的状态，即正在提供服务中的状态
+3. NSTARTED：start 过程失败且还未开始 stop 过程的状态
+4. STOPPING：stop 过程
+5. STOPPED：stop 过程成功的状态
+6. NSTOPPED：stop 过程失败的状态
+
+初始状态是 STOPPED。
 
 ## 特性
 
-1.  如果你调用一个 Service 的 stop() 时这个 Service 正处在 STOPPING/STOPPED/BROKEN 状态，你的这次调用没有任何效果，并返回实际已经运行的 stop() 的函数值。因此你可以尽情地调用 stop() 而不需要考虑重复 stop 的问题。
+1.  如果你调用一个 Service 的 stop() 时这个 Service 正处在 STOPPING/STOPPED/NSTOPPED 状态，你的这次调用没有任何效果，并返回实际已经运行的 stop() 的函数值。因此你可以尽情地调用 stop() 而不需要考虑重复 stop 的问题。
 
-    同理，如果你调用一个 Service 的 start() 时这个 Service 正处在 STARTING/STARTED/FAILED 状态，你的这次调用没有任何效果，并返回实际已经运行的 start() 的函数值。
+    同理，如果你调用一个 Service 的 start() 时这个 Service 正处在 STARTING/STARTED/NSTARTED 状态，你的这次调用没有任何效果，并返回实际已经运行的 start() 的函数值。
 
-2.  如果你调用一个 Service 的 stop() 时这个 Service 正处在 CONSTRUCTED 状态，那么 Service 会经过一个什么都不干的瞬间 stop 过程，直接进入 STOPPED 状态。
+2.  STARTING 状态不能 stop()，STOPPING/BROKEN 状态不能 start()，否则抛出 Ilegall 类的异常。但 STOPPED 状态可以重新 start()。
 
-    Q：这个瞬间的 stop 过程会不会调用 onStopping？
-
-    A：CUNSTRUCTED 状态下 onStopping 还没传进去呢。
-
-3.  STARTING 状态不能 stop()，STOPPING/BROKEN 状态不能 start()，否则抛出 Ilegall 类的异常。但 STOPPED 状态可以重新 start()。
-
-4.  源代码是用面向对象风格写的而不是函数式，所以 start/stop 等方法均没有 bound。
+3.  源代码是用面向对象风格写的而不是函数式，所以 start/stop 等方法均没有 bound。
 
     ```ts
     class Service extends Startable {
@@ -325,4 +320,4 @@ Startable 扩展到 7 个状态
     }
     ```
 
-5. stop 函数可以传入一个错误，表示 stop 的原因，这个错误会自动传入 onStopping。从语义上说，应当在自己 stop 自己时总是传入，在被从外部 stop 时总是不传入。这样就可以在 stop() 和 onStopping() 中根据参数是否存在来判断是这个 service 自己挂了还是被从外部 stop。
+4.  stop 函数可以传入一个错误，表示 stop 的原因，这个错误会自动传入 onStopping。从语义上说，应当在自己 stop 自己时总是传入，在被从外部 stop 时总是不传入。这样就可以在 stop() 和 onStopping() 中根据参数是否存在来判断是这个 service 自己挂了还是被从外部 stop。
