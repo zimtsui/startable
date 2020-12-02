@@ -42,6 +42,7 @@ interface DoSomethingAsyncToStartService {
 interface DoSomethingAsyncToStopService {
     (callback: () => void): void;
 }
+
 class Service implements EventalizedService {
     public start(): void {
         doSomethingAsyncToStartService(() => {
@@ -161,6 +162,7 @@ interface PromisifiedService{
     start(): Promise<void>;
     stop(): Promise<void>;
 }
+
 class ParentService implements PromisifiedService {
     private childService1: PromisifiedService = new ChildService1();
     private childService2: PromisifiedService = new ChildService2();
@@ -212,6 +214,7 @@ class ParentService implements PromisifiedService {
 interface OnStopping {
     (err?: Error): void;
 }
+
 class ParentService implements PromisifiedService {
     private childService1: PromisifiedService = new ChildService1();
     private childService2: PromisifiedService = new ChildService2();
@@ -294,9 +297,11 @@ Startable 扩展到 7 个状态
 6. STOPPED：stop 过程成功的状态
 7. BROKEN：stop 过程失败的状态
 
-## 说明
+## 特性
 
 1.  如果你调用一个 Service 的 stop() 时这个 Service 正处在 STOPPING/STOPPED/BROKEN 状态，你的这次调用没有任何效果，并返回实际已经运行的 stop() 的函数值。因此你可以尽情地调用 stop() 而不需要考虑重复 stop 的问题。
+
+    同理，如果你调用一个 Service 的 start() 时这个 Service 正处在 STARTING/STARTED/FAILED 状态，你的这次调用没有任何效果，并返回实际已经运行的 start() 的函数值。
 
 2.  如果你调用一个 Service 的 stop() 时这个 Service 正处在 CONSTRUCTED 状态，那么 Service 会经过一个什么都不干的瞬间 stop 过程，直接进入 STOPPED 状态。
 
@@ -304,6 +309,20 @@ Startable 扩展到 7 个状态
 
     A：CUNSTRUCTED 状态下 onStopping 还没传进去呢。
 
-3.  如果你实现的 _start() 函数 throw 了，那标志着 start 过程的失败，这个 Service 会进入 FAILED 状态。
+3.  STARTING 状态不能 stop()，STOPPING/BROKEN 状态不能 start()，否则抛出 Ilegall 类的异常。但 STOPPED 状态可以重新 start()。
 
-4.  如果你实现的 _stop() 函数 throw 了，那标志着 stop 过程的失败，这个 Service 会进入 BROKEN 状态。BROKEN 状态的 Service 不能重新 start。
+4.  源代码是用面向对象风格写的而不是函数式，所以 start/stop 等方法均没有 bound。
+
+    ```ts
+    class Service extends Startable {
+        protected async _start(): Promise<void> {
+            this.childService.start(this.stop); // wrong
+            this.childService.start(err => this.stop(err)); // right
+        }
+        protected async _stop((err?: Error)): Promise<void> {
+            this.childService.stop();
+        }
+    }
+    ```
+
+5. stop 函数可以传入一个错误，表示 stop 的原因，这个错误会自动传入 onStopping。从语义上说，应当在自己 stop 自己时总是传入，在被从外部 stop 时总是不传入。这样就可以在 stop() 和 onStopping() 中根据参数是否存在来判断是这个 service 自己挂了还是被从外部 stop。
