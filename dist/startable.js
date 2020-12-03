@@ -19,6 +19,8 @@ class Startable extends EventEmitter {
         return Promise.resolve().then(() => this._starting);
     }
     async start(onStopping) {
+        if (this.lifePeriod === "STOPPING" /* STOPPING */)
+            await this.stopping.catch(() => { });
         if (this.lifePeriod === "STOPPED" /* STOPPED */) {
             this.lifePeriod = "STARTING" /* STARTING */;
             this.onStopping = onStopping;
@@ -27,8 +29,6 @@ class Startable extends EventEmitter {
                 this.lifePeriod = "STARTED" /* STARTED */;
             });
         }
-        else
-            await this.stopping.catch(() => { });
         return this.starting;
     }
     get stopping() {
@@ -36,6 +36,8 @@ class Startable extends EventEmitter {
         return Promise.resolve().then(() => this._stopping);
     }
     async stop(err) {
+        if (this.lifePeriod === "STARTING" /* STARTING */)
+            await this.starting.catch(() => { });
         if (this.lifePeriod === "STARTED" /* STARTED */) {
             this.lifePeriod = "STOPPING" /* STOPPING */;
             if (this.onStopping)
@@ -45,8 +47,6 @@ class Startable extends EventEmitter {
                 this.lifePeriod = "STOPPED" /* STOPPED */;
             });
         }
-        else
-            await this.starting.catch(() => { });
         return this.stopping;
     }
 }

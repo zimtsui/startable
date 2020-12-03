@@ -34,6 +34,8 @@ abstract class Startable extends EventEmitter implements StartableLike {
 
     @boundMethod
     public async start(onStopping?: OnStopping): Promise<void> {
+        if (this.lifePeriod === LifePeriod.STOPPING)
+            await this.stopping.catch(() => { });
         if (this.lifePeriod === LifePeriod.STOPPED) {
             this.lifePeriod = LifePeriod.STARTING;
             this.onStopping = onStopping;
@@ -41,7 +43,7 @@ abstract class Startable extends EventEmitter implements StartableLike {
                 .finally(() => {
                     this.lifePeriod = LifePeriod.STARTED;
                 });
-        } else await this.stopping.catch(() => { });
+        }
         return this.starting;
     }
 
@@ -53,6 +55,8 @@ abstract class Startable extends EventEmitter implements StartableLike {
 
     @boundMethod
     public async stop(err?: Error): Promise<void> {
+        if (this.lifePeriod === LifePeriod.STARTING)
+            await this.starting.catch(() => { });
         if (this.lifePeriod === LifePeriod.STARTED) {
             this.lifePeriod = LifePeriod.STOPPING;
             if (this.onStopping) this.onStopping(err);
@@ -60,7 +64,7 @@ abstract class Startable extends EventEmitter implements StartableLike {
                 .finally(() => {
                     this.lifePeriod = LifePeriod.STOPPED;
                 });
-        } else await this.starting.catch(() => { });
+        }
         return this.stopping;
     }
 }
