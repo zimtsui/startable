@@ -26,36 +26,42 @@ abstract class Startable extends EventEmitter implements StartableLike {
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
 
-    private starting = Promise.resolve();
+    private _starting = Promise.resolve();
+    public get starting(): Promise<void> {
+        // in case _start() calls start() syncly
+        return Promise.resolve().then(() => this._starting);
+    }
+
     @boundMethod
     public async start(onStopping?: OnStopping): Promise<void> {
         if (this.lifePeriod === LifePeriod.STOPPED) {
             this.lifePeriod = LifePeriod.STARTING;
             this.onStopping = onStopping;
-            return this.starting = this._start()
+            return this._starting = this._start()
                 .finally(() => {
                     this.lifePeriod = LifePeriod.STARTED;
                 });
-        }
-
-        // in case _start() calls start() syncly
-        return Promise.resolve().then(() => this.starting);
+        } else await this.stopping.catch(() => { });
+        return this.starting;
     }
 
-    private stopping = Promise.resolve();
+    private _stopping = Promise.resolve();
+    public get stopping(): Promise<void> {
+        // in case _stop() or onStopping() calls stop() syncly
+        return Promise.resolve().then(() => this._stopping);
+    }
+
     @boundMethod
     public async stop(err?: Error): Promise<void> {
         if (this.lifePeriod === LifePeriod.STARTED) {
             this.lifePeriod = LifePeriod.STOPPING;
             if (this.onStopping) this.onStopping(err);
-            return this.stopping = this._stop(err)
+            return this._stopping = this._stop(err)
                 .finally(() => {
                     this.lifePeriod = LifePeriod.STOPPED;
                 });
-        }
-
-        // in case _stop() or onStopping() calls stop() syncly
-        return Promise.resolve().then(() => this.stopping);
+        } else await this.starting.catch(() => { });
+        return this.stopping;
     }
 }
 

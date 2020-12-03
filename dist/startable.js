@@ -11,33 +11,43 @@ class Startable extends EventEmitter {
     constructor() {
         super(...arguments);
         this.lifePeriod = "STOPPED" /* STOPPED */;
-        this.starting = Promise.resolve();
-        this.stopping = Promise.resolve();
+        this._starting = Promise.resolve();
+        this._stopping = Promise.resolve();
+    }
+    get starting() {
+        // in case _start() calls start() syncly
+        return Promise.resolve().then(() => this._starting);
     }
     async start(onStopping) {
         if (this.lifePeriod === "STOPPED" /* STOPPED */) {
             this.lifePeriod = "STARTING" /* STARTING */;
             this.onStopping = onStopping;
-            return this.starting = this._start()
+            return this._starting = this._start()
                 .finally(() => {
                 this.lifePeriod = "STARTED" /* STARTED */;
             });
         }
-        // in case _start() calls start() syncly
-        return Promise.resolve().then(() => this.starting);
+        else
+            await this.stopping.catch(() => { });
+        return this.starting;
+    }
+    get stopping() {
+        // in case _stop() or onStopping() calls stop() syncly
+        return Promise.resolve().then(() => this._stopping);
     }
     async stop(err) {
         if (this.lifePeriod === "STARTED" /* STARTED */) {
             this.lifePeriod = "STOPPING" /* STOPPING */;
             if (this.onStopping)
                 this.onStopping(err);
-            return this.stopping = this._stop(err)
+            return this._stopping = this._stop(err)
                 .finally(() => {
                 this.lifePeriod = "STOPPED" /* STOPPED */;
             });
         }
-        // in case _stop() or onStopping() calls stop() syncly
-        return Promise.resolve().then(() => this.stopping);
+        else
+            await this.starting.catch(() => { });
+        return this.stopping;
     }
 }
 __decorate([
