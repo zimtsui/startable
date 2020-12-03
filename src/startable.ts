@@ -1,12 +1,13 @@
 import { EventEmitter } from 'events';
+import { boundMethod } from 'autobind-decorator';
+
+process.on('unhandledRejection', () => { });
 
 const enum LifePeriod {
     STARTING = 'STARTING',
     STARTED = 'STARTED',
-    NSTARTED = 'NSTARTED',
     STOPPING = 'STOPPING',
     STOPPED = 'STOPPED',
-    NSTOPPED = 'NSTOPPED',
 }
 
 interface StartableLike {
@@ -18,8 +19,6 @@ interface OnStopping {
     (err?: Error): void;
 }
 
-class Illegal extends Error { }
-
 abstract class Startable extends EventEmitter implements StartableLike {
     public lifePeriod: LifePeriod = LifePeriod.STOPPED;
     private onStopping?: OnStopping;
@@ -27,56 +26,36 @@ abstract class Startable extends EventEmitter implements StartableLike {
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
 
-    public started = Promise.resolve();
+    private starting = Promise.resolve();
+    @boundMethod
     public async start(onStopping?: OnStopping): Promise<void> {
-        if (
-            this.lifePeriod === LifePeriod.STOPPED ||
-            this.lifePeriod === LifePeriod.NSTOPPED
-        ) {
+        if (this.lifePeriod === LifePeriod.STOPPED) {
             this.lifePeriod = LifePeriod.STARTING;
             this.onStopping = onStopping;
-            return this.started = this._start()
-                .then(() => {
+            return this.starting = this._start()
+                .finally(() => {
                     this.lifePeriod = LifePeriod.STARTED;
-                }, (err: Error) => {
-                    this.lifePeriod = LifePeriod.NSTARTED;
-                    throw err;
                 });
         }
 
-        if (
-            this.lifePeriod === LifePeriod.STARTING ||
-            this.lifePeriod === LifePeriod.STARTED ||
-            this.lifePeriod === LifePeriod.NSTARTED
-        )
-            // in case _start() calls start() syncly
-            return Promise.resolve().then(() => this.started!);
-
-        throw new Illegal(this.lifePeriod);
+        // in case _start() calls start() syncly
+        return Promise.resolve().then(() => this.starting);
     }
 
-    public stopped = Promise.resolve();
+    private stopping = Promise.resolve();
+    @boundMethod
     public async stop(err?: Error): Promise<void> {
-        if (this.lifePeriod === LifePeriod.STARTING)
-            throw new Illegal(this.lifePeriod);
-
-        if (
-            this.lifePeriod === LifePeriod.STARTED ||
-            this.lifePeriod === LifePeriod.NSTARTED
-        ) {
+        if (this.lifePeriod === LifePeriod.STARTED) {
             this.lifePeriod = LifePeriod.STOPPING;
             if (this.onStopping) this.onStopping(err);
-            return this.stopped = this._stop(err)
-                .then(() => {
+            return this.stopping = this._stop(err)
+                .finally(() => {
                     this.lifePeriod = LifePeriod.STOPPED;
-                }, (err: Error) => {
-                    this.lifePeriod = LifePeriod.NSTOPPED;
-                    throw err;
                 });
         }
 
         // in case _stop() or onStopping() calls stop() syncly
-        return Promise.resolve().then(() => this.stopped);
+        return Promise.resolve().then(() => this.stopping);
     }
 }
 
@@ -86,5 +65,4 @@ export {
     StartableLike,
     LifePeriod,
     OnStopping,
-    Illegal,
 };

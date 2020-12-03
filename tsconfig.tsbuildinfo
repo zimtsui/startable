@@ -206,9 +206,14 @@
         "signature": "400db42c3a46984118bff14260d60cec580057dc1ab4c2d7310beb643e4f5935",
         "affectsGlobalScope": false
       },
+      "./node_modules/autobind-decorator/index.d.ts": {
+        "version": "2de69362c6be41535d58884c066a2b104c9e0e5aab709f35aed8d4e08ead4c95",
+        "signature": "2de69362c6be41535d58884c066a2b104c9e0e5aab709f35aed8d4e08ead4c95",
+        "affectsGlobalScope": false
+      },
       "./src/startable.ts": {
-        "version": "aa643fd3024997c7b0edcf60a94c52dfc307ce564a424c23eb3803e89be0f1ea",
-        "signature": "d9b6e7468b34a01834a66b66baacaf95eb344a7720eb4345f611619b99344d39",
+        "version": "760f4bf4470ec7278d5e1266ff28a42216be5653b6f3805b81dae14f1e2b36f6",
+        "signature": "8c18d27fbf362e6b9f2324f23ff054e3d13cf6cad3345faf052b42ae3354fd4a",
         "affectsGlobalScope": false
       },
       "./node_modules/@types/chai/index.d.ts": {
@@ -808,7 +813,8 @@
         "./node_modules/@types/sinonjs__fake-timers/index.d.ts"
       ],
       "./src/startable.ts": [
-        "../../node_modules/@types/node/events.d.ts"
+        "../../node_modules/@types/node/events.d.ts",
+        "./node_modules/autobind-decorator/index.d.ts"
       ]
     },
     "exportedModulesMap": {
@@ -1141,6 +1147,7 @@
       "./node_modules/@types/normalize-package-data/index.d.ts",
       "./node_modules/@types/sinon/index.d.ts",
       "./node_modules/@types/sinonjs__fake-timers/index.d.ts",
+      "./node_modules/autobind-decorator/index.d.ts",
       "./src/startable.ts",
       "../../../../usr/local/lib/node_modules/typescript/lib/lib.es2015.collection.d.ts",
       "../../../../usr/local/lib/node_modules/typescript/lib/lib.es2015.core.d.ts",

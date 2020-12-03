@@ -1,52 +1,50 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 import { EventEmitter } from 'events';
-class Illegal extends Error {
-}
+import { boundMethod } from 'autobind-decorator';
+process.on('unhandledRejection', () => { });
 class Startable extends EventEmitter {
     constructor() {
         super(...arguments);
         this.lifePeriod = "STOPPED" /* STOPPED */;
-        this.started = Promise.resolve();
-        this.stopped = Promise.resolve();
+        this.starting = Promise.resolve();
+        this.stopping = Promise.resolve();
     }
     async start(onStopping) {
-        if (this.lifePeriod === "STOPPED" /* STOPPED */ ||
-            this.lifePeriod === "NSTOPPED" /* NSTOPPED */) {
+        if (this.lifePeriod === "STOPPED" /* STOPPED */) {
             this.lifePeriod = "STARTING" /* STARTING */;
             this.onStopping = onStopping;
-            return this.started = this._start()
-                .then(() => {
+            return this.starting = this._start()
+                .finally(() => {
                 this.lifePeriod = "STARTED" /* STARTED */;
-            }, (err) => {
-                this.lifePeriod = "NSTARTED" /* NSTARTED */;
-                throw err;
             });
         }
-        if (this.lifePeriod === "STARTING" /* STARTING */ ||
-            this.lifePeriod === "STARTED" /* STARTED */ ||
-            this.lifePeriod === "NSTARTED" /* NSTARTED */)
-            // in case _start() calls start() syncly
-            return Promise.resolve().then(() => this.started);
-        throw new Illegal(this.lifePeriod);
+        // in case _start() calls start() syncly
+        return Promise.resolve().then(() => this.starting);
     }
     async stop(err) {
-        if (this.lifePeriod === "STARTING" /* STARTING */)
-            throw new Illegal(this.lifePeriod);
-        if (this.lifePeriod === "STARTED" /* STARTED */ ||
-            this.lifePeriod === "NSTARTED" /* NSTARTED */) {
+        if (this.lifePeriod === "STARTED" /* STARTED */) {
             this.lifePeriod = "STOPPING" /* STOPPING */;
             if (this.onStopping)
                 this.onStopping(err);
-            return this.stopped = this._stop(err)
-                .then(() => {
+            return this.stopping = this._stop(err)
+                .finally(() => {
                 this.lifePeriod = "STOPPED" /* STOPPED */;
-            }, (err) => {
-                this.lifePeriod = "NSTOPPED" /* NSTOPPED */;
-                throw err;
             });
         }
         // in case _stop() or onStopping() calls stop() syncly
-        return Promise.resolve().then(() => this.stopped);
+        return Promise.resolve().then(() => this.stopping);
     }
 }
-export { Startable as default, Startable, Illegal, };
+__decorate([
+    boundMethod
+], Startable.prototype, "start", null);
+__decorate([
+    boundMethod
+], Startable.prototype, "stop", null);
+export { Startable as default, Startable, };
 //# sourceMappingURL=startable.js.map
