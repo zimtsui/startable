@@ -630,7 +630,7 @@ function stop() {
 }
 ```
 
-Startable 自动绑定了 start() 和 stop()，同时默认关闭了 unhandledRejection 事件。最终简化代码
+Startable 没有绑定 start() 和 stop()，也没有关闭 unhandledRejection 事件，因此下面这个更优美的代码是错误的。
 
 ```ts
 class Parent extends Startable {
@@ -667,7 +667,7 @@ function stop() {
 }
 ```
 
-优美得把我自己都感动了。
+之所以不关闭 unhandledRejection 是因为与 js 未来发展方向不符，有的测试框架比如 ava 甚至强制检测 unhandledRejection 设置里都不能改。既然需要自己 catch，那么绑定也没用了。
 
 # 协程安全
 

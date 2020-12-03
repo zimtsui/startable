@@ -1,7 +1,4 @@
 import { EventEmitter } from 'events';
-import { boundMethod } from 'autobind-decorator';
-
-process.on('unhandledRejection', () => { });
 
 const enum LifePeriod {
     STARTING = 'STARTING',
@@ -32,7 +29,6 @@ abstract class Startable extends EventEmitter implements StartableLike {
         return Promise.resolve().then(() => this._starting);
     }
 
-    @boundMethod
     public async start(onStopping?: OnStopping): Promise<void> {
         if (this.lifePeriod === LifePeriod.STOPPING)
             await this.stopping.catch(() => { });
@@ -53,7 +49,6 @@ abstract class Startable extends EventEmitter implements StartableLike {
         return Promise.resolve().then(() => this._stopping);
     }
 
-    @boundMethod
     public async stop(err?: Error): Promise<void> {
         if (this.lifePeriod === LifePeriod.STARTING)
             await this.starting.catch(() => { });
