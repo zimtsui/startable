@@ -3,8 +3,8 @@
     "version": "0.0.1",
     "description": "",
     "type": "module",
-    "main": "./dist/startable.js",
-    "types": "./dist/startable.d.ts",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "scripts": {
         "build": "tsc -b",
         "test": "tsc -b ./test && ava"
@@ -20,7 +20,9 @@
     },
     "homepage": "https://github.com/zimtsui/startable#readme",
     "dependencies": {
+        "@types/bluebird": "^3.5.33",
         "@types/events": "^3.0.0",
+        "bluebird": "^3.7.2",
         "events": "^3.2.0"
     },
     "devDependencies": {
