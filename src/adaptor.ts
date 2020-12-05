@@ -1,6 +1,6 @@
 import { StartableLike } from './startable';
 
-function pm2Adaptor(service: StartableLike) {
+function adaptor(service: StartableLike) {
     service.start(err => {
         if (err) {
             console.error(err);
@@ -24,6 +24,6 @@ function pm2Adaptor(service: StartableLike) {
 }
 
 export {
-    pm2Adaptor as default,
-    pm2Adaptor,
+    adaptor as default,
+    adaptor,
 }

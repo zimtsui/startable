@@ -1,4 +1,4 @@
-function pm2Adaptor(service) {
+function adaptor(service) {
     service.start(err => {
         if (err) {
             console.error(err);
@@ -17,5 +17,5 @@ function pm2Adaptor(service) {
         service.stop().catch(err => console.error(err));
     });
 }
-export { pm2Adaptor as default, pm2Adaptor, };
+export { adaptor as default, adaptor, };
 //# sourceMappingURL=adaptor.js.map
