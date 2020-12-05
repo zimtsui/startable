@@ -211,19 +211,14 @@
         "signature": "05ec4662747c3bb879f42a2ac04275f46ca6dc0732f2872b612840bded928440",
         "affectsGlobalScope": false
       },
-      "./node_modules/@types/bluebird/index.d.ts": {
-        "version": "6247a016129906c76ba4012d2d77773c919ea33a96830b0a8d522a9790fc7efe",
-        "signature": "6247a016129906c76ba4012d2d77773c919ea33a96830b0a8d522a9790fc7efe",
-        "affectsGlobalScope": false
-      },
-      "./src/pm2-adaptor.ts": {
-        "version": "f3940afb0e3a095acf6c48185792af71be674a4389a2b7b90d79e106533185c5",
+      "./src/adaptor.ts": {
+        "version": "4bc128536d2a0da11782f2b26178a57cf59c782bc8dc9557d7ec62da87a6f8d8",
         "signature": "fedd9e46e142096a723538e9fa96b6fe791df990da2065b8623d57c4716d9673",
         "affectsGlobalScope": false
       },
       "./src/index.ts": {
-        "version": "c2afd1d527bc652b3f9c54b3cf7116a8626b68323ae2550f98fd584e17b46307",
-        "signature": "c2afd1d527bc652b3f9c54b3cf7116a8626b68323ae2550f98fd584e17b46307",
+        "version": "a8a17c833a6e857778c83fb00d47df12270bd703ce3974baace8dd4be5e0fc47",
+        "signature": "a8a17c833a6e857778c83fb00d47df12270bd703ce3974baace8dd4be5e0fc47",
         "affectsGlobalScope": false
       },
       "./node_modules/@types/chai/index.d.ts": {
@@ -822,12 +817,11 @@
       "./node_modules/@types/sinon/index.d.ts": [
         "./node_modules/@types/sinonjs__fake-timers/index.d.ts"
       ],
-      "./src/index.ts": [
-        "./src/pm2-adaptor.ts",
+      "./src/adaptor.ts": [
         "./src/startable.ts"
       ],
-      "./src/pm2-adaptor.ts": [
-        "./node_modules/@types/bluebird/index.d.ts",
+      "./src/index.ts": [
+        "./src/adaptor.ts",
         "./src/startable.ts"
       ],
       "./src/startable.ts": [
@@ -1067,11 +1061,11 @@
       "./node_modules/@types/sinon/index.d.ts": [
         "./node_modules/@types/sinonjs__fake-timers/index.d.ts"
       ],
-      "./src/index.ts": [
-        "./src/pm2-adaptor.ts",
+      "./src/adaptor.ts": [
         "./src/startable.ts"
       ],
-      "./src/pm2-adaptor.ts": [
+      "./src/index.ts": [
+        "./src/adaptor.ts",
         "./src/startable.ts"
       ],
       "./src/startable.ts": [
@@ -1143,15 +1137,14 @@
       "../../node_modules/@types/qs/index.d.ts",
       "../../node_modules/@types/range-parser/index.d.ts",
       "../../node_modules/@types/serve-static/index.d.ts",
-      "./node_modules/@types/bluebird/index.d.ts",
       "./node_modules/@types/chai-as-promised/index.d.ts",
       "./node_modules/@types/chai/index.d.ts",
       "./node_modules/@types/events/index.d.ts",
       "./node_modules/@types/normalize-package-data/index.d.ts",
       "./node_modules/@types/sinon/index.d.ts",
       "./node_modules/@types/sinonjs__fake-timers/index.d.ts",
+      "./src/adaptor.ts",
       "./src/index.ts",
-      "./src/pm2-adaptor.ts",
       "./src/startable.ts",
       "../../../../usr/local/lib/node_modules/typescript/lib/lib.es2015.collection.d.ts",
       "../../../../usr/local/lib/node_modules/typescript/lib/lib.es2015.core.d.ts",

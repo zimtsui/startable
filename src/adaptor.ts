@@ -1,0 +1,29 @@
+import { StartableLike } from './startable';
+
+function pm2Adaptor(service: StartableLike) {
+    service.start(err => {
+        if (err) {
+            console.error(err);
+            service.stop().then(() => {
+                process.exitCode = 0;
+            }, err => {
+                console.error(err);
+                process.exitCode = 1;
+            }).then(() => {
+                setTimeout(
+                    () => void process.exit(),
+                    1000,
+                ).unref();
+            });
+        }
+    });
+    process.once('SIGINT', () => {
+        process.once('SIGINT', () => void process.exit(1));
+        service.stop().catch(err => console.error(err));
+    });
+}
+
+export {
+    pm2Adaptor as default,
+    pm2Adaptor,
+}
