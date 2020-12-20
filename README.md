@@ -579,9 +579,9 @@ class Parent extends Startable {
 -           await child1.start(err => {
 -               if (err) this.stop(err).catch(() => { });
 -           });
-+           await child1.start(err => this.stop(err).catch(() => { }));
-+           await child2.start(err => this.stop(err).catch(() => { }));
-+           await child3.start(err => this.stop(err).catch(() => { }));
++           await child1.start(err => void this.stop(err).catch(() => { }));
++           await child2.start(err => void this.stop(err).catch(() => { }));
++           await child3.start(err => void this.stop(err).catch(() => { }));
         }
         protected async _stop(): Promise<void> {
             await child3.stop();
@@ -607,9 +607,9 @@ class Parent extends Startable {
     }
 
     protected async _start(): Promise<void> {
-        await child1.start(err => this.stop(err).catch(() => { }));
-        await child2.start(err => this.stop(err).catch(() => { }));
-        await child3.start(err => this.stop(err).catch(() => { }));
+        await child1.start(err => void this.stop(err).catch(() => { }));
+        await child2.start(err => void this.stop(err).catch(() => { }));
+        await child3.start(err => void this.stop(err).catch(() => { }));
     }
     protected async _stop(): Promise<void> {
         await child3.stop();
