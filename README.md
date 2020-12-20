@@ -213,7 +213,7 @@ class Parent implements PromisifiedService {
 一个 Service 从开始自析构的时刻起逻辑上就不可用了，所以需要同步地通知外层。可以使用 EventEmitter 来通知。
 
 ```ts
-class Service implements PromisifiedService {
+class Service extends EventEmitter implements PromisifiedService {
     constructor() {
         super();
         this.someComponent.on('some fatal error', err => {
