@@ -1,14 +1,16 @@
-# Brief
+# Startable
+
+## Brief
 
 Startable 是一个 JavaScript 服务型对象框架。最初目的是为了适配阿里开源 node 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
 
-## 特性
+### 特性
 
 - 支持一个服务自己 stop 自己
 - 健壮的启停
 - 优雅的嵌套
 
-# Service
+## Service
 
 一个 Service 是一个常驻内存的程序，理想模型中他的生命周期分为 5 个状态
 
@@ -33,7 +35,7 @@ const server = new Server();
 4. STOPPING：从 `server.close()` 执行，到 `close` 事件发生
 5. STOPPED：从 `close` 事件发生，到对象被引擎回收
 
-## 用事件管理 Service 的生命周期
+### 用事件管理 Service 的生命周期
 
 Node.js 中 net.Server 使用事件来管理 Service 的生命周期。形如
 
@@ -159,7 +161,7 @@ class Parent implements EventalizedService {
 }
 ```
 
-## 用 Promise 管理 Service 的生命周期
+### 用 Promise 管理 Service 的生命周期
 
 可以看出，用事件管理 Service 生命周期的方式在面对这种 Service 嵌套时会变得很麻烦。用 Promise 管理嵌套 Service 的生命周期更加方便
 
@@ -212,7 +214,7 @@ class Parent implements PromisifiedService {
 }
 ```
 
-## 自析构的 Service
+### 自析构的 Service
 
 然而实际中的 Service 并不一定都能一直运行到你关掉他，而是可能跑着跑着有一个就突然自己把自己析构了，进入了不可用状态。原因可能有很多，比如故障崩溃了，或者他维护的一个连接被对方正常断开了，或者计划的事情做完了。
 
@@ -274,7 +276,7 @@ function stop() {
 }
 ```
 
-# Startable
+## Startable
 
 用 Promise 管理 Service 的写法，逻辑上很优美，可惜代码上很麻烦。并且，实际中的 Service 并不一定只在 start 完成后正常运行中崩溃，完全有可能 start 过程本身崩溃，或者 stop 过程崩溃，这样代码就更复杂了。
 
@@ -322,7 +324,7 @@ Startable 的生命周期分为 4 个状态
 
 四个状态顺序循环，不可跳跃。
 
-## 特性
+### Usage
 
 1.  如果你调用一个 Service 的 stop() 时这个 Service 正处在 
     
@@ -401,7 +403,7 @@ Startable 的生命周期分为 4 个状态
 
 1.  Startable 继承了一个通用版本的 EventEmitter，与 node 中的 EventEmitter 接口相同，但可以在其他环境使用。
 
-## 简化
+### 简化
 
 用 Startable 框架维护 Service，代码可以写得非常简洁优美，但前提是你理解了他的语义。
 
@@ -675,7 +677,7 @@ function stop() {
 
 之所以不关闭 unhandledRejection 是因为与 js 未来发展方向不符，有的测试框架比如 ava 甚至强制检测 unhandledRejection 设置里都不能改。既然需要自己 catch，那么绑定也没用了。
 
-# 协程安全
+## 协程安全
 
 写多线程要考虑线程同步问题，一个线程内的连续代码并不一定在连续时间片中运行，他们之间可能插入了其他时间片跑着其他线程的代码。同理，写多协程也要考虑协程同步问题，一个协程内的连续代码并不一定在连续的事件循环中运行，他们之间可能插入了其他事件循环跑着其他协程的代码。
 
