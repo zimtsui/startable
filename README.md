@@ -1,6 +1,12 @@
 # Brief
 
-Startable 是一个 JavaScript 服务型对象的生命周期状态管理框架。
+Startable 是一个 JavaScript 服务型对象框架。最初目的是为了适配阿里开源 node 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
+
+## 特性
+
+- 支持一个服务自己 stop 自己
+- 健壮的启停
+- 优雅的嵌套
 
 # Service
 
