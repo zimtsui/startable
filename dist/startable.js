@@ -3,6 +3,7 @@ class Startable extends EventEmitter {
     constructor() {
         super(...arguments);
         this.lifePeriod = "STOPPED" /* STOPPED */;
+        this.onStoppings = [];
         this._starting = Promise.resolve();
         this._stopping = Promise.resolve();
     }
@@ -15,13 +16,17 @@ class Startable extends EventEmitter {
             await this.stopping.catch(() => { });
         if (this.lifePeriod === "STOPPED" /* STOPPED */) {
             this.lifePeriod = "STARTING" /* STARTING */;
-            this.onStopping = onStopping;
+            this.onStoppings = onStopping ? [onStopping] : [];
             return this._starting = this._start()
                 .finally(() => {
                 this.lifePeriod = "STARTED" /* STARTED */;
             });
         }
-        return this.starting;
+        else {
+            if (onStopping)
+                this.onStoppings.push(onStopping);
+            return this.starting;
+        }
     }
     get stopping() {
         // in case _stop() or onStopping() calls stop() syncly
@@ -32,8 +37,8 @@ class Startable extends EventEmitter {
             await this.starting.catch(() => { });
         if (this.lifePeriod === "STARTED" /* STARTED */) {
             this.lifePeriod = "STOPPING" /* STOPPING */;
-            if (this.onStopping)
-                this.onStopping(err);
+            for (const onStopping of this.onStoppings)
+                onStopping();
             return this._stopping = this._stop(err)
                 .finally(() => {
                 this.lifePeriod = "STOPPED" /* STOPPED */;

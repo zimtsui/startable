@@ -15,7 +15,7 @@ interface OnStopping {
 }
 declare abstract class Startable extends EventEmitter implements StartableLike {
     lifePeriod: LifePeriod;
-    private onStopping?;
+    private onStoppings;
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
     private _starting;

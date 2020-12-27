@@ -18,7 +18,7 @@ interface OnStopping {
 
 abstract class Startable extends EventEmitter implements StartableLike {
     public lifePeriod: LifePeriod = LifePeriod.STOPPED;
-    private onStopping?: OnStopping;
+    private onStoppings: OnStopping[] = [];
 
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
@@ -32,15 +32,18 @@ abstract class Startable extends EventEmitter implements StartableLike {
     public async start(onStopping?: OnStopping): Promise<void> {
         if (this.lifePeriod === LifePeriod.STOPPING)
             await this.stopping.catch(() => { });
+
         if (this.lifePeriod === LifePeriod.STOPPED) {
             this.lifePeriod = LifePeriod.STARTING;
-            this.onStopping = onStopping;
+            this.onStoppings = onStopping ? [onStopping] : [];
             return this._starting = this._start()
                 .finally(() => {
                     this.lifePeriod = LifePeriod.STARTED;
                 });
+        } else {
+            if (onStopping) this.onStoppings.push(onStopping);
+            return this.starting;
         }
-        return this.starting;
     }
 
     private _stopping = Promise.resolve();
@@ -54,7 +57,7 @@ abstract class Startable extends EventEmitter implements StartableLike {
             await this.starting.catch(() => { });
         if (this.lifePeriod === LifePeriod.STARTED) {
             this.lifePeriod = LifePeriod.STOPPING;
-            if (this.onStopping) this.onStopping(err);
+            for (const onStopping of this.onStoppings) onStopping();
             return this._stopping = this._stop(err)
                 .finally(() => {
                     this.lifePeriod = LifePeriod.STOPPED;

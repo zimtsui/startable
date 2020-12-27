@@ -207,8 +207,8 @@
         "affectsGlobalScope": false
       },
       "./src/startable.ts": {
-        "version": "b04c9e6187cab85b95f5604d35afb2189853ed63051616abea546df12a87e95e",
-        "signature": "05ec4662747c3bb879f42a2ac04275f46ca6dc0732f2872b612840bded928440",
+        "version": "d4b149bed0b990669b2b4737bcfe482586c92db960430fac94f54d78bcec4966",
+        "signature": "0dbcb67fa6001421f0f026cb075c2447b273e5968d38807e4d6638accffd9971",
         "affectsGlobalScope": false
       },
       "./src/adaptor.ts": {
@@ -569,7 +569,7 @@
     },
     "options": {
       "target": 7,
-      "module": 5,
+      "module": 99,
       "moduleResolution": 2,
       "lib": [
         "lib.esnext.d.ts"
