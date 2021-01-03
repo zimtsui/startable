@@ -202,8 +202,8 @@
         "affectsGlobalScope": true
       },
       "./src/startable.ts": {
-        "version": "d4b149bed0b990669b2b4737bcfe482586c92db960430fac94f54d78bcec4966",
-        "signature": "0dbcb67fa6001421f0f026cb075c2447b273e5968d38807e4d6638accffd9971",
+        "version": "2db085e14a683858d24608fc6b247d0aaa95995fbc30f72fa93d2adde47daf1b",
+        "signature": "19eccc378155cad924e32a793469612309c3619f1eb29c7dbe4d31cb39450258",
         "affectsGlobalScope": false
       },
       "./src/adaptor.ts": {
@@ -861,7 +861,7 @@
         "./src/startable.ts"
       ],
       "./src/startable.ts": [
-        "../../node_modules/@types/node/events.d.ts"
+        "./node_modules/@types/node/events.d.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [

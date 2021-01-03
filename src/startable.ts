@@ -28,6 +28,9 @@ abstract class Startable extends EventEmitter implements StartableLike {
         // in case _start() calls start() syncly
         return Promise.resolve().then(() => this._starting);
     }
+    public set starting(v: Promise<void>) {
+        this._starting = v;
+    }
 
     public async start(onStopping?: OnStopping): Promise<void> {
         if (this.lifePeriod === LifePeriod.STOPPING)
@@ -35,15 +38,14 @@ abstract class Startable extends EventEmitter implements StartableLike {
 
         if (this.lifePeriod === LifePeriod.STOPPED) {
             this.lifePeriod = LifePeriod.STARTING;
-            this.onStoppings = onStopping ? [onStopping] : [];
-            return this._starting = this._start()
+            this.onStoppings = [];
+            this.starting = this._start()
                 .finally(() => {
                     this.lifePeriod = LifePeriod.STARTED;
                 });
-        } else {
-            if (onStopping) this.onStoppings.push(onStopping);
-            return this.starting;
         }
+        if (onStopping) this.onStoppings.push(onStopping);
+        return this.starting;
     }
 
     private _stopping = Promise.resolve();
@@ -51,14 +53,17 @@ abstract class Startable extends EventEmitter implements StartableLike {
         // in case _stop() or onStopping() calls stop() syncly
         return Promise.resolve().then(() => this._stopping);
     }
+    public set stopping(v: Promise<void>) {
+        this._stopping = v;
+    }
 
     public async stop(err?: Error): Promise<void> {
         if (this.lifePeriod === LifePeriod.STARTING)
             await this.starting.catch(() => { });
         if (this.lifePeriod === LifePeriod.STARTED) {
             this.lifePeriod = LifePeriod.STOPPING;
-            for (const onStopping of this.onStoppings) onStopping();
-            return this._stopping = this._stop(err)
+            for (const onStopping of this.onStoppings) onStopping(err);
+            this.stopping = this._stop(err)
                 .finally(() => {
                     this.lifePeriod = LifePeriod.STOPPED;
                 });

@@ -20,9 +20,11 @@ declare abstract class Startable extends EventEmitter implements StartableLike {
     protected abstract _stop(err?: Error): Promise<void>;
     private _starting;
     get starting(): Promise<void>;
+    set starting(v: Promise<void>);
     start(onStopping?: OnStopping): Promise<void>;
     private _stopping;
     get stopping(): Promise<void>;
+    set stopping(v: Promise<void>);
     stop(err?: Error): Promise<void>;
 }
 export { Startable as default, Startable, StartableLike, LifePeriod, OnStopping, };
