@@ -481,15 +481,14 @@
       "target": 7,
       "module": 99,
       "moduleResolution": 2,
-      "esModuleInterop": true,
       "lib": [
         "lib.esnext.d.ts"
       ],
       "sourceMap": true,
       "strict": true,
+      "esModuleInterop": true,
       "experimentalDecorators": true,
       "composite": true,
-      "declaration": true,
       "rootDir": "../src",
       "outDir": "./",
       "configFilePath": "../src/tsconfig.json"
