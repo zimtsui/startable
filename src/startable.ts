@@ -19,7 +19,7 @@ interface OnStopping {
 abstract class Startable extends EventEmitter implements StartableLike {
     public lifePeriod = LifePeriod.STOPPED;
     private onStoppings: OnStopping[] = [];
-    protected starp = (err: Error) => void this
+    protected starp = (err?: Error) => void this
         .start()
         .finally(() => this.stop(err))
         .catch(() => { });

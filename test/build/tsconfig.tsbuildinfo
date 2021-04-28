@@ -442,8 +442,8 @@
         "affectsGlobalScope": false
       },
       "../../dist/startable.d.ts": {
-        "version": "fd88b282973edbae5b0cbb9c84de4d4ac2496acf6080b5cd182470471c4e7f08",
-        "signature": "fd88b282973edbae5b0cbb9c84de4d4ac2496acf6080b5cd182470471c4e7f08",
+        "version": "3fde742d6d05e287c82325a95b80db4925181359b9ac74012b1115f1c58eb85d",
+        "signature": "3fde742d6d05e287c82325a95b80db4925181359b9ac74012b1115f1c58eb85d",
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/sinonjs__fake-timers/index.d.ts": {
