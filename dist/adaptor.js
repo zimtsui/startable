@@ -9,8 +9,7 @@ function adaptor(daemon, startTimeout = 0, stopTimeout = 0) {
         }
         if (stopTimeout)
             setTimeout(() => void process.exit(5), stopTimeout).unref();
-        daemon.stop().then(() => {
-        }, err => {
+        daemon.stop().catch(err => {
             console.error(err);
             process.exitCode = 5;
         });

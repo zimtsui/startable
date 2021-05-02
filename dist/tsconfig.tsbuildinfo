@@ -217,7 +217,7 @@
         "affectsGlobalScope": false
       },
       "../src/adaptor.ts": {
-        "version": "5a1a356eccf2cddde56ff2ddbb92b8db43ded985ff6d67b3274ef64d20b80f8d",
+        "version": "646c51459b122ad0c43b31e2858828a242b287b2965dbddacfb69373b08d1cc6",
         "signature": "124185162316a6f01c474d296665d8936e3b792d08b75544ea084437b3460698",
         "affectsGlobalScope": false
       },
