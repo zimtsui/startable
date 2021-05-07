@@ -7,8 +7,7 @@
     "types": "./dist/index.d.ts",
     "scripts": {
         "build": "tsc -b ./src",
-        "test": "tsc -b ./test/src && ava",
-        "prepare": "npm run build"
+        "test": "tsc -b ./test/src && ava"
     },
     "repository": {
         "type": "git",
