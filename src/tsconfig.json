@@ -3,7 +3,13 @@
     "compilerOptions": {
         "composite": true,
         "rootDir": ".",
-        "outDir": "../dist",
+        "outDir": "../build",
+        "baseUrl": ".",
+        "paths": {
+            "#*": [
+                "./*"
+            ]
+        }
     },
     "include": [
         "./**/*",

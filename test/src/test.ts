@@ -1,4 +1,4 @@
-import Startable from '../../dist/startable';
+import Startable from '#startable';
 import sinon from 'sinon';
 import test from 'ava';
 import chai from 'chai';

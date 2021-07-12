@@ -3,14 +3,22 @@
     "compilerOptions": {
         "incremental": true,
         "rootDir": ".",
-        "outDir": "../build"
+        "outDir": "../build",
+        "paths": {
+            "#*": [
+                "../../src/*"
+            ],
+            "#test/*": [
+                "./*"
+            ]
+        }
     },
     "include": [
         "./**/*"
     ],
     "references": [
         {
-            "path": "../../src"
+            "path": "../../src/tsconfig.json"
         }
     ]
 }

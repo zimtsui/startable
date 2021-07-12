@@ -3,11 +3,15 @@
     "version": "0.0.1",
     "description": "",
     "type": "module",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "exports": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "imports": {
+        "#*": "./build/*.js",
+        "#test/*": "./test/build/*.js"
+    },
     "scripts": {
-        "build": "tsc -b ./src",
-        "test": "tsc -b ./test/src && ava"
+        "build": "tsc -b ./src/tsconfig.json",
+        "test": "tsc -b ./test/src/tsconfig.json && ava"
     },
     "repository": {
         "type": "git",
