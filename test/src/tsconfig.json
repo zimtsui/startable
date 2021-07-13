@@ -3,15 +3,7 @@
     "compilerOptions": {
         "incremental": true,
         "rootDir": ".",
-        "outDir": "../build",
-        "paths": {
-            "#*": [
-                "../../src/*"
-            ],
-            "#test/*": [
-                "./*"
-            ]
-        }
+        "outDir": "../build"
     },
     "include": [
         "./**/*"

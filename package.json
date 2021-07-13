@@ -2,13 +2,8 @@
     "name": "startable",
     "version": "0.0.1",
     "description": "",
-    "type": "module",
-    "exports": "./build/index.js",
+    "main": "./build/index.js",
     "types": "./build/index.d.ts",
-    "imports": {
-        "#*": "./build/*.js",
-        "#test/*": "./test/build/*.js"
-    },
     "scripts": {
         "build": "tsc -b ./src/tsconfig.json",
         "test": "tsc -b ./test/src/tsconfig.json && ava"

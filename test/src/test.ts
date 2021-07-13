@@ -1,8 +1,8 @@
-import Startable from '#startable';
-import sinon from 'sinon';
+import { Startable } from '../../build/startable';
+import sinon = require('sinon');
 import test from 'ava';
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import chai = require('chai');
+import chaiAsPromised = require('chai-as-promised');
 const { fake } = sinon;
 chai.use(chaiAsPromised);
 const { assert } = chai;

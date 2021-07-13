@@ -1,4 +1,4 @@
-import { StartableLike } from '#startable';
+import { StartableLike } from './startable';
 
 function adaptor(
     daemon: StartableLike,
@@ -36,6 +36,5 @@ function adaptor(
 }
 
 export {
-    adaptor as default,
     adaptor,
 }

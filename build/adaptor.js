@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.adaptor = void 0;
 function adaptor(daemon, startTimeout = 0, stopTimeout = 0) {
     let startTimer = null;
     if (startTimeout)
@@ -29,5 +32,5 @@ function adaptor(daemon, startTimeout = 0, stopTimeout = 0) {
         daemon.stop().catch(() => { });
     });
 }
-export { adaptor as default, adaptor, };
+exports.adaptor = adaptor;
 //# sourceMappingURL=adaptor.js.map

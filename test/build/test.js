@@ -1,14 +1,16 @@
-import Startable from '#startable';
-import sinon from 'sinon';
-import test from 'ava';
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const startable_1 = require("../../build/startable");
+const sinon = require("sinon");
+const ava_1 = require("ava");
+const chai = require("chai");
+const chaiAsPromised = require("chai-as-promised");
 const { fake } = sinon;
 chai.use(chaiAsPromised);
 const { assert } = chai;
-test('start succ stop succ', async (t) => {
+ava_1.default('start succ stop succ', async (t) => {
     const f = fake();
-    class Service extends Startable {
+    class Service extends startable_1.Startable {
         _start() {
             f();
             return Promise.resolve();
@@ -25,9 +27,9 @@ test('start succ stop succ', async (t) => {
     await service.stop();
     assert(f.callCount === 2);
 });
-test('start succ stop fail', async (t) => {
+ava_1.default('start succ stop fail', async (t) => {
     const f = fake();
-    class Service extends Startable {
+    class Service extends startable_1.Startable {
         _start() {
             f();
             return Promise.resolve();
@@ -44,9 +46,9 @@ test('start succ stop fail', async (t) => {
     await assert.isRejected(service.stop(), /^stop$/);
     assert(f.callCount === 2);
 });
-test('start fail stop succ', async (t) => {
+ava_1.default('start fail stop succ', async (t) => {
     const f = fake();
-    class Service extends Startable {
+    class Service extends startable_1.Startable {
         _start() {
             f();
             return Promise.reject(new Error('start'));
@@ -63,9 +65,9 @@ test('start fail stop succ', async (t) => {
     await service.stop();
     assert(f.callCount === 2);
 });
-test('start fail stop fail', async (t) => {
+ava_1.default('start fail stop fail', async (t) => {
     const f = fake();
-    class Service extends Startable {
+    class Service extends startable_1.Startable {
         _start() {
             f();
             return Promise.reject(new Error('start'));

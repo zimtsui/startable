@@ -1,5 +1,8 @@
-import { EventEmitter } from 'events';
-class Startable extends EventEmitter {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Startable = void 0;
+const events_1 = require("events");
+class Startable extends events_1.EventEmitter {
     constructor() {
         super(...arguments);
         this.lifePeriod = "STOPPED" /* STOPPED */;
@@ -39,5 +42,5 @@ class Startable extends EventEmitter {
         return Promise.resolve().then(() => this._stopping);
     }
 }
-export { Startable as default, Startable, };
+exports.Startable = Startable;
 //# sourceMappingURL=startable.js.map

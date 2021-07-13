@@ -58,7 +58,6 @@ abstract class Startable extends EventEmitter implements StartableLike {
 }
 
 export {
-    Startable as default,
     Startable,
     StartableLike,
     LifePeriod,
