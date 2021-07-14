@@ -625,7 +625,7 @@ class Parent extends Startable {
 
 之所以不关闭 unhandledRejection 是因为与 js 未来发展方向不符，有的测试框架比如 ava 甚至强制检测 unhandledRejection 设置里都不能改。既然需要自己 catch，那么绑定也没用了。
 
-#### 最终版
+### 最终版
 
 ```ts
 class Parent extends Startable {
