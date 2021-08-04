@@ -5,7 +5,7 @@ const events_1 = require("events");
 class Startable extends events_1.EventEmitter {
     constructor() {
         super(...arguments);
-        this.lifePeriod = "STOPPED" /* STOPPED */;
+        this.readyState = "STOPPED" /* STOPPED */;
         this.onStoppings = [];
         this.starp = (err) => void this
             .start()
@@ -15,12 +15,12 @@ class Startable extends events_1.EventEmitter {
         this._stopping = Promise.resolve();
     }
     async start(onStopping) {
-        if (this.lifePeriod === "STOPPED" /* STOPPED */) {
-            this.lifePeriod = "STARTING" /* STARTING */;
+        if (this.readyState === "STOPPED" /* STOPPED */) {
+            this.readyState = "STARTING" /* STARTING */;
             this.onStoppings = [];
             this._starting = this._start()
                 .finally(() => {
-                this.lifePeriod = "STARTED" /* STARTED */;
+                this.readyState = "STARTED" /* STARTED */;
             });
         }
         if (onStopping)
@@ -29,13 +29,13 @@ class Startable extends events_1.EventEmitter {
         return Promise.resolve().then(() => this._starting);
     }
     async stop(err) {
-        if (this.lifePeriod === "STARTED" /* STARTED */) {
-            this.lifePeriod = "STOPPING" /* STOPPING */;
+        if (this.readyState === "STARTED" /* STARTED */) {
+            this.readyState = "STOPPING" /* STOPPING */;
             for (const onStopping of this.onStoppings)
                 onStopping(err);
             this._stopping = this._stop(err)
                 .finally(() => {
-                this.lifePeriod = "STOPPED" /* STOPPED */;
+                this.readyState = "STOPPED" /* STOPPED */;
             });
         }
         // in case _stop() or onStopping() calls stop() syncly

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-const enum LifePeriod {
+const enum ReadyState {
     STARTING = 'STARTING',
     STARTED = 'STARTED',
     STOPPING = 'STOPPING',
@@ -17,7 +17,7 @@ interface OnStopping {
 }
 
 abstract class Startable extends EventEmitter implements StartableLike {
-    public lifePeriod = LifePeriod.STOPPED;
+    public readyState = ReadyState.STOPPED;
     private onStoppings: OnStopping[] = [];
     protected starp = (err?: Error) => void this
         .start()
@@ -29,12 +29,12 @@ abstract class Startable extends EventEmitter implements StartableLike {
 
     private _starting = Promise.resolve();
     public async start(onStopping?: OnStopping): Promise<void> {
-        if (this.lifePeriod === LifePeriod.STOPPED) {
-            this.lifePeriod = LifePeriod.STARTING;
+        if (this.readyState === ReadyState.STOPPED) {
+            this.readyState = ReadyState.STARTING;
             this.onStoppings = [];
             this._starting = this._start()
                 .finally(() => {
-                    this.lifePeriod = LifePeriod.STARTED;
+                    this.readyState = ReadyState.STARTED;
                 });
         }
         if (onStopping) this.onStoppings.push(onStopping);
@@ -44,12 +44,12 @@ abstract class Startable extends EventEmitter implements StartableLike {
 
     private _stopping = Promise.resolve();
     public async stop(err?: Error): Promise<void> {
-        if (this.lifePeriod === LifePeriod.STARTED) {
-            this.lifePeriod = LifePeriod.STOPPING;
+        if (this.readyState === ReadyState.STARTED) {
+            this.readyState = ReadyState.STOPPING;
             for (const onStopping of this.onStoppings) onStopping(err);
             this._stopping = this._stop(err)
                 .finally(() => {
-                    this.lifePeriod = LifePeriod.STOPPED;
+                    this.readyState = ReadyState.STOPPED;
                 });
         }
         // in case _stop() or onStopping() calls stop() syncly
@@ -60,6 +60,6 @@ abstract class Startable extends EventEmitter implements StartableLike {
 export {
     Startable,
     StartableLike,
-    LifePeriod,
+    ReadyState,
     OnStopping,
 };

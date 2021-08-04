@@ -1,6 +1,5 @@
-/// <reference types="node" />
 import { EventEmitter } from 'events';
-declare const enum LifePeriod {
+declare const enum ReadyState {
     STARTING = "STARTING",
     STARTED = "STARTED",
     STOPPING = "STOPPING",
@@ -14,7 +13,7 @@ interface OnStopping {
     (err?: Error): void;
 }
 declare abstract class Startable extends EventEmitter implements StartableLike {
-    lifePeriod: LifePeriod;
+    readyState: ReadyState;
     private onStoppings;
     protected starp: (err?: Error | undefined) => undefined;
     protected abstract _start(): Promise<void>;
@@ -24,4 +23,4 @@ declare abstract class Startable extends EventEmitter implements StartableLike {
     private _stopping;
     stop(err?: Error): Promise<void>;
 }
-export { Startable, StartableLike, LifePeriod, OnStopping, };
+export { Startable, StartableLike, ReadyState, OnStopping, };
