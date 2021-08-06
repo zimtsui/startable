@@ -693,6 +693,12 @@ class Service extends Startable {
 }
 ```
 
+## stop 语义
+
+如果想要让 startable 可复用的话，stop 的语义必须很严格：stop 协程返回时 service 已完全结束，可以立即开始新一轮 start。
+
+如果 startable 不需要复用的话，stop 语义可以比较宽松：stop 协程返回时 service 已经结束，但还没有为新一轮 start 做好准备，比如内部某协程还差几个无关紧要事件循环没有跑完。
+
 ## 兼容性
 
 Startable 继承于 `node:events` 的 polyfill [events](https://github.com/browserify/events)，与 node 核心模块同名。在 node 中会自动加载核心 events 模块，在浏览器中会自动加载 polyfill。
