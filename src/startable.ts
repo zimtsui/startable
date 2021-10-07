@@ -17,14 +17,17 @@ interface OnStopping {
     (err?: Error): void;
 }
 
+class StopDuringStarting extends Error { }
+
 abstract class Startable extends EventEmitter implements StartableLike {
     public readyState = ReadyState.STOPPED;
     private onStoppings: OnStopping[] = [];
     private errStopDuringStarting: null | Error = null;
-    public hasNotBeenStopping(onStopping?: OnStopping): Promise<void> {
+    public assertStart(onStopping?: OnStopping): Promise<void> {
         assert(
             this.readyState === ReadyState.STARTING ||
-            this.readyState === ReadyState.STARTED
+            this.readyState === ReadyState.STARTED,
+            'Not STARTING or STARTED.',
         );
         return this.start(onStopping);
     }
@@ -56,12 +59,12 @@ abstract class Startable extends EventEmitter implements StartableLike {
     private _stopping = Promise.resolve();
     public stop = (err?: Error): Promise<void> => {
         if (this.readyState === ReadyState.STARTING) {
-            assert(err);
-            this.errStopDuringStarting = err!;
+            if (err) this.errStopDuringStarting = err;
+            else this.errStopDuringStarting = new Error('start() stopped by stop() with no reason.');
             const stopping = this.start()
                 .catch(() => { })
                 .then(() => {
-                    throw new Error('start() failed.');
+                    throw new StopDuringStarting('Stop during starting.');
                 });;
             stopping.catch(() => { });
             return stopping;
@@ -87,4 +90,5 @@ export {
     StartableLike,
     ReadyState,
     OnStopping,
+    StopDuringStarting,
 };

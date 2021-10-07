@@ -1,8 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Startable = void 0;
+exports.StopDuringStarting = exports.Startable = void 0;
 const events_1 = require("events");
 const chai_1 = require("chai");
+class StopDuringStarting extends Error {
+}
+exports.StopDuringStarting = StopDuringStarting;
 class Startable extends events_1.EventEmitter {
     constructor() {
         super(...arguments);
@@ -13,12 +16,14 @@ class Startable extends events_1.EventEmitter {
         this._stopping = Promise.resolve();
         this.stop = (err) => {
             if (this.readyState === "STARTING" /* STARTING */) {
-                chai_1.assert(err);
-                this.errStopDuringStarting = err;
+                if (err)
+                    this.errStopDuringStarting = err;
+                else
+                    this.errStopDuringStarting = new Error('start() stopped by stop() with no reason.');
                 const stopping = this.start()
                     .catch(() => { })
                     .then(() => {
-                    throw new Error('start() failed.');
+                    throw new StopDuringStarting('Stop during starting.');
                 });
                 ;
                 stopping.catch(() => { });
@@ -40,9 +45,9 @@ class Startable extends events_1.EventEmitter {
             return stopping;
         };
     }
-    hasNotBeenStopping(onStopping) {
+    assertStart(onStopping) {
         chai_1.assert(this.readyState === "STARTING" /* STARTING */ ||
-            this.readyState === "STARTED" /* STARTED */);
+            this.readyState === "STARTED" /* STARTED */, 'Not STARTING or STARTED.');
         return this.start(onStopping);
     }
     async start(onStopping) {
