@@ -18,7 +18,7 @@ class Startable extends events_1.EventEmitter {
                 const stopping = this.start()
                     .catch(() => { })
                     .then(() => {
-                    throw new Error('start() cancelled.');
+                    throw new Error('start() failed.');
                 });
                 ;
                 stopping.catch(() => { });

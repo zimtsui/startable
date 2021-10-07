@@ -61,7 +61,7 @@ abstract class Startable extends EventEmitter implements StartableLike {
             const stopping = this.start()
                 .catch(() => { })
                 .then(() => {
-                    throw new Error('start() cancelled.');
+                    throw new Error('start() failed.');
                 });;
             stopping.catch(() => { });
             return stopping;

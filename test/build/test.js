@@ -109,7 +109,7 @@ ava_1.default('stop during starting', async (t) => {
     const pStop = service.stop(new Error('stop during starting'));
     resolveStart();
     await assert.isRejected(pStart, /^stop during starting$/);
-    await assert.isRejected(pStop, /^start\(\) cancelled\.$/);
+    await assert.isRejected(pStop, /^start\(\) failed\.$/);
     assert(f.callCount === 1);
 });
 //# sourceMappingURL=test.js.map
