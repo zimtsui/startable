@@ -2,15 +2,15 @@
 
 ## Brief
 
-Startable 是一个 JavaScript 的 service 框架。初衷是为了适配阿里开源 node 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
+Startable 是一个 JavaScript 的 Service 框架。初衷是为了适配阿里开源 node 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
 
 ### 特性
 
-- 让一个 service 可以 stop 自己
+- 让一个 Service 可以自己析构自己
 - 健壮的启停
-- 优雅的嵌套
+- 优雅的依赖
 
-## Service
+## 管理 Service 的生命周期
 
 一个 Service 是一个常驻内存的对象，理想模型中他的生命周期分为 5 个状态
 
@@ -35,7 +35,7 @@ const server = new Server();
 4. STOPPING：从 `server.close()` 执行，到 `close` 事件发生
 5. STOPPED：从 `close` 事件发生，到对象被引擎回收
 
-### 用事件管理 Service 的生命周期
+### 用 EventEmitter 管理
 
 Node.js 中 net.Server 使用事件来管理 Service 的生命周期。形如
 
@@ -65,7 +65,7 @@ class Service implements EventifiedService {
 }
 ```
 
-有的 Service 内部包含子 Service，只有儿子完成了 start 过程，爸爸才算完成了 start 过程。
+有的 Service 依赖于内部的子 Service，只有儿子完成了 start 过程，爸爸才算完成了 start 过程。
 
 ```ts
 class Parent implements EventifiedService {
@@ -161,7 +161,7 @@ class Parent implements EventifiedService {
 }
 ```
 
-### 用 Promise 管理 Service 的生命周期
+### 用 Promise 管理
 
 可以看出，用事件管理 Service 生命周期的方式在面对这种 Service 嵌套时会变得很麻烦。用 Promise 管理嵌套 Service 的生命周期更加方便
 
@@ -317,24 +317,21 @@ function stop() {
 
 Startable 的生命周期分为 4 个状态
 
-1. STARTING：start 过程
+1. STARTING：正在 start 过程中的状态
 2. STARTED：start 过程成功或失败，且未开始 stop 过程的状态
-3. STOPPING：stop 过程
+3. STOPPING：正在 stop 过程中的状态
 4. STOPPED：stop 过程成功或失败的状态。这是新 Startable 对象的初始状态。
 
 四个状态顺序循环，不可跳跃。
 
 ### Usage
 
-1.  如果你调用一个 Service 的 stop() 时这个 Service 正处在 
+1.  如果你调用一个 Service 的 start() 时这个 Service 正处在 
     
-    - STARTED 状态，将会同步开始 stop 过程，并返回这个过程的 Promise
-    - STOPPING 状态，将会直接返回正在进行的 stop 过程的 Promise
-    - STOPPED/STARTING 状态，将会返回最近这次 stop 过程的 Promise
+    - STOPPED状态，将会同步开始 start 过程，并返回这个过程的 Promise
+    - STARTING/STARTED/STOPPING 状态，将会返回最近一次 start 过程的 Promise
     
-    因此你可以在 stop 过程中尽情地重复调用 stop() 而不需要考虑实际重复运行 stop 过程的问题。
-
-    start() 同理。
+    因此你可以在 start 过程中尽情地重复调用 start() 而不需要考虑实际重复运行 start 过程的问题。
 
     ```ts
     class Service extends Startable {
@@ -362,7 +359,59 @@ Startable 的生命周期分为 4 个状态
     }
     ```
 
-1.  可以通过 readyState 属性读取当前状态。状态的变化与 start 和 stop 过程同步，比如在 STOPPED 状态时 start() 的第一个事件循环内，状态就会由 STOPPED 变为 STARTING。
+    可以很简单地实现 start 失败自动 stop
+
+    ```ts
+    class Service extends Startable {
+        protected async _start(): Promise<void> {
+            this.start().catch(err => this.stop(err)).catch(() => { });
+        }
+    } 
+    ```
+
+1. 如果你调用一个 Service 的 stop() 时这个 Service 正处在 
+    
+    - STARTED 状态，将会同步开始 stop 过程，并返回这个过程的 Promise
+    - STOPPING/STOPPED 状态，将会返回最近一次 stop 过程的 Promise
+    - STARTING 状态，将返回一个失败的 Promise，并使这一次 start 过程最终失败
+    
+    因此你可以将爸爸的 stop 函数作为儿子的析构 hook 不需要考虑儿子在爸爸的 start 过程中自析构的问题。
+
+    ```ts
+    interface PromisifiedService{
+        start(): Promise<void>;
+        stop(): Promise<void>;
+    }
+
+    class Parent implements PromisifiedService {
+        private child1: PromisifiedService;
+        private child2: PromisifiedService;
+        private child3: PromisifiedService;
+
+        public async start(): Promise<void> {
+            await child1.start(err => this.stop(err).catch(() => {}));
+            await child2.start(err => this.stop(err).catch(() => {}));
+            await child3.start(err => this.stop(err).catch(() => {}));
+        }
+        public async stop(): Promise<void> {
+            await child3.stop();
+            await child2.stop();
+            await child1.stop();
+        }
+    }
+    ```
+
+    可以很简单地实现 stop 成功自动重启
+
+    ```ts
+    class Service extends Startable {
+        protected async _stop((err?: Error)): Promise<void> {
+            this.stop().then(err => this.start()).catch(() => { });
+        }
+    } 
+    ```
+
+1. 可以通过 readyState 属性读取当前状态。状态的变化与 start 和 stop 过程同步，比如在 STOPPED 状态时 start() 的第一个事件循环内，状态就会由 STOPPED 变为 STARTING。
 
     ```ts
     import { Startable, ReadyState } from 'startable';
@@ -376,27 +425,11 @@ Startable 的生命周期分为 4 个状态
     console.log(service.readyState === ReadyState.STARTED); // true
     ```
 
-1.  start 方法接受一个钩子回调 onStopping() 作为可选参数，这个钩子在进入 STOPPING 状态后被同步调用。
+1. start 方法接受一个钩子回调 onStopping() 作为可选参数，这个钩子在进入 STOPPING 状态后被同步调用。
 
-1.  stop 方法接受一个 Error 作为可选参数，表示 stop 的原因，这个 Error 会自动传入 onStopping()。你可以自行定义这个 Error 的语义，比如你可以只在自析构时传入 Error，然后在 onStopping() 中用这个参数是否存在来判断是自析构还是被析构。
+1. stop 方法接受一个 Error 作为可选参数，表示 stop 的原因，这个 Error 会自动传入 onStopping()。你可以自行定义这个 Error 的语义，比如你可以只在自析构时传入 Error，然后在 onStopping() 中用这个参数是否存在来判断是自析构还是被析构。
 
-1.  可以很简单地在 _start() 和 _stop() 中实现
-    
-    - start 失败自动 stop
-    - stop 成功自动重启
-
-    ```ts
-    class Service extends Startable {
-        protected async _start(): Promise<void> {
-            this.start().catch(err => this.stop(err)).catch(() => { });
-        }
-        protected async _stop((err?: Error)): Promise<void> {
-            this.stop().then(err => this.start()).catch(() => { });
-        }
-    } 
-    ```
-
-1.  Startable 继承了一个通用版本的 EventEmitter，与 node 中的 EventEmitter 接口相同，但可以在浏览器等其他环境使用。
+1. Startable 继承了一个通用版本的 EventEmitter，与 node 中的 EventEmitter 接口相同，但可以在浏览器等其他环境使用。
 
 ### 简化 Conventions
 
@@ -409,8 +442,7 @@ class Service extends Startable {
     constructor() {
         super();
         this.someComponent.on('some fatal error', (err: InternalError) => {
-            this.start().catch(() => { })
-                .then(() => this.stop(err))
+            this.stop(err)
                 .catch(handle);
         });
     }
@@ -434,8 +466,7 @@ function stop() {
         constructor() {
             super();
             this.someComponent.on('some fatal error', (err: InternalError) => {
-                this.start().catch(() => { })
-                    .then(() => this.stop(err))
+                this.stop(err)
 -                   .catch(handle);
 +                   .catch(err => this.emit('error during stopping', err));
             });
@@ -462,8 +493,7 @@ function stop() {
         constructor() {
             super();
             this.someComponent.on('some fatal error', (err: InternalError) => {
-                this.start().catch(() => { })
-                    .then(() => this.stop(err))
+                this.stop(err)
 -                   .catch(err => this.emit('error during stopping', err));
 +                   .catch(() => {}));
             });
@@ -491,8 +521,7 @@ function stop() {
         constructor() {
             super();
             this.someComponent.on('some fatal error', (err: InternalError) => {
-                this.start().catch(() => { })
-                    .then(() => this.stop(err))
+                this.stop(err)
                     .catch(() => {}));
             });
         }
@@ -520,8 +549,7 @@ stop() 的可选参数表示 stop 的原因，我们可以自行定义这个参�
         constructor() {
             super();
             this.someComponent.on('some fatal error', (err: InternalError) => {
-                this.start().catch(() => { })
-                    .then(() => this.stop(err))
+                this.stop(err)
                     .catch(() => {}));
             });
         }
@@ -552,13 +580,13 @@ class Parent extends Startable {
 
     protected async _start(): Promise<void> {
         await child1.start(err => {
-            if (err) this.start().finally(()=>this.stop(err)).catch(() => { });
+            if (err) this.stop(err).catch(() => { });
         });
         await child2.start(err => {
-            if (err) this.start().finally(()=>this.stop(err)).catch(() => { });
+            if (err) this.stop(err).catch(() => { });
         });
         await child3.start(err => {
-            if (err) this.start().finally(()=>this.stop(err)).catch(() => { });
+            if (err) this.stop(err).catch(() => { });
         });
     }
     protected async _stop(): Promise<void> {
@@ -579,17 +607,17 @@ class Parent extends Startable {
 
         protected async _start(): Promise<void> {
 -           await child1.start(err => {
-                if (err) this.start().finally(()=>this.stop(err)).catch(() => { });
+-               if (err) this.stop(err).catch(() => { });
 -           });
 -           await child1.start(err => {
-                if (err) this.start().finally(()=>this.stop(err)).catch(() => { });
+-               if (err) this.stop(err).catch(() => { });
 -           });
 -           await child1.start(err => {
-                if (err) this.start().finally(()=>this.stop(err)).catch(() => { });
+-               if (err) this.stop(err).catch(() => { });
 -           });
-+           await child1.start(err => void this.start().finally(()=>this.stop(err)).catch(() => { }));
-+           await child2.start(err => void this.start().finally(()=>this.stop(err)).catch(() => { }));
-+           await child3.start(err => void this.start().finally(()=>this.stop(err)).catch(() => { }));
++           await child1.start(err => void this.stop(err).catch(() => { }));
++           await child2.start(err => void this.stop(err).catch(() => { }));
++           await child3.start(err => void this.stop(err).catch(() => { }));
         }
         protected async _stop(): Promise<void> {
             await child3.stop();
@@ -599,7 +627,7 @@ class Parent extends Startable {
     }
 ```
 
-虽然 Startable 没有绑定 start() 和 stop()，也没有关闭 unhandledRejection 事件，但提供了一个快捷方式 `this.starp` 等价于 `err => void this.start().finally(() => this.stop(err)).catch(() => { })`。因此可以继续简化为
+Startable 绑定了 stop 的 this，且返回的 Promise 自带了一个空的 rejection handler，因此可以继续简化为
 
 ```ts
     class Parent extends Startable {
@@ -608,12 +636,12 @@ class Parent extends Startable {
         private child3: Startable;
 
         protected async _start(): Promise<void> {
--           await child1.start(err => void this.start().finally(()=>this.stop(err)).catch(() => { }));
--           await child2.start(err => void this.start().finally(()=>this.stop(err)).catch(() => { }));
--           await child3.start(err => void this.start().finally(()=>this.stop(err)).catch(() => { }));
-+       await child1.start(this.starp);
-+       await child2.start(this.starp);
-+       await child3.start(this.starp);
+-       await child1.start(err => void this.stop(err).catch(() => { }));
+-       await child2.start(err => void this.stop(err).catch(() => { }));
+-       await child3.start(err => void this.stop(err).catch(() => { }));
++       await child1.start(this.stop);
++       await child2.start(this.stop);
++       await child3.start(this.stop);
         }
         protected async _stop(): Promise<void> {
             await child3.stop();
@@ -623,9 +651,9 @@ class Parent extends Startable {
     }
 ```
 
-之所以不关闭 unhandledRejection 是因为与 js 未来发展方向不符，有的测试框架比如 ava 甚至强制检测 unhandledRejection 设置里都不能改。既然需要自己 catch，那么绑定也没用了。
+之所以不关闭 unhandledRejection 是因为与 js 未来发展方向不符，有的测试框架比如 ava 甚至强制检测 unhandledRejection 设置里都不能改。
 
-### 最终版
+### 最终简化版
 
 ```ts
 class Parent extends Startable {
@@ -635,13 +663,13 @@ class Parent extends Startable {
 
     constructor() {
         super();
-        this.someComponent.on('some fatal error', this.starp);
+        this.someComponent.on('some fatal error', this.stop);
     }
 
     protected async _start(): Promise<void> {
-        await child1.start(this.starp);
-        await child2.start(this.starp);
-        await child3.start(this.starp);
+        await child1.start(this.stop);
+        await child2.start(this.stop);
+        await child3.start(this.stop);
     }
     protected async _stop(): Promise<void> {
         await child3.stop();
@@ -658,7 +686,7 @@ function start() {
     }).catch(handle);
 }
 function stop() {
-    service.stop().catch(() => {});
+    service.stop();
 }
 ```
 
@@ -675,9 +703,9 @@ console.log(service.readyState);
 
 的结果不一定是 STARTED，完全有可能是 STOPPING 或 STOPPED。而 Startable 的状态是成环的，搞不好甚至已经转了一圈到了下一次 STARTING 了。
 
-## 自定义 service 依赖
+## 外部依赖
 
-将所有 services 放在上下文对象中，每个 service 的 start() 在上下文中取出自己的依赖，等待依赖 start。
+一个 Service 的依赖并不一定是这个 Service 的儿子，也可能是外部的 Service。将所有所依赖的外部 Service 放在上下文对象中，每个 Service 的 start() 在上下文中取出自己的依赖，等待依赖 start。
 
 ```ts
 class Service extends Startable {
@@ -687,17 +715,22 @@ class Service extends Startable {
     }) { }
 
     protected async _start() {
-        await this.ctx.dep1.start(this.starp);
-        await this.ctx.dep2.start(this.starp);
+        assert(
+            this.ctx.dep1.readyState === ReadyState.STARTING ||
+            this.ctx.dep1.readyState === ReadyState.STARTED
+        );
+        await this.ctx.dep1.start(this.stop);
+        // are equivalent to
+        await this.ctx.dep2.hasNotBeenStopping(this.stop);
     }
 }
 ```
 
-## stop 语义
+## 可复用性
 
-如果想要让 startable 可复用的话，stop 的语义必须很严格：stop 协程返回时 service 已完全结束，可以立即开始新一轮 start。
+如果想要让 Startable 可复用的话，stop 的语义必须很严格：stop 协程返回时 Service 已完全结束，可以立即开始新一轮 start。
 
-如果 startable 不需要复用的话，stop 语义可以比较宽松：stop 协程返回时 service 已经结束，但还没有为新一轮 start 做好准备，比如内部某协程还差几个无关紧要事件循环没有跑完。
+如果 Startable 不需要复用的话，stop 语义可以比较宽松：stop 协程返回时 Service 已经结束，但还没有为新一轮 start 做好准备，比如内部某协程还差几个无关紧要事件循环没有跑完。
 
 ## 兼容性
 

@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { assert } from 'chai';
 
 const enum ReadyState {
     STARTING = 'STARTING',
@@ -19,10 +20,15 @@ interface OnStopping {
 abstract class Startable extends EventEmitter implements StartableLike {
     public readyState = ReadyState.STOPPED;
     private onStoppings: OnStopping[] = [];
-    protected starp = (err?: Error) => void this
-        .start()
-        .finally(() => this.stop(err))
-        .catch(() => { });
+    private errStopDuringStarting: null | Error = null;
+    public hasNotBeenStopping(onStopping?: OnStopping): Promise<void> {
+        assert(
+            this.readyState === ReadyState.STARTING ||
+            this.readyState === ReadyState.STARTED
+        );
+        return this.start(onStopping);
+    }
+
 
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
@@ -31,11 +37,16 @@ abstract class Startable extends EventEmitter implements StartableLike {
     public async start(onStopping?: OnStopping): Promise<void> {
         if (this.readyState === ReadyState.STOPPED) {
             this.readyState = ReadyState.STARTING;
+            this.errStopDuringStarting = null;
             this.onStoppings = [];
             this._starting = this._start()
                 .finally(() => {
                     this.readyState = ReadyState.STARTED;
+                }).then(result => {
+                    if (this.errStopDuringStarting) throw this.errStopDuringStarting;
+                    return result;
                 });
+            this._starting.catch(() => { });
         }
         if (onStopping) this.onStoppings.push(onStopping);
         // in case _start() calls start() syncly
@@ -43,7 +54,18 @@ abstract class Startable extends EventEmitter implements StartableLike {
     }
 
     private _stopping = Promise.resolve();
-    public async stop(err?: Error): Promise<void> {
+    public stop = (err?: Error): Promise<void> => {
+        if (this.readyState === ReadyState.STARTING) {
+            assert(err);
+            this.errStopDuringStarting = err!;
+            const stopping = this.start()
+                .catch(() => { })
+                .then(() => {
+                    throw new Error('start() cancelled.');
+                });;
+            stopping.catch(() => { });
+            return stopping;
+        }
         if (this.readyState === ReadyState.STARTED) {
             this.readyState = ReadyState.STOPPING;
             for (const onStopping of this.onStoppings) onStopping(err);
@@ -51,9 +73,12 @@ abstract class Startable extends EventEmitter implements StartableLike {
                 .finally(() => {
                     this.readyState = ReadyState.STOPPED;
                 });
+            this._stopping.catch(() => { });
         }
         // in case _stop() or onStopping() calls stop() syncly
-        return Promise.resolve().then(() => this._stopping);
+        const stopping = Promise.resolve().then(() => this._stopping);
+        stopping.catch(() => { });
+        return stopping;
     }
 }
 

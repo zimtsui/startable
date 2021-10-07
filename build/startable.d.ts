@@ -15,12 +15,13 @@ interface OnStopping {
 declare abstract class Startable extends EventEmitter implements StartableLike {
     readyState: ReadyState;
     private onStoppings;
-    protected starp: (err?: Error | undefined) => undefined;
+    private errStopDuringStarting;
+    hasNotBeenStopping(onStopping?: OnStopping): Promise<void>;
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;
     private _starting;
     start(onStopping?: OnStopping): Promise<void>;
     private _stopping;
-    stop(err?: Error): Promise<void>;
+    stop: (err?: Error | undefined) => Promise<void>;
 }
 export { Startable, StartableLike, ReadyState, OnStopping, };
