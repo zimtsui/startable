@@ -11,21 +11,13 @@ class Startable extends events_1.EventEmitter {
         super(...arguments);
         this.readyState = "STOPPED" /* STOPPED */;
         this.onStoppings = [];
-        this.errStopDuringStarting = null;
         this._starting = Promise.resolve();
         this._stopping = Promise.resolve();
         this.stop = (err) => {
             if (this.readyState === "STARTING" /* STARTING */) {
-                if (err)
-                    this.errStopDuringStarting = err;
-                else
-                    this.errStopDuringStarting = new Error('start() stopped by stop() with no reason.');
+                this.errStopDuringStarting = err || new Error('start() stopped by stop() with no reason.');
                 const stopping = this.start()
-                    .catch(() => { })
-                    .then(() => {
-                    throw new StopDuringStarting('Stop during starting.');
-                });
-                ;
+                    .finally(() => Promise.reject(new StopDuringStarting('Stop during starting.')));
                 stopping.catch(() => { });
                 return stopping;
             }

@@ -22,7 +22,7 @@ class StopDuringStarting extends Error { }
 abstract class Startable extends EventEmitter implements StartableLike {
     public readyState = ReadyState.STOPPED;
     private onStoppings: OnStopping[] = [];
-    private errStopDuringStarting: null | Error = null;
+    private errStopDuringStarting?: null | Error;
     public assertStart(onStopping?: OnStopping): Promise<void> {
         assert(
             this.readyState === ReadyState.STARTING ||
@@ -46,7 +46,7 @@ abstract class Startable extends EventEmitter implements StartableLike {
                 .finally(() => {
                     this.readyState = ReadyState.STARTED;
                 }).then(result => {
-                    if (this.errStopDuringStarting) throw this.errStopDuringStarting;
+                    if (this.errStopDuringStarting!) throw this.errStopDuringStarting;
                     return result;
                 });
             this._starting.catch(() => { });
@@ -59,13 +59,11 @@ abstract class Startable extends EventEmitter implements StartableLike {
     private _stopping = Promise.resolve();
     public stop = (err?: Error): Promise<void> => {
         if (this.readyState === ReadyState.STARTING) {
-            if (err) this.errStopDuringStarting = err;
-            else this.errStopDuringStarting = new Error('start() stopped by stop() with no reason.');
+            this.errStopDuringStarting = err || new Error('start() stopped by stop() with no reason.');
             const stopping = this.start()
-                .catch(() => { })
-                .then(() => {
-                    throw new StopDuringStarting('Stop during starting.');
-                });;
+                .finally(() => Promise.reject(
+                    new StopDuringStarting('Stop during starting.'),
+                ));
             stopping.catch(() => { });
             return stopping;
         }

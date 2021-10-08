@@ -17,7 +17,7 @@ declare class StopDuringStarting extends Error {
 declare abstract class Startable extends EventEmitter implements StartableLike {
     readyState: ReadyState;
     private onStoppings;
-    private errStopDuringStarting;
+    private errStopDuringStarting?;
     assertStart(onStopping?: OnStopping): Promise<void>;
     protected abstract _start(): Promise<void>;
     protected abstract _stop(err?: Error): Promise<void>;

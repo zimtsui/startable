@@ -1,4 +1,4 @@
-import { Startable } from '../../build/startable';
+import { Startable, StopDuringStarting } from '../../build/startable';
 import sinon = require('sinon');
 import test from 'ava';
 import chai = require('chai');
@@ -107,6 +107,6 @@ test('stop during starting', async t => {
     const pStop = service.stop(new Error('stop during starting'));
     resolveStart!();
     await assert.isRejected(pStart, /^stop during starting$/);
-    await assert.isRejected(pStop, /^start\(\) failed\.$/);
+    await assert.isRejected(pStop, StopDuringStarting);
     assert(f.callCount === 1);
 });
