@@ -23,7 +23,7 @@ abstract class Startable extends EventEmitter implements StartableLike {
     public readyState = ReadyState.STOPPED;
     private onStoppings: OnStopping[] = [];
     private errStopDuringStarting?: null | Error;
-    public assertStart(onStopping?: OnStopping): Promise<void> {
+    public assart(onStopping?: OnStopping): Promise<void> {
         assert(
             this.readyState === ReadyState.STARTING ||
             this.readyState === ReadyState.STARTED,

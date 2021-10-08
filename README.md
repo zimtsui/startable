@@ -1,10 +1,8 @@
 # Startable
 
-## Brief
-
 Startable 是一个 JavaScript 的 Service 框架。初衷是为了适配阿里开源 node 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
 
-### 特性
+特性
 
 - 异步构造与析构
 - 让一个 Service 可以自己析构自己
