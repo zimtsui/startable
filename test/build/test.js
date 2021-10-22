@@ -112,4 +112,30 @@ ava_1.default('stop during starting', async (t) => {
     await assert.isRejected(pStop, startable_1.StopDuringStarting);
     assert(f.callCount === 1);
 });
+ava_1.default('start during stopping', async (t) => {
+    const f = fake();
+    let resolveStop;
+    class Service extends startable_1.Startable {
+        _start() {
+            f();
+            return Promise.resolve();
+        }
+        _stop() {
+            f();
+            return new Promise(resolve => {
+                resolveStop = resolve;
+            });
+        }
+    }
+    ;
+    const service = new Service();
+    await service.start();
+    const pStop = service.stop();
+    pStop.catch(() => { });
+    const pStart = service.start();
+    resolveStop();
+    await assert.isRejected(pStart, startable_1.StartDuringStopping);
+    await pStop;
+    assert(f.callCount === 2);
+});
 //# sourceMappingURL=test.js.map

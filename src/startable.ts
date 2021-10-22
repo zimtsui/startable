@@ -1,28 +1,34 @@
 import { EventEmitter } from 'events';
 import { assert } from 'chai';
 
-const enum ReadyState {
+export const enum ReadyState {
     STARTING = 'STARTING',
     STARTED = 'STARTED',
+    UNSTARTED = 'UNSTARTED',
     STOPPING = 'STOPPING',
     STOPPED = 'STOPPED',
+    UNSTOPPED = 'UNSTOPPED',
 }
 
-interface StartableLike {
+export interface StartableLike {
     start(stopping?: OnStopping): Promise<void>;
     stop(err?: Error): Promise<void>;
 }
 
-interface OnStopping {
+export interface OnStopping {
     (err?: Error): void;
 }
 
-class StopDuringStarting extends Error { }
+export class StopDuringStarting extends Error { }
+export class StartDuringStopping extends Error { }
 
-abstract class Startable extends EventEmitter implements StartableLike {
+export abstract class Startable extends EventEmitter implements StartableLike {
     public readyState = ReadyState.STOPPED;
-    private onStoppings: OnStopping[] = [];
-    private errStopDuringStarting?: null | Error;
+    private _onStoppings: OnStopping[] = [];
+    private _stopErrorDuringStarting?: null | Error;
+    private _resolve?: () => void;
+    private _reject?: (err: Error) => void;
+
     public assart(onStopping?: OnStopping): Promise<void> {
         assert(
             this.readyState === ReadyState.STARTING ||
@@ -32,61 +38,87 @@ abstract class Startable extends EventEmitter implements StartableLike {
         return this.start(onStopping);
     }
 
-
     protected abstract _start(): Promise<void>;
-    protected abstract _stop(err?: Error): Promise<void>;
-
     private _starting = Promise.resolve();
-    public async start(onStopping?: OnStopping): Promise<void> {
-        if (this.readyState === ReadyState.STOPPED) {
-            this.readyState = ReadyState.STARTING;
-            this.errStopDuringStarting = null;
-            this.onStoppings = [];
-            this._starting = this._start()
-                .finally(() => {
-                    this.readyState = ReadyState.STARTED;
-                }).then(result => {
-                    if (this.errStopDuringStarting!) throw this.errStopDuringStarting;
-                    return result;
-                });
-            this._starting.catch(() => { });
+    public start(onStopping?: OnStopping): Promise<void> {
+        if (this.readyState === ReadyState.STOPPING) {
+            return Promise.reject(
+                new StartDuringStopping('.start() called during stopping.')
+            );
         }
-        if (onStopping) this.onStoppings.push(onStopping);
-        // in case _start() calls start() syncly
-        return Promise.resolve().then(() => this._starting);
+        if (
+            this.readyState === ReadyState.STOPPED ||
+            this.readyState === ReadyState.UNSTOPPED
+        ) {
+            this.readyState = ReadyState.STARTING;
+            this._stopErrorDuringStarting = null;
+            this._onStoppings = [];
+
+            // in case _start() calls start() syncly
+            this._starting = new Promise((resolve, reject) => {
+                this._resolve = resolve;
+                this._reject = reject;
+            });
+            // this._starting.catch(() => { });
+
+            this._start().then(() => {
+                if (this._stopErrorDuringStarting!)
+                    throw this._stopErrorDuringStarting;
+            }).then(() => {
+                this._resolve!();
+                this.readyState = ReadyState.STARTED;
+            }).catch(err => {
+                this._reject!(err);
+                this.readyState = ReadyState.UNSTARTED;
+            });
+        }
+        if (onStopping) this._onStoppings.push(onStopping);
+        return this._starting;
     }
 
+    protected abstract _stop(err?: Error): Promise<void>;
     private _stopping = Promise.resolve();
+    /*
+        stop() 不能是 async，否则 stop() 的返回值和 this._stopping 不是
+        同一个 Promise 对象，stop() 的值如果外部没有 catch 就会抛到全局空间去。
+    */
     public stop = (err?: Error): Promise<void> => {
         if (this.readyState === ReadyState.STARTING) {
-            this.errStopDuringStarting = err || new Error('start() stopped by stop() with no reason.');
-            const stopping = this.start()
-                .finally(() => Promise.reject(
-                    new StopDuringStarting('Stop during starting.'),
-                ));
-            stopping.catch(() => { });
-            return stopping;
+            this._stopErrorDuringStarting = err ||
+                this._stopErrorDuringStarting ||
+                new Error('.start() stopped by stop() with no reason.');
+            return Promise.reject(
+                new StopDuringStarting('.stop() called during starting.')
+            );
+            // const stopping = this.start()
+            //     .finally(() => Promise.reject(
+            //         new StopDuringStarting('Stop during starting.'),
+            //     ));
+            // stopping.catch(() => { });
+            // return stopping;
         }
-        if (this.readyState === ReadyState.STARTED) {
+        if (
+            this.readyState === ReadyState.STARTED ||
+            this.readyState === ReadyState.UNSTARTED
+        ) {
             this.readyState = ReadyState.STOPPING;
-            for (const onStopping of this.onStoppings) onStopping(err);
-            this._stopping = this._stop(err)
-                .finally(() => {
-                    this.readyState = ReadyState.STOPPED;
-                });
+            for (const onStopping of this._onStoppings) onStopping(err);
+
+            // in case _stop() or onStopping() calls stop() syncly
+            this._stopping = new Promise((resolve, reject) => {
+                this._resolve = resolve;
+                this._reject = reject;
+            })
             this._stopping.catch(() => { });
+
+            this._stop(err).then(() => {
+                this._resolve!();
+                this.readyState = ReadyState.STOPPED;
+            }).catch(err => {
+                this._reject!(err);
+                this.readyState = ReadyState.UNSTOPPED;
+            });
         }
-        // in case _stop() or onStopping() calls stop() syncly
-        const stopping = Promise.resolve().then(() => this._stopping);
-        stopping.catch(() => { });
-        return stopping;
+        return this._stopping;
     }
 }
-
-export {
-    Startable,
-    StartableLike,
-    ReadyState,
-    OnStopping,
-    StopDuringStarting,
-};

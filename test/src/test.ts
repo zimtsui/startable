@@ -1,4 +1,8 @@
-import { Startable, StopDuringStarting } from '../../build/startable';
+import {
+    Startable,
+    StartDuringStopping,
+    StopDuringStarting,
+} from '../../build/startable';
 import sinon = require('sinon');
 import test from 'ava';
 import chai = require('chai');
@@ -109,4 +113,30 @@ test('stop during starting', async t => {
     await assert.isRejected(pStart, /^stop during starting$/);
     await assert.isRejected(pStop, StopDuringStarting);
     assert(f.callCount === 1);
+});
+
+test('start during stopping', async t => {
+    const f = fake();
+    let resolveStop: () => void;
+    class Service extends Startable {
+        protected _start() {
+            f();
+            return Promise.resolve();
+        }
+        protected _stop() {
+            f();
+            return new Promise<void>(resolve => {
+                resolveStop = resolve;
+            });
+        }
+    };
+    const service = new Service();
+    await service.start();
+    const pStop = service.stop();
+    pStop.catch(() => { });
+    const pStart = service.start();
+    resolveStop!();
+    await assert.isRejected(pStart, StartDuringStopping);
+    await pStop;
+    assert(f.callCount === 2);
 });
