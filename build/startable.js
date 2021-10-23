@@ -55,7 +55,7 @@ class Startable extends events_1.EventEmitter {
             return this._stopping;
         };
     }
-    assart(onStopping) {
+    async assart(onStopping) {
         chai_1.assert(this.readyState === "STARTING" /* STARTING */ ||
             this.readyState === "STARTED" /* STARTED */, 'Not STARTING or STARTED.');
         return this.start(onStopping);

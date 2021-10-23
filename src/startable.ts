@@ -29,7 +29,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
     private _resolve?: () => void;
     private _reject?: (err: Error) => void;
 
-    public assart(onStopping?: OnStopping): Promise<void> {
+    public async assart(onStopping?: OnStopping): Promise<void> {
         assert(
             this.readyState === ReadyState.STARTING ||
             this.readyState === ReadyState.STARTED,

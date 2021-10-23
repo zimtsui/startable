@@ -80,7 +80,7 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 
 - 你可以在停止过程中尽情地重复运行 `.stop()` ，而不用担心重复运行你的 `._stop()` 实现。
 - 在停止过程中无法查看上一次启动是否成功。
-- `.stop()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.stop()` 而不必 `this.stop().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去。
+- `.stop()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.stop()` 而不必 `this.stop().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
 - `.stop()` 默认已经绑定到 Startable 上了，因此你可以把 `this.stop` 作为回调而不必 `err => this.stop(err)`。
 
 ## 自发启停
@@ -98,7 +98,7 @@ class Daemon extends Startable {
 }
 ```
 
-Startable 允许 `.start()` 接受一个 onStopping 回调，当这个 Startable 的 `.stop()` 运行时会同步地调用这个回调，并将你填进 `.stop()` 的参数传递给这个回调，用于第一时间通知外部。你可以自行定义这个 Error 参数的语义，然后在回调中根据参数判断停止的原因。一般来说，如果是自发停止则传参，如果是从外部被动停止则不传参，这样就可以在回调中根据参数是否存在来判断是不是自发停止。
+Startable 允许 `.start()` 接受一个钩子 onStopping 回调，当这个 Startable 的 `.stop()` 运行时会同步地调用这个回调，并将你填进 `.stop()` 的参数传递给这个回调，用于第一时间通知外部。你可以自行定义这个 Error 参数的语义，然后在回调中根据参数判断停止的原因。一般来说，如果是自发停止则传参，如果是从外部被动停止则不传参，这样就可以在回调中根据参数是否存在来判断是不是自发停止。
 
 ```ts
 // main coroutine
