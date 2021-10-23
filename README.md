@@ -28,8 +28,8 @@ Startable 是一个 JavaScript 的后台对象框架。初衷是为了适配阿�
 
 ```ts
 class Daemon extends Startable {
-    protected async _start(): Promise<void> {    }
-    protected async _stop(): Promise<void> {    }
+    protected async _start(): Promise<void> { }
+    protected async _stop(): Promise<void> { }
 }
 
 const daemon = new Daemon();
@@ -45,9 +45,9 @@ await daemon.stop();
 
 1. 一个 Startable 刚 new 出来时是 STOPPED 状态。
 1. 此时运行异步的 `.start()` 进入 STARTING 状态，Startable 会调用你实现的 `._start()`。
-1. `.start()` 结束时，如果 fulfilled 则进入 STARTED 状态，也就是「正常提供服务中」的状态，如果 rejected 则进入 UNSTARTED 状态。
+1. `._start()` 结束时，如果 fulfilled 则进入 STARTED 状态，也就是「正常提供服务中」的状态，如果 rejected 则进入 UNSTARTED 状态。
 1. 此时运行异步的 `.stop()` 进入 STOPPING 状态，Startable 会调用你实现的 `._stop()`。
-1. `.stop()` 结束时，如果 fulfilled 则进入 STOPPED 状态，如果 rejected 则进入 UNSTOPPED 状态。
+1. `._stop()` 结束时，如果 fulfilled 则进入 STOPPED 状态，如果 rejected 则进入 UNSTOPPED 状态。
 
 你可以通过 `readyState` 属性查看当前时刻的状态。
 
@@ -98,7 +98,7 @@ class Daemon extends Startable {
 }
 ```
 
-Startable 允许 `.start()` 接受一个钩子 onStopping 回调，当这个 Startable 的 `.stop()` 运行时会同步地调用这个回调，并将你填进 `.stop()` 的参数传递给这个回调，用于第一时间通知外部。你可以自行定义这个 Error 参数的语义，然后在回调中根据参数判断停止的原因。一般来说，如果是自发停止则传参，如果是从外部被动停止则不传参，这样就可以在回调中根据参数是否存在来判断是不是自发停止。
+`.start()` 可以接受一个 onStopping 钩子作为回调，用于在停止过程开始时通知外部。当这个 `.stop()` 运行时会同步地调用这个回调，并将你填进 `.stop()` 的参数传递给这个回调。你可以自行定义这个 Error 参数的语义，然后在回调中根据参数判断停止的原因。一般来说，如果是自发停止则传参，如果是从外部被动停止则不传参，这样就可以在回调中根据参数是否存在来判断是不是自发停止。
 
 ```ts
 // main coroutine
@@ -111,7 +111,8 @@ function startDaemon(){
     }).catch(handleStartingException);
 }
 function stopDaemon() {
-    daemon.stop(); // have a think about why .catch() is not necessary.
+    // have a think about why .catch(handleStoppingException) is not necessary.
+    daemon.stop();
 }
 ```
 
@@ -197,7 +198,7 @@ class Parent extends Startable {
 
 ### 外部依赖
 
-一个 Startable 的依赖也可能是外部的 Startable。将所有所依赖的外部 Startable 放在上下文对象中，每个 Startable 的 `.start()` 在上下文中取出自己的依赖，等待依赖完成启动。
+一个 Startable 的依赖也可能是外部的 Startable。将被依赖的外部 Startable 放在上下文对象中，`._start()` 在上下文中取出自己的依赖，等待依赖完成启动。
 
 ```diff
     class Daemon extends Startable {
