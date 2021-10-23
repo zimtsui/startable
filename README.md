@@ -240,4 +240,4 @@ console.log(daemon.readyState);
 
 ## 浏览器兼容性
 
-Startable 继承于 `node:events` 的 polyfill [events](https://github.com/browserify/events)，与 node 核心模块同名。在 node 中会自动加载核心 events 模块，在浏览器中会自动加载 polyfill。
+Startable 继承于 `node:events` 的 polyfill [events](https://github.com/browserify/events)，与 node 核心模块同名。在 node 中会自动加载核心 events 模块，在浏览器中会自动加载 polyfill
