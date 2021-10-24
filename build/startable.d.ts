@@ -16,8 +16,6 @@ export interface OnStopping {
 }
 export declare class StopDuringStarting extends Error {
 }
-export declare class StartDuringStopping extends Error {
-}
 export declare abstract class Startable extends EventEmitter implements StartableLike {
     readyState: ReadyState;
     private _onStoppings;

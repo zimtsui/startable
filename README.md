@@ -64,10 +64,18 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 | STOPPED/UNSTOPPED | 开始启动过程 | 最近一次启动过程的 Promise（即本次 `.start()` 所开始的这次） |
 | STARTING | 什么也不干 | 最近一次启动过程的 Promise（即正在进行的这次） |
 | STARTED/UNSTARTED | 什么也不干 | 最近一次启动过程的 Promise（即刚刚结束的那次） |
-| STOPPING | 什么也不干 | 一个立即 rejected 的 Promise，其携带的异常属于 StartDuringStopping 类 |
+| STOPPING | 什么也不干 | 最近一次启动过程的 Promise（即上一次） |
 
 - 你可以在启动过程中尽情地重复运行 `.start()` ，而不用担心重复运行你的 `._start()` 实现。
-- 在启动过程中无法查看上一次停止是否成功。
+- 在停止过程中可以查看上一次启动是否成功
+
+    ```ts
+    class Daemon extends Startable {
+        protected async _stop() {
+            console.log(await this.start().then(() => true, () => false));
+        }
+    }
+    ```
 
 ### 停止方法
 
@@ -79,7 +87,6 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 | STOPPING | 什么也不干 | 最近一次停止过程的 Promise（即正在进行的这次） |
 
 - 你可以在停止过程中尽情地重复运行 `.stop()` ，而不用担心重复运行你的 `._stop()` 实现。
-- 在停止过程中无法查看上一次启动是否成功。
 - `.stop()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.stop()` 而不必 `this.stop().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
 - `.stop()` 默认已经绑定到 Startable 上了，因此你可以把 `this.stop` 作为回调而不必 `err => this.stop(err)`。
 

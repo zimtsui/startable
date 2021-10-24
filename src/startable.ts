@@ -20,7 +20,6 @@ export interface OnStopping {
 }
 
 export class StopDuringStarting extends Error { }
-export class StartDuringStopping extends Error { }
 
 export abstract class Startable extends EventEmitter implements StartableLike {
     public readyState = ReadyState.STOPPED;
@@ -41,11 +40,6 @@ export abstract class Startable extends EventEmitter implements StartableLike {
     protected abstract _start(): Promise<void>;
     private _starting = Promise.resolve();
     public start(onStopping?: OnStopping): Promise<void> {
-        if (this.readyState === ReadyState.STOPPING) {
-            return Promise.reject(
-                new StartDuringStopping('.start() called during stopping.')
-            );
-        }
         if (
             this.readyState === ReadyState.STOPPED ||
             this.readyState === ReadyState.UNSTOPPED

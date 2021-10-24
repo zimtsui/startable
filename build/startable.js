@@ -1,14 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Startable = exports.StartDuringStopping = exports.StopDuringStarting = void 0;
+exports.Startable = exports.StopDuringStarting = void 0;
 const events_1 = require("events");
 const chai_1 = require("chai");
 class StopDuringStarting extends Error {
 }
 exports.StopDuringStarting = StopDuringStarting;
-class StartDuringStopping extends Error {
-}
-exports.StartDuringStopping = StartDuringStopping;
 class Startable extends events_1.EventEmitter {
     constructor() {
         super(...arguments);
@@ -61,9 +58,6 @@ class Startable extends events_1.EventEmitter {
         return this.start(onStopping);
     }
     start(onStopping) {
-        if (this.readyState === "STOPPING" /* STOPPING */) {
-            return Promise.reject(new StartDuringStopping('.start() called during stopping.'));
-        }
         if (this.readyState === "STOPPED" /* STOPPED */ ||
             this.readyState === "UNSTOPPED" /* UNSTOPPED */) {
             this.readyState = "STARTING" /* STARTING */;
