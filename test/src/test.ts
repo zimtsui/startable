@@ -1,6 +1,6 @@
 import {
     Startable,
-    StopDuringStarting,
+    StopCalledDuringStarting,
 } from '../../build/startable';
 import sinon = require('sinon');
 import test from 'ava';
@@ -13,11 +13,11 @@ const { assert } = chai;
 test('start succ stop succ', async t => {
     const f = fake();
     class Service extends Startable {
-        protected _start() {
+        protected Startable$start() {
             f();
             return Promise.resolve();
         }
-        protected _stop() {
+        protected Startable$stop() {
             f();
             return Promise.resolve();
         }
@@ -33,11 +33,11 @@ test('start succ stop succ', async t => {
 test('start succ stop fail', async t => {
     const f = fake();
     class Service extends Startable {
-        protected _start() {
+        protected Startable$start() {
             f();
             return Promise.resolve();
         }
-        protected _stop() {
+        protected Startable$stop() {
             f();
             return Promise.reject(new Error('stop'));
         }
@@ -52,11 +52,11 @@ test('start succ stop fail', async t => {
 test('start fail stop succ', async t => {
     const f = fake();
     class Service extends Startable {
-        protected _start() {
+        protected Startable$start() {
             f();
             return Promise.reject(new Error('start'));
         }
-        protected _stop() {
+        protected Startable$stop() {
             f();
             return Promise.resolve();
         }
@@ -72,11 +72,11 @@ test('start fail stop succ', async t => {
 test('start fail stop fail', async t => {
     const f = fake();
     class Service extends Startable {
-        protected _start() {
+        protected Startable$start() {
             f();
             return Promise.reject(new Error('start'));
         }
-        protected _stop() {
+        protected Startable$stop() {
             f();
             return Promise.reject(new Error('stop'));
         }
@@ -93,13 +93,13 @@ test('stop during starting', async t => {
     const f = fake();
     let resolveStart: () => void;
     class Service extends Startable {
-        protected _start() {
+        protected Startable$start() {
             f();
             return new Promise<void>(resolve => {
                 resolveStart = resolve;
             });
         }
-        protected _stop() {
+        protected Startable$stop() {
             f();
             return Promise.resolve();
         }
@@ -110,6 +110,6 @@ test('stop during starting', async t => {
     const pStop = service.stop(new Error('stop during starting'));
     resolveStart!();
     await assert.isRejected(pStart, /^stop during starting$/);
-    await assert.isRejected(pStop, StopDuringStarting);
+    await assert.isRejected(pStop, StopCalledDuringStarting);
     assert(f.callCount === 1);
 });

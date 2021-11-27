@@ -14,19 +14,20 @@ export interface StartableLike {
 export interface OnStopping {
     (err?: Error): void;
 }
-export declare class StopDuringStarting extends Error {
+export declare class StopCalledDuringStarting extends Error {
+    constructor();
 }
 export declare abstract class Startable extends EventEmitter implements StartableLike {
     readyState: ReadyState;
-    private _onStoppings;
-    private _stopErrorDuringStarting?;
-    private _resolve?;
-    private _reject?;
+    private Startable$onStoppings;
+    private Startable$errorDuringStarting?;
+    private Startable$resolve?;
+    private Startable$reject?;
     assart(onStopping?: OnStopping): Promise<void>;
-    protected abstract _start(): Promise<void>;
-    private _starting;
+    protected abstract Startable$start(): Promise<void>;
+    private Startable$starting;
     start(onStopping?: OnStopping): Promise<void>;
-    protected abstract _stop(err?: Error): Promise<void>;
-    private _stopping;
+    protected abstract Startable$stop(err?: Error): Promise<void>;
+    private Startable$stopping;
     stop: (err?: Error | undefined) => Promise<void>;
 }

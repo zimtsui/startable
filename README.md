@@ -24,12 +24,12 @@ Startable 是一个 JavaScript 的后台对象框架。初衷是为了适配阿�
 
 ## Startable 抽象类
 
-将你要定义的后台类继承 Startable，然后将异步的启停过程实现在 `._start()` 和 `._stop()` 中。
+将你要定义的后台类继承 Startable，然后将异步的启停过程实现在 `.Startable$start()` 和 `.Startable$stop()` 中。
 
 ```ts
 class Daemon extends Startable {
-    protected async _start(): Promise<void> { }
-    protected async _stop(): Promise<void> { }
+    protected async Startable$start(): Promise<void> { }
+    protected async Startable$stop(): Promise<void> { }
 }
 
 const daemon = new Daemon();
@@ -44,10 +44,10 @@ await daemon.stop();
 ![State cycle](./doc/state-cycle.png)
 
 1. 一个 Startable 刚 new 出来时是 STOPPED 状态。
-1. 此时运行异步的 `.start()` 进入 STARTING 状态，Startable 会调用你实现的 `._start()`。
-1. `._start()` 结束时，如果 fulfilled 则进入 STARTED 状态，也就是「正常提供服务中」的状态，如果 rejected 则进入 UNSTARTED 状态。
-1. 此时运行异步的 `.stop()` 进入 STOPPING 状态，Startable 会调用你实现的 `._stop()`。
-1. `._stop()` 结束时，如果 fulfilled 则进入 STOPPED 状态，如果 rejected 则进入 UNSTOPPED 状态。
+1. 此时运行异步的 `.start()` 进入 STARTING 状态，Startable 会调用你实现的 `.Startable$start()`。
+1. `.Startable$start()` 结束时，如果 fulfilled 则进入 STARTED 状态，也就是「正常提供服务中」的状态，如果 rejected 则进入 UNSTARTED 状态。
+1. 此时运行异步的 `.stop()` 进入 STOPPING 状态，Startable 会调用你实现的 `.Startable$stop()`。
+1. `.Startable$stop()` 结束时，如果 fulfilled 则进入 STOPPED 状态，如果 rejected 则进入 UNSTOPPED 状态。
 
 你可以通过 `readyState` 属性查看当前时刻的状态。
 
@@ -66,12 +66,12 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 | STARTED/UNSTARTED | 什么也不干 | 最近一次启动过程的 Promise（即刚刚结束的那次） |
 | STOPPING | 什么也不干 | 最近一次启动过程的 Promise（即上一次） |
 
-- 你可以在启动过程中尽情地重复运行 `.start()` ，而不用担心重复运行你的 `._start()` 实现。
+- 你可以在启动过程中尽情地重复运行 `.start()` ，而不用担心重复运行你的 `.Startable$start()` 实现。
 - 在停止过程中可以查看上一次启动是否成功
 
     ```ts
     class Daemon extends Startable {
-        protected async _stop() {
+        protected async Startable$stop() {
             console.log(await this.start().then(() => true, () => false));
         }
     }
@@ -82,11 +82,11 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 | 状态 | `.stop()` 的行为 | `.stop()` 的值 |
 |---|---|---|
 | STOPPED/UNSTOPPED | 什么也不干 | 最近一次停止过程的 Promise（即刚刚结束的那次） |
-| STARTING | 使正在进行的启动过程最终 rejected | 一个立即 rejected 的 Promise，其携带的异常属于 `StopDuringStarting` 类 |
+| STARTING | 使正在进行的这次启动过程最终 rejected | 一个立即 rejected 的 Promise，其携带的异常属于 `StopCalledDuringStarting` 类 |
 | STARTED/UNSTARTED | 开始停止过程 | 最近一次停止过程的 Promise（即本次 `.stop()` 所开始的这次） |
 | STOPPING | 什么也不干 | 最近一次停止过程的 Promise（即正在进行的这次） |
 
-- 你可以在停止过程中尽情地重复运行 `.stop()` ，而不用担心重复运行你的 `._stop()` 实现。
+- 你可以在停止过程中尽情地重复运行 `.stop()` ，而不用担心重复运行你的 `.Startable$stop()` 实现。
 - `.stop()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.stop()` 而不必 `this.stop().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
 - `.stop()` 默认已经绑定到 Startable 上了，因此你可以把 `this.stop` 作为回调而不必 `err => this.stop(err)`。
 
@@ -189,11 +189,11 @@ class Parent extends Startable {
     private child1: Startable;
     private child2: Startable;
 
-    protected async _start(): Promise<void> {
+    protected async Startable$start(): Promise<void> {
         await child1.start(this.stop);
         await child2.start(this.stop);
     }
-    protected async _stop(): Promise<void> {
+    protected async Startable$stop(): Promise<void> {
         await child2.stop();
         await child1.stop();
     }
@@ -201,11 +201,11 @@ class Parent extends Startable {
 ```
 
 - 如果在 child2 启动过程中，已经启动完成的 child1 开始自发停止，那么 child1 会通过 onStopping 回调调用 parent 的 `.stop()`，此时 parent 处于 STARTING 状态，导致 parent 的启动过程 rejected。在语义上，一个后台对象启动过程中，他依赖的儿子挂了，这个后台对象的启动过程也确实算不上成功，因此语义与实现是一致的。
-- 如果调用 `parent.stop()`，`parent.stop()` 会调用 `child.stop()`，`child.stop()` 会通过 onStopping 回调再次调用 `parent.stop()`，不过此时 parent 处于 STOPPING 状态，parent 内部的 `._stop()` 实现不会被调用两次。
+- 如果调用 `parent.stop()`，`parent.stop()` 会调用 `child.stop()`，`child.stop()` 会通过 onStopping 回调再次调用 `parent.stop()`，不过此时 parent 处于 STOPPING 状态，parent 内部的 `.Startable$stop()` 实现不会被调用两次。
 
 ### 外部依赖
 
-一个 Startable 的依赖也可能是外部的 Startable。将被依赖的外部 Startable 放在上下文对象中，`._start()` 在上下文中取出自己的依赖，等待依赖完成启动。
+一个 Startable 的依赖也可能是外部的 Startable。将被依赖的外部 Startable 放在上下文对象中，`.Startable$start()` 在上下文中取出自己的依赖，等待依赖完成启动。
 
 ```diff
     class Daemon extends Startable {
@@ -213,7 +213,7 @@ class Parent extends Startable {
             dep: Startable;
         }) { super(); }
 
-        protected async _start() {
+        protected async Startable$start() {
 -           assert(
 -               this.ctx.dep.readyState === ReadyState.STARTING ||
 -               this.ctx.dep.readyState === ReadyState.STARTED
@@ -228,9 +228,9 @@ class Parent extends Startable {
 
 ## 可复用性
 
-如果想要让 Startable 可复用的话，`._stop()` 的语义必须很严格：`._stop()` 返回时对这个后台对象的停止工作已完全结束，可以立即开始新一轮启动。
+如果想要让 Startable 可复用的话，`.Startable$stop()` 的语义必须很严格：`.Startable$stop()` 返回时对这个后台对象的停止工作已完全结束，可以立即开始新一轮启动。
 
-如果 Startable 不需要复用的话，`._stop()` 的语义可以比较宽松：`._stop()` 返回时停止工作已经结束，但还没有为新一轮启动做好准备，比如内部某协程还差几个无关紧要事件循环没有跑完。
+如果 Startable 不需要复用的话，`.Startable$stop()` 的语义可以比较宽松：`.Startable$stop()` 返回时停止工作已经结束，但还没有为新一轮启动做好准备，比如内部某协程还差几个无关紧要事件循环没有跑完。
 
 ## 协程安全
 
