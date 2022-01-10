@@ -169,11 +169,11 @@ function startDaemon() {
     }).catch(handleStartingException);
 }
 function stopDaemon() {
-    daemon.stop().catch(handleStoppingException);
+    daemon.stop().catch(handleStoppingException); // don't do this.
 }
 ```
 
-这个例子的问题在于，一个后台对象的自发停止过程发生异常而失败，这个异常的 handle 代码不应写在类定义的里面，因为对停止失败的 handle 过程在语义上不属于这个对象的一部分，哪怕是这次停止是自发的。
+这个例子的问题在于，一个后台对象的自发停止过程发生异常而失败，这个异常的 handle 代码不应写在 `.stop()` 的 caller 中，因为 caller 有很多个，不得不写很多遍。
 
 ## 依赖
 
@@ -205,7 +205,7 @@ class Parent extends Startable {
 
 ### 外部依赖
 
-一个 Startable 的依赖也可能是外部的 Startable。将被依赖的外部 Startable 放在上下文对象中，`.Startable$start()` 在上下文中取出自己的依赖，等待依赖完成启动。
+一个 Startable 的依赖也可能是外部的 Startable，即 UML 中的 Aggregation 而不是 Composition。将被依赖的外部 Startable 放在上下文对象中，`.Startable$start()` 在上下文中取出自己的依赖，等待依赖完成启动。
 
 ```diff
     class Daemon extends Startable {
