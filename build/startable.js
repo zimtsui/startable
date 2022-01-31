@@ -35,13 +35,11 @@ class Startable extends events_1.EventEmitter {
         return promise;
     }
     async Startable$startUncaught(onStopping) {
-        if (this.readyState !== "STOPPING" /* STOPPING */ && onStopping)
-            this.Startable$onStoppings.push(onStopping);
         if (this.readyState === "STOPPED" /* STOPPED */ ||
             this.readyState === "UNSTOPPED" /* UNSTOPPED */) {
             this.readyState = "STARTING" /* STARTING */;
             this.Startable$errorDuringStarting = null;
-            this.Startable$onStoppings = [];
+            this.Startable$onStoppings = onStopping ? [onStopping] : [];
             // in case Startable$start() calls start() syncly
             this.Startable$starting = new Promise((resolve, reject) => {
                 this.Startable$resolve = resolve;
@@ -59,6 +57,8 @@ class Startable extends events_1.EventEmitter {
                 this.readyState = "UNSTARTED" /* UNSTARTED */;
             }
         }
+        else if (this.readyState !== "STOPPING" /* STOPPING */ && onStopping)
+            this.Startable$onStoppings.push(onStopping);
         await this.Startable$starting;
     }
     start(onStopping) {

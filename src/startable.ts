@@ -52,15 +52,13 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 	protected abstract rawStart(): Promise<void>;
 	private Startable$starting = Promise.resolve();
 	private async Startable$startUncaught(onStopping?: OnStopping): Promise<void> {
-		if (this.readyState !== ReadyState.STOPPING && onStopping)
-			this.Startable$onStoppings.push(onStopping);
 		if (
 			this.readyState === ReadyState.STOPPED ||
 			this.readyState === ReadyState.UNSTOPPED
 		) {
 			this.readyState = ReadyState.STARTING;
 			this.Startable$errorDuringStarting = null;
-			this.Startable$onStoppings = [];
+			this.Startable$onStoppings = onStopping ? [onStopping] : [];
 
 			// in case Startable$start() calls start() syncly
 			this.Startable$starting = new Promise((resolve, reject) => {
@@ -78,7 +76,8 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 				this.Startable$reject!(<Error>err);
 				this.readyState = ReadyState.UNSTARTED;
 			}
-		}
+		} else if (this.readyState !== ReadyState.STOPPING && onStopping)
+			this.Startable$onStoppings.push(onStopping);
 		await this.Startable$starting;
 	}
 
