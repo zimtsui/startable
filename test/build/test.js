@@ -11,11 +11,11 @@ const { assert } = chai;
 (0, ava_1.default)('start succ stop succ', async (t) => {
     const f = fake();
     class Service extends startable_1.Startable {
-        Startable$start() {
+        rawStart() {
             f();
             return Promise.resolve();
         }
-        Startable$stop() {
+        rawStop() {
             f();
             return Promise.resolve();
         }
@@ -31,11 +31,11 @@ const { assert } = chai;
 (0, ava_1.default)('start succ stop fail', async (t) => {
     const f = fake();
     class Service extends startable_1.Startable {
-        Startable$start() {
+        rawStart() {
             f();
             return Promise.resolve();
         }
-        Startable$stop() {
+        rawStop() {
             f();
             return Promise.reject(new Error('stop'));
         }
@@ -50,11 +50,11 @@ const { assert } = chai;
 (0, ava_1.default)('start fail stop succ', async (t) => {
     const f = fake();
     class Service extends startable_1.Startable {
-        Startable$start() {
+        rawStart() {
             f();
             return Promise.reject(new Error('start'));
         }
-        Startable$stop() {
+        rawStop() {
             f();
             return Promise.resolve();
         }
@@ -70,11 +70,11 @@ const { assert } = chai;
 (0, ava_1.default)('start fail stop fail', async (t) => {
     const f = fake();
     class Service extends startable_1.Startable {
-        Startable$start() {
+        rawStart() {
             f();
             return Promise.reject(new Error('start'));
         }
-        Startable$stop() {
+        rawStop() {
             f();
             return Promise.reject(new Error('stop'));
         }
@@ -87,17 +87,42 @@ const { assert } = chai;
     await assert.isRejected(service.stop(), /^stop$/);
     assert(f.callCount === 2);
 });
-(0, ava_1.default)('stop during starting', async (t) => {
+(0, ava_1.default)('try stop during starting', async (t) => {
     const f = fake();
     let resolveStart;
     class Service extends startable_1.Startable {
-        Startable$start() {
+        rawStart() {
             f();
             return new Promise(resolve => {
                 resolveStart = resolve;
             });
         }
-        Startable$stop() {
+        rawStop() {
+            f();
+            return Promise.resolve();
+        }
+    }
+    ;
+    const service = new Service();
+    const pStart = service.start();
+    pStart.catch(() => { });
+    const pStop = service.tryStop(new Error('stop during starting'));
+    resolveStart();
+    await assert.isRejected(pStart, /^stop during starting$/);
+    await assert.isRejected(pStop, startable_1.StopCalledDuringStarting);
+    assert(f.callCount === 1);
+});
+(0, ava_1.default)('stop during starting', async (t) => {
+    const f = fake();
+    let resolveStart;
+    class Service extends startable_1.Startable {
+        rawStart() {
+            f();
+            return new Promise(resolve => {
+                resolveStart = resolve;
+            });
+        }
+        rawStop() {
             f();
             return Promise.resolve();
         }
@@ -109,7 +134,7 @@ const { assert } = chai;
     const pStop = service.stop(new Error('stop during starting'));
     resolveStart();
     await assert.isRejected(pStart, /^stop during starting$/);
-    await assert.isRejected(pStop, startable_1.StopCalledDuringStarting);
-    assert(f.callCount === 1);
+    await assert.isFulfilled(pStop);
+    assert(f.callCount === 2);
 });
 //# sourceMappingURL=test.js.map
