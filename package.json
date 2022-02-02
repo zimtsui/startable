@@ -2,8 +2,8 @@
     "name": "startable",
     "version": "0.0.1",
     "description": "",
-    "main": "./build/startable.js",
-    "types": "./build/startable.d.ts",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
     "scripts": {
         "build": "tsc -b ./src/tsconfig.json",
         "test": "tsc -b ./test/src/tsconfig.json && ava"
