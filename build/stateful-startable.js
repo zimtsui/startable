@@ -9,25 +9,28 @@ class StatefulStartable extends startable_1.Startable {
         this.StatefulStartable$restored = false;
     }
     async Startable$start() {
-        if (this.StatefulStartable$restored)
-            this.StatefulStartable$restored = false;
+        /*
+            the type is boolean or undefined,
+            so "=== false" is preferred than "!"
+        */
+        if (this.StatefulStartable$restored === false) {
+            this.StatefulStartable$restored = undefined;
+            await this.StatefulStartable$rawStart();
+        }
         else
-            await this.StatefulStartable$start();
+            this.StatefulStartable$restored = undefined;
     }
     async Startable$stop() {
-        await this.StatefulStartable$stop();
+        await this.StatefulStartable$rawStop();
+        this.StatefulStartable$restored = false;
     }
     capture() {
-        (0, chai_1.assert)(
-        // TODO
-        this.readyState === "STOPPED" /* STOPPED */ ||
-            this.readyState === "STARTED" /* STARTED */);
-        return this.StatefulStartable$capture();
+        return this.StatefulStartable$rawCapture();
     }
     restore(backup) {
         (0, chai_1.assert)(this.readyState === "STOPPED" /* STOPPED */);
         this.StatefulStartable$restored = true;
-        this.StatefulStartable$restore(backup);
+        this.StatefulStartable$rawRestore(backup);
     }
 }
 exports.StatefulStartable = StatefulStartable;

@@ -49,7 +49,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 		return promise;
 	}
 
-	protected abstract rawStart(): Promise<void>;
+	protected abstract Startable$rawStart(): Promise<void>;
 	private Startable$starting = Promise.resolve();
 	private async Startable$startUncaught(onStopping?: OnStopping): Promise<void> {
 		if (
@@ -67,7 +67,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 			});
 
 			try {
-				await this.rawStart();
+				await this.Startable$rawStart();
 				if (this.Startable$errorDuringStarting!)
 					throw this.Startable$errorDuringStarting;
 				this.Startable$resolve!();
@@ -88,7 +88,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 		return promise;
 	}
 
-	protected abstract rawStop(err?: Error): Promise<void>;
+	protected abstract Startable$rawStop(err?: Error): Promise<void>;
 	private Startable$stopping = Promise.resolve();
 	/*
 		stop() 不能是 async，否则 stop() 的返回值和 this.Startable$stopping 不是
@@ -117,7 +117,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 			});
 
 			try {
-				await this.rawStop(err);
+				await this.Startable$rawStop(err);
 				this.Startable$resolve!();
 				this.readyState = ReadyState.STOPPED;
 			} catch (err: unknown) {

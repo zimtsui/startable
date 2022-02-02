@@ -46,7 +46,7 @@ class Startable extends events_1.EventEmitter {
                 this.Startable$reject = reject;
             });
             try {
-                await this.rawStart();
+                await this.Startable$rawStart();
                 if (this.Startable$errorDuringStarting)
                     throw this.Startable$errorDuringStarting;
                 this.Startable$resolve();
@@ -89,7 +89,7 @@ class Startable extends events_1.EventEmitter {
                 this.Startable$reject = reject;
             });
             try {
-                await this.rawStop(err);
+                await this.Startable$rawStop(err);
                 this.Startable$resolve();
                 this.readyState = "STOPPED" /* STOPPED */;
             }

@@ -25,11 +25,11 @@ export declare abstract class Startable extends EventEmitter implements Startabl
     private Startable$reject?;
     private Startable$assartUncaught;
     assart(onStopping?: OnStopping): Promise<void>;
-    protected abstract rawStart(): Promise<void>;
+    protected abstract Startable$rawStart(): Promise<void>;
     private Startable$starting;
     private Startable$startUncaught;
     start(onStopping?: OnStopping): Promise<void>;
-    protected abstract rawStop(err?: Error): Promise<void>;
+    protected abstract Startable$rawStop(err?: Error): Promise<void>;
     private Startable$stopping;
     private Startable$tryStopUncaught;
     tryStop(err?: Error): Promise<void>;
