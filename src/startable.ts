@@ -117,7 +117,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 	}
 
 	public failStarting(): void {
-		if (this.readyState !== ReadyState.STARTING) return;
+		assert(this.readyState === ReadyState.STARTING);
 		this.Startable$startingIsFailedManually = true;
 	}
 

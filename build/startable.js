@@ -89,8 +89,7 @@ class Startable extends events_1.EventEmitter {
         await this.Startable$stopping;
     }
     failStarting() {
-        if (this.readyState !== "STARTING" /* STARTING */)
-            return;
+        (0, chai_1.assert)(this.readyState === "STARTING" /* STARTING */);
         this.Startable$startingIsFailedManually = true;
     }
     async Startable$stopUncaught(err) {
