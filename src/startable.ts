@@ -22,7 +22,13 @@ export interface OnStopping {
 
 export class StopCalledDuringStarting extends Error {
 	constructor() {
-		super('.stop() is called during STARTING. The ongoing start() will fail.');
+		super('.stop() is called during STARTING.');
+	}
+}
+
+export class StartingFailedManually extends Error {
+	constructor() {
+		super('.failStarting() was called during STARTING.');
 	}
 }
 
@@ -33,7 +39,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 	private Startable$resolve?: () => void;
 	private Startable$reject?: (err: Error) => void;
 
-	private async Startable$assartUncaught(onStopping?: OnStopping): Promise<void> {
+	public async assart(onStopping?: OnStopping): Promise<void> {
 		assert(
 			this.readyState === ReadyState.STARTING ||
 			this.readyState === ReadyState.STARTED,
@@ -42,16 +48,9 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 		await this.start(onStopping);
 	}
 
-	@boundMethod
-	public assart(onStopping?: OnStopping): Promise<void> {
-		const promise = this.Startable$assartUncaught(onStopping);
-		promise.catch(() => { });
-		return promise;
-	}
-
 	protected abstract Startable$rawStart(): Promise<void>;
 	private Startable$starting = Promise.resolve();
-	private async Startable$startUncaught(onStopping?: OnStopping): Promise<void> {
+	public async start(onStopping?: OnStopping): Promise<void> {
 		if (
 			this.readyState === ReadyState.STOPPED ||
 			this.readyState === ReadyState.UNSTOPPED
@@ -81,27 +80,11 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 		await this.Startable$starting;
 	}
 
-	@boundMethod
-	public start(onStopping?: OnStopping) {
-		const promise = this.Startable$startUncaught(onStopping);
-		promise.catch(() => { });
-		return promise;
-	}
-
 	protected abstract Startable$rawStop(err?: Error): Promise<void>;
 	private Startable$stopping = Promise.resolve();
-	/*
-		stop() 不能是 async，否则 stop() 的返回值和 this.Startable$stopping 不是
-		同一个 Promise 对象，stop() 的值如果外部没有 catch 就会抛到全局空间去。
-	*/
-	private async Startable$tryStopUncaught(err?: Error): Promise<void> {
-		if (this.readyState === ReadyState.STARTING) {
-			this.Startable$errorDuringStarting =
-				err ||
-				this.Startable$errorDuringStarting! ||
-				new StopCalledDuringStarting();
+	public async tryStop(err?: Error): Promise<void> {
+		if (this.readyState === ReadyState.STARTING)
 			throw new StopCalledDuringStarting();
-		}
 		if (
 			this.readyState === ReadyState.STARTED ||
 			this.readyState === ReadyState.UNSTARTED
@@ -128,28 +111,25 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 		await this.Startable$stopping;
 	}
 
-	@boundMethod
-	public tryStop(err?: Error) {
-		const promise = this.Startable$tryStopUncaught(err);
-		promise.catch(() => { });
-		return promise;
+	public failStarting(): void {
+		if (this.readyState !== ReadyState.STARTING) return;
+		this.Startable$errorDuringStarting =
+			this.Startable$errorDuringStarting! ||
+			new StartingFailedManually();
 	}
 
 	private async Startable$stopUncaught(err?: Error): Promise<void> {
-		try {
-			await this.tryStop(err);
-		} catch (errDuringStopping: unknown) {
-			if (<Error>errDuringStopping instanceof StopCalledDuringStarting) {
-				await this.start().catch(() => { });
-				await this.tryStop(err);
-			} else throw <Error>errDuringStopping;
+		if (this.readyState === ReadyState.STARTING) {
+			this.failStarting();
+			await this.start().catch();
 		}
+		await this.tryStop(err);
 	}
 
 	@boundMethod
 	public stop(err?: Error): Promise<void> {
 		const promise = this.Startable$stopUncaught(err);
-		promise.catch(() => { });
+		promise.catch();
 		return promise;
 	}
 }

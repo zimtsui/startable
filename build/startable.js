@@ -6,16 +6,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Startable = exports.StopCalledDuringStarting = void 0;
+exports.Startable = exports.StartingFailedManually = exports.StopCalledDuringStarting = void 0;
 const events_1 = require("events");
 const chai_1 = require("chai");
 const autobind_decorator_1 = require("autobind-decorator");
 class StopCalledDuringStarting extends Error {
     constructor() {
-        super('.stop() is called during STARTING. The ongoing start() will fail.');
+        super('.stop() is called during STARTING.');
     }
 }
 exports.StopCalledDuringStarting = StopCalledDuringStarting;
+class StartingFailedManually extends Error {
+    constructor() {
+        super('.failStarting() was called during STARTING.');
+    }
+}
+exports.StartingFailedManually = StartingFailedManually;
 class Startable extends events_1.EventEmitter {
     constructor() {
         super(...arguments);
@@ -24,17 +30,12 @@ class Startable extends events_1.EventEmitter {
         this.Startable$starting = Promise.resolve();
         this.Startable$stopping = Promise.resolve();
     }
-    async Startable$assartUncaught(onStopping) {
+    async assart(onStopping) {
         (0, chai_1.assert)(this.readyState === "STARTING" /* STARTING */ ||
             this.readyState === "STARTED" /* STARTED */, '.assert() is allowed during only STARTING or STARTED.');
         await this.start(onStopping);
     }
-    assart(onStopping) {
-        const promise = this.Startable$assartUncaught(onStopping);
-        promise.catch(() => { });
-        return promise;
-    }
-    async Startable$startUncaught(onStopping) {
+    async start(onStopping) {
         if (this.readyState === "STOPPED" /* STOPPED */ ||
             this.readyState === "UNSTOPPED" /* UNSTOPPED */) {
             this.readyState = "STARTING" /* STARTING */;
@@ -61,23 +62,9 @@ class Startable extends events_1.EventEmitter {
             this.Startable$onStoppings.push(onStopping);
         await this.Startable$starting;
     }
-    start(onStopping) {
-        const promise = this.Startable$startUncaught(onStopping);
-        promise.catch(() => { });
-        return promise;
-    }
-    /*
-        stop() 不能是 async，否则 stop() 的返回值和 this.Startable$stopping 不是
-        同一个 Promise 对象，stop() 的值如果外部没有 catch 就会抛到全局空间去。
-    */
-    async Startable$tryStopUncaught(err) {
-        if (this.readyState === "STARTING" /* STARTING */) {
-            this.Startable$errorDuringStarting =
-                err ||
-                    this.Startable$errorDuringStarting ||
-                    new StopCalledDuringStarting();
+    async tryStop(err) {
+        if (this.readyState === "STARTING" /* STARTING */)
             throw new StopCalledDuringStarting();
-        }
         if (this.readyState === "STARTED" /* STARTED */ ||
             this.readyState === "UNSTARTED" /* UNSTARTED */) {
             this.readyState = "STOPPING" /* STOPPING */;
@@ -100,39 +87,26 @@ class Startable extends events_1.EventEmitter {
         }
         await this.Startable$stopping;
     }
-    tryStop(err) {
-        const promise = this.Startable$tryStopUncaught(err);
-        promise.catch(() => { });
-        return promise;
+    failStarting() {
+        if (this.readyState !== "STARTING" /* STARTING */)
+            return;
+        this.Startable$errorDuringStarting =
+            this.Startable$errorDuringStarting ||
+                new StartingFailedManually();
     }
     async Startable$stopUncaught(err) {
-        try {
-            await this.tryStop(err);
+        if (this.readyState === "STARTING" /* STARTING */) {
+            this.failStarting();
+            await this.start().catch();
         }
-        catch (errDuringStopping) {
-            if (errDuringStopping instanceof StopCalledDuringStarting) {
-                await this.start().catch(() => { });
-                await this.tryStop(err);
-            }
-            else
-                throw errDuringStopping;
-        }
+        await this.tryStop(err);
     }
     stop(err) {
         const promise = this.Startable$stopUncaught(err);
-        promise.catch(() => { });
+        promise.catch();
         return promise;
     }
 }
-__decorate([
-    autobind_decorator_1.boundMethod
-], Startable.prototype, "assart", null);
-__decorate([
-    autobind_decorator_1.boundMethod
-], Startable.prototype, "start", null);
-__decorate([
-    autobind_decorator_1.boundMethod
-], Startable.prototype, "tryStop", null);
 __decorate([
     autobind_decorator_1.boundMethod
 ], Startable.prototype, "stop", null);

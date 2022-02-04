@@ -61,10 +61,10 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 
 | 状态 | `.start()` 的行为 | `.start()` 的值 |
 |---|---|---|
-| STOPPED/UNSTOPPED | 开始启动过程 | 最近一次启动过程的 Promise（即本次 `.start()` 所开始的这次） |
-| STARTING | 什么也不干 | 最近一次启动过程的 Promise（即正在进行的这次） |
-| STARTED/UNSTARTED | 什么也不干 | 最近一次启动过程的 Promise（即刚刚结束的那次） |
-| STOPPING | 什么也不干 | 最近一次启动过程的 Promise（即上一次） |
+| STOPPED/UNSTOPPED | 开始启动过程 | 本次 `.start()` 所开始的这次启动过程的 Promise |
+| STARTING | 什么也不干 | 正在进行的这次启动过程的 Promise |
+| STARTED/UNSTARTED | 什么也不干 | 刚刚结束的那次启动过程的 Promise |
+| STOPPING | 什么也不干 | 上一次启动过程的 Promise |
 
 - 你可以在启动过程中尽情地重复运行 `.start()` ，而不用担心重复运行你的 `.rawStart` 实现。
 - 在停止过程中可以查看上一次启动是否成功
@@ -79,19 +79,12 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 
 ### 停止方法
 
-| 状态 | `.tryStop()` 的行为 | `.tryStop()` 的值 |
-|---|---|---|
-| STOPPED/UNSTOPPED | 什么也不干 | 最近一次停止过程的 Promise（即刚刚结束的那次） |
-| STARTING | 使正在进行的这次启动过程最终 rejected | 一个立即 rejected 的 Promise，其携带的异常属于 `StopCalledDuringStarting` 类 |
-| STARTED/UNSTARTED | 开始停止过程 | 最近一次停止过程的 Promise（即本次 `.tryStop()` 所开始的这次） |
-| STOPPING | 什么也不干 | 最近一次停止过程的 Promise（即正在进行的这次） |
-
 | 状态 | `.stop()` 的行为 | `.stop()` 的值 |
 |---|---|---|
-| STOPPED/UNSTOPPED | 什么也不干 | 最近一次停止过程的 Promise（即刚刚结束的那次） |
-| STARTING | 使正在进行的这次启动过程最终 rejected，并在启动过程结束后开始停止过程 | 下一次停止过程的 Promise（即本次 `.stop()` 所开始的这次） |
-| STARTED/UNSTARTED | 开始停止过程 | 最近一次停止过程的 Promise（即本次 `.stop()` 所开始的这次） |
-| STOPPING | 什么也不干 | 最近一次停止过程的 Promise（即正在进行的这次） |
+| STOPPED/UNSTOPPED | 什么也不干 | 刚刚结束的这次停止过程的 Promise |
+| STARTING | 使正在进行的这次启动过程最终 rejected，并在启动过程结束后开始停止过程 | 本次 `.stop()` 所开始的这次停止过程的 Promise |
+| STARTED/UNSTARTED | 开始停止过程 | 本次 `.stop()` 所开始的这次停止过程的 Promise |
+| STOPPING | 什么也不干 | 正在进行的这次停止过程的 Promise |
 
 - 你可以在停止过程中尽情地重复运行 `.stop()` ，而不用担心重复运行你的 `.rawStop` 实现。
 - `.stop()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.stop()` 而不必 `this.stop().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
