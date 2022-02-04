@@ -38,7 +38,7 @@ class Startable extends events_1.EventEmitter {
         if (this.readyState === "STOPPED" /* STOPPED */ ||
             this.readyState === "UNSTOPPED" /* UNSTOPPED */) {
             this.readyState = "STARTING" /* STARTING */;
-            this.Startable$errorDuringStarting = null;
+            this.Startable$startingIsFailedManually = false;
             this.Startable$onStoppings = [];
             // in case Startable$start() calls start() syncly
             this.Startable$starting = new Promise((resolve, reject) => {
@@ -47,8 +47,8 @@ class Startable extends events_1.EventEmitter {
             });
             try {
                 await this.Startable$rawStart();
-                if (this.Startable$errorDuringStarting)
-                    throw this.Startable$errorDuringStarting;
+                if (this.Startable$startingIsFailedManually)
+                    throw new StartingFailedManually();
                 this.Startable$resolve();
                 this.readyState = "STARTED" /* STARTED */;
             }
@@ -91,9 +91,7 @@ class Startable extends events_1.EventEmitter {
     failStarting() {
         if (this.readyState !== "STARTING" /* STARTING */)
             return;
-        this.Startable$errorDuringStarting =
-            this.Startable$errorDuringStarting ||
-                new StartingFailedManually();
+        this.Startable$startingIsFailedManually = true;
     }
     async Startable$stopUncaught(err) {
         if (this.readyState === "STARTING" /* STARTING */) {

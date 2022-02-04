@@ -35,7 +35,7 @@ export class StartingFailedManually extends Error {
 export abstract class Startable extends EventEmitter implements StartableLike {
 	public readyState = ReadyState.STOPPED;
 	private Startable$onStoppings?: OnStopping[];
-	private Startable$errorDuringStarting?: null | Error;
+	private Startable$startingIsFailedManually?: boolean;
 	private Startable$resolve?: () => void;
 	private Startable$reject?: (err: Error) => void;
 
@@ -56,7 +56,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 			this.readyState === ReadyState.UNSTOPPED
 		) {
 			this.readyState = ReadyState.STARTING;
-			this.Startable$errorDuringStarting = null;
+			this.Startable$startingIsFailedManually = false;
 			this.Startable$onStoppings = [];
 
 			// in case Startable$start() calls start() syncly
@@ -67,8 +67,8 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 
 			try {
 				await this.Startable$rawStart();
-				if (this.Startable$errorDuringStarting!)
-					throw this.Startable$errorDuringStarting;
+				if (this.Startable$startingIsFailedManually!)
+					throw new StartingFailedManually();
 				this.Startable$resolve!();
 				this.readyState = ReadyState.STARTED;
 			} catch (err: any) {
@@ -118,9 +118,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 
 	public failStarting(): void {
 		if (this.readyState !== ReadyState.STARTING) return;
-		this.Startable$errorDuringStarting =
-			this.Startable$errorDuringStarting! ||
-			new StartingFailedManually();
+		this.Startable$startingIsFailedManually = true;
 	}
 
 	private async Startable$stopUncaught(err?: Error): Promise<void> {
