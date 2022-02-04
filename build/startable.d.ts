@@ -22,7 +22,7 @@ export declare class StartingFailedManually extends Error {
 }
 export declare abstract class Startable extends EventEmitter implements StartableLike {
     readyState: ReadyState;
-    private Startable$onStoppings;
+    private Startable$onStoppings?;
     private Startable$errorDuringStarting?;
     private Startable$resolve?;
     private Startable$reject?;

@@ -34,7 +34,7 @@ export class StartingFailedManually extends Error {
 
 export abstract class Startable extends EventEmitter implements StartableLike {
 	public readyState = ReadyState.STOPPED;
-	private Startable$onStoppings: OnStopping[] = [];
+	private Startable$onStoppings?: OnStopping[];
 	private Startable$errorDuringStarting?: null | Error;
 	private Startable$resolve?: () => void;
 	private Startable$reject?: (err: Error) => void;
@@ -57,7 +57,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 		) {
 			this.readyState = ReadyState.STARTING;
 			this.Startable$errorDuringStarting = null;
-			this.Startable$onStoppings = onStopping ? [onStopping] : [];
+			this.Startable$onStoppings = [];
 
 			// in case Startable$start() calls start() syncly
 			this.Startable$starting = new Promise((resolve, reject) => {
@@ -75,8 +75,13 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 				this.Startable$reject!(<Error>err);
 				this.readyState = ReadyState.UNSTARTED;
 			}
-		} else if (this.readyState !== ReadyState.STOPPING && onStopping)
-			this.Startable$onStoppings.push(onStopping);
+		}
+		if ((
+			this.readyState === ReadyState.STARTING ||
+			this.readyState === ReadyState.STARTED ||
+			this.readyState === ReadyState.UNSTARTED
+		) && onStopping)
+			this.Startable$onStoppings!.push(onStopping);
 		await this.Startable$starting;
 	}
 
@@ -90,7 +95,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 			this.readyState === ReadyState.UNSTARTED
 		) {
 			this.readyState = ReadyState.STOPPING;
-			for (const onStopping of this.Startable$onStoppings)
+			for (const onStopping of this.Startable$onStoppings!)
 				onStopping(err);
 
 			// in case $Startable$stop() or onStopping() calls stop() syncly
@@ -121,7 +126,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 	private async Startable$stopUncaught(err?: Error): Promise<void> {
 		if (this.readyState === ReadyState.STARTING) {
 			this.failStarting();
-			await this.start().catch();
+			await this.start().catch(() => { });
 		}
 		await this.tryStop(err);
 	}
@@ -129,7 +134,7 @@ export abstract class Startable extends EventEmitter implements StartableLike {
 	@boundMethod
 	public stop(err?: Error): Promise<void> {
 		const promise = this.Startable$stopUncaught(err);
-		promise.catch();
+		promise.catch(() => { });
 		return promise;
 	}
 }

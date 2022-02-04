@@ -26,7 +26,6 @@ class Startable extends events_1.EventEmitter {
     constructor() {
         super(...arguments);
         this.readyState = "STOPPED" /* STOPPED */;
-        this.Startable$onStoppings = [];
         this.Startable$starting = Promise.resolve();
         this.Startable$stopping = Promise.resolve();
     }
@@ -40,7 +39,7 @@ class Startable extends events_1.EventEmitter {
             this.readyState === "UNSTOPPED" /* UNSTOPPED */) {
             this.readyState = "STARTING" /* STARTING */;
             this.Startable$errorDuringStarting = null;
-            this.Startable$onStoppings = onStopping ? [onStopping] : [];
+            this.Startable$onStoppings = [];
             // in case Startable$start() calls start() syncly
             this.Startable$starting = new Promise((resolve, reject) => {
                 this.Startable$resolve = resolve;
@@ -58,7 +57,9 @@ class Startable extends events_1.EventEmitter {
                 this.readyState = "UNSTARTED" /* UNSTARTED */;
             }
         }
-        else if (this.readyState !== "STOPPING" /* STOPPING */ && onStopping)
+        if ((this.readyState === "STARTING" /* STARTING */ ||
+            this.readyState === "STARTED" /* STARTED */ ||
+            this.readyState === "UNSTARTED" /* UNSTARTED */) && onStopping)
             this.Startable$onStoppings.push(onStopping);
         await this.Startable$starting;
     }
@@ -97,13 +98,13 @@ class Startable extends events_1.EventEmitter {
     async Startable$stopUncaught(err) {
         if (this.readyState === "STARTING" /* STARTING */) {
             this.failStarting();
-            await this.start().catch();
+            await this.start().catch(() => { });
         }
         await this.tryStop(err);
     }
     stop(err) {
         const promise = this.Startable$stopUncaught(err);
-        promise.catch();
+        promise.catch(() => { });
         return promise;
     }
 }
