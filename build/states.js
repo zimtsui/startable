@@ -54,7 +54,6 @@ exports.State = State;
             // https://github.com/microsoft/TypeScript/issues/38929
             this.setup();
         }
-        ;
         async setup() {
             try {
                 await this.rawStart();

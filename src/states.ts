@@ -4,13 +4,13 @@ import { Startable } from './startable';
 import { ManualPromise } from 'manual-promise';
 
 export abstract class State {
-	public abstract readyState: ReadyState;
+	public abstract readonly readyState: ReadyState;
 	public abstract start(onStopping?: OnStopping): Promise<void>;
 	public abstract stop(err?: Error): Promise<void>;
 
 	constructor(
-		protected ctx: Startable,
-		protected setState: (state: State) => void,
+		protected readonly ctx: Startable,
+		protected readonly setState: (state: State) => void,
 	) {
 		setState(this);
 	}
@@ -18,14 +18,14 @@ export abstract class State {
 
 export namespace State {
 	export class Stopped extends State {
-		public readyState = ReadyState.STOPPED;
-		public stoppingPromise: Promise<void>;
-		public rawStart: () => Promise<void>;
-		public rawStop: () => Promise<void>;
+		public readonly readyState: ReadyState = ReadyState.STOPPED;
+		public readonly stoppingPromise: Promise<void>;
+		public readonly rawStart: () => Promise<void>;
+		public readonly rawStop: () => Promise<void>;
 
 		constructor(
-			protected ctx: Startable,
-			protected setState: (state: State) => void,
+			protected readonly ctx: Startable,
+			protected readonly setState: (state: State) => void,
 			prevState: Stopped.PrevState,
 			args: Stopped.Args,
 		) {
@@ -50,29 +50,29 @@ export namespace State {
 
 	export namespace Stopped {
 		export interface PrevState {
-			rawStart(): Promise<void>;
-			rawStop(): Promise<void>;
-			stoppingPromise: Promise<void>;
+			readonly rawStart: () => Promise<void>;
+			readonly rawStop: () => Promise<void>;
+			readonly stoppingPromise: Promise<void>;
 		}
 
 		export interface Args { }
 	}
 
 	export class Unstopped extends Stopped {
-		public readyState = ReadyState.UNSTOPPED;
+		public readonly readyState: ReadyState = ReadyState.UNSTOPPED;
 	}
 
 	export class Starting extends State {
-		public readyState = ReadyState.STARTING;
-		public startingPromise = new ManualPromise();
-		public rawStart: () => Promise<void>;;
-		public rawStop: () => Promise<void>;
+		public readonly readyState: ReadyState = ReadyState.STARTING;
+		public readonly startingPromise = new ManualPromise();
+		public readonly rawStart: () => Promise<void>;
+		public readonly rawStop: () => Promise<void>;
 		public onStoppings: OnStopping[] = [];
 		public startingIsFailedManually = false;
 
 		constructor(
-			protected ctx: Startable,
-			protected setState: (state: State) => void,
+			protected readonly ctx: Startable,
+			protected readonly setState: (state: State) => void,
 			prevState: Starting.PrevState,
 			args: Starting.Args,
 		) {
@@ -114,25 +114,25 @@ export namespace State {
 
 	export namespace Starting {
 		export interface PrevState {
-			rawStart(): Promise<void>;
-			rawStop(): Promise<void>;
+			readonly rawStart: () => Promise<void>;
+			readonly rawStop: () => Promise<void>;
 		}
 
 		export interface Args {
-			onStopping?: OnStopping;
+			readonly onStopping?: OnStopping;
 		}
 	}
 
 	export class Started extends State {
-		public readyState = ReadyState.STARTED;
-		public startingPromise: Promise<void>;
-		public rawStart: () => Promise<void>;
-		public rawStop: () => Promise<void>;
+		public readonly readyState: ReadyState = ReadyState.STARTED;
+		public readonly startingPromise: Promise<void>;
+		public readonly rawStart: () => Promise<void>;
+		public readonly rawStop: () => Promise<void>;
 		public onStoppings: OnStopping[];
 
 		constructor(
-			protected ctx: Startable,
-			protected setState: (state: State) => void,
+			protected readonly ctx: Startable,
+			protected readonly setState: (state: State) => void,
 			prevState: Started.PrevState,
 			args: Started.Args,
 		) {
@@ -158,31 +158,31 @@ export namespace State {
 	}
 
 	export namespace Started {
-		export interface Args { }
-
 		export interface PrevState {
-			rawStart(): Promise<void>;
-			rawStop(): Promise<void>;
-			startingPromise: Promise<void>;
-			onStoppings: OnStopping[];
+			readonly rawStart: () => Promise<void>;
+			readonly rawStop: () => Promise<void>;
+			readonly startingPromise: Promise<void>;
+			readonly onStoppings: OnStopping[];
 		}
+
+		export interface Args { }
 	}
 
 	export class Unstarted extends Started {
-		public readyState = ReadyState.UNSTARTED;
+		public readonly readyState: ReadyState = ReadyState.UNSTARTED;
 	}
 
 	export class Stopping extends State {
-		public readyState = ReadyState.STOPPING;
-		public startingPromise: Promise<void>;
-		public stoppingPromise = new ManualPromise();
-		public rawStart: () => Promise<void>;
-		public rawStop: () => Promise<void>;
+		public readonly readyState: ReadyState = ReadyState.STOPPING;
+		public readonly startingPromise: Promise<void>;
+		public readonly stoppingPromise = new ManualPromise();
+		public readonly rawStart: () => Promise<void>;
+		public readonly rawStop: () => Promise<void>;
 		public onStoppings: OnStopping[];
 
 		constructor(
-			protected ctx: Startable,
-			protected setState: (state: State) => void,
+			protected readonly ctx: Startable,
+			protected readonly setState: (state: State) => void,
 			prevState: Stopping.PrevState,
 			args: Stopping.Args,
 		) {
@@ -220,15 +220,14 @@ export namespace State {
 
 	export namespace Stopping {
 		export interface PrevState {
-			rawStart(): Promise<void>;
-			rawStop(): Promise<void>;
-			startingPromise: Promise<void>;
-			onStoppings: OnStopping[];
+			readonly rawStart: () => Promise<void>;
+			readonly rawStop: () => Promise<void>;
+			readonly startingPromise: Promise<void>;
+			readonly onStoppings: OnStopping[];
 		}
 
 		export interface Args {
-			err?: Error;
+			readonly err?: Error;
 		}
 	}
-
 }
