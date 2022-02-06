@@ -6,103 +6,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Startable = exports.StartingFailedManually = exports.StopCalledDuringStarting = void 0;
+exports.Startable = void 0;
 const events_1 = require("events");
-const chai_1 = require("chai");
 const autobind_decorator_1 = require("autobind-decorator");
-class StopCalledDuringStarting extends Error {
-    constructor() {
-        super('.stop() is called during STARTING.');
-    }
-}
-exports.StopCalledDuringStarting = StopCalledDuringStarting;
-class StartingFailedManually extends Error {
-    constructor() {
-        super('.failStarting() was called during STARTING.');
-    }
-}
-exports.StartingFailedManually = StartingFailedManually;
+const states_1 = require("./states");
 class Startable extends events_1.EventEmitter {
     constructor() {
         super(...arguments);
-        this.readyState = "STOPPED" /* STOPPED */;
-        this.Startable$starting = Promise.resolve();
-        this.Startable$stopping = Promise.resolve();
-    }
-    async assart(onStopping) {
-        (0, chai_1.assert)(this.readyState === "STARTING" /* STARTING */ ||
-            this.readyState === "STARTED" /* STARTED */, '.assert() is allowed during only STARTING or STARTED.');
-        await this.start(onStopping);
+        this.Startble$state = new states_1.State.Stopped(this, state => { this.Startble$state = state; }, {
+            rawStart: this.Startable$rawStart,
+            rawStop: this.Startable$rawStop,
+            stoppingPromise: Promise.resolve(),
+        }, {});
     }
     async start(onStopping) {
-        if (this.readyState === "STOPPED" /* STOPPED */ ||
-            this.readyState === "UNSTOPPED" /* UNSTOPPED */) {
-            this.readyState = "STARTING" /* STARTING */;
-            this.Startable$startingIsFailedManually = false;
-            this.Startable$onStoppings = [];
-            // in case Startable$start() calls start() syncly
-            this.Startable$starting = new Promise((resolve, reject) => {
-                this.Startable$resolve = resolve;
-                this.Startable$reject = reject;
-            });
-            try {
-                await this.Startable$rawStart();
-                if (this.Startable$startingIsFailedManually)
-                    throw new StartingFailedManually();
-                this.Startable$resolve();
-                this.readyState = "STARTED" /* STARTED */;
-            }
-            catch (err) {
-                this.Startable$reject(err);
-                this.readyState = "UNSTARTED" /* UNSTARTED */;
-            }
-        }
-        if ((this.readyState === "STARTING" /* STARTING */ ||
-            this.readyState === "STARTED" /* STARTED */ ||
-            this.readyState === "UNSTARTED" /* UNSTARTED */) && onStopping)
-            this.Startable$onStoppings.push(onStopping);
-        await this.Startable$starting;
-    }
-    async tryStop(err) {
-        if (this.readyState === "STARTING" /* STARTING */)
-            throw new StopCalledDuringStarting();
-        if (this.readyState === "STARTED" /* STARTED */ ||
-            this.readyState === "UNSTARTED" /* UNSTARTED */) {
-            this.readyState = "STOPPING" /* STOPPING */;
-            for (const onStopping of this.Startable$onStoppings)
-                onStopping(err);
-            // in case $Startable$stop() or onStopping() calls stop() syncly
-            this.Startable$stopping = new Promise((resolve, reject) => {
-                this.Startable$resolve = resolve;
-                this.Startable$reject = reject;
-            });
-            try {
-                await this.Startable$rawStop(err);
-                this.Startable$resolve();
-                this.readyState = "STOPPED" /* STOPPED */;
-            }
-            catch (err) {
-                this.Startable$reject(err);
-                this.readyState = "UNSTOPPED" /* UNSTOPPED */;
-            }
-        }
-        await this.Startable$stopping;
-    }
-    failStarting() {
-        (0, chai_1.assert)(this.readyState === "STARTING" /* STARTING */);
-        this.Startable$startingIsFailedManually = true;
-    }
-    async Startable$stopUncaught(err) {
-        if (this.readyState === "STARTING" /* STARTING */) {
-            this.failStarting();
-            await this.start().catch(() => { });
-        }
-        await this.tryStop(err);
+        await this.Startble$state.start(onStopping);
     }
     stop(err) {
-        const promise = this.Startable$stopUncaught(err);
+        const promise = this.Startble$state.stop(err);
         promise.catch(() => { });
         return promise;
+    }
+    getReadyState() {
+        return this.Startble$state.readyState;
     }
 }
 __decorate([

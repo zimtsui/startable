@@ -30,6 +30,7 @@
         "@types/events": "^3.0.0",
         "autobind-decorator": "^2.4.0",
         "chai": "^4.2.0",
-        "events": "^3.3.0"
+        "events": "^3.3.0",
+        "manual-promise": "github:zimtsui/manual-promise"
     }
 }

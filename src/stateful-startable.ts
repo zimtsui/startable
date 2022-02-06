@@ -1,4 +1,5 @@
-import { Startable, ReadyState } from './startable';
+import { Startable } from './startable';
+import { ReadyState } from './interfaces';
 import { assert } from 'chai';
 
 export interface StatefulLike<Snapshot, Backup = Snapshot> {
@@ -37,7 +38,7 @@ export abstract class StatefulStartable<Snapshot, Backup = Snapshot>
 	}
 
 	public restore(backup: Backup): void {
-		assert(this.readyState === ReadyState.STOPPED);
+		assert(this.getReadyState() === ReadyState.STOPPED);
 		this.StatefulStartable$restored = true;
 		this.StatefulStartable$rawRestore(backup);
 	}

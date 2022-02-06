@@ -28,7 +28,7 @@ class StatefulStartable extends startable_1.Startable {
         return this.StatefulStartable$rawCapture();
     }
     restore(backup) {
-        (0, chai_1.assert)(this.readyState === "STOPPED" /* STOPPED */);
+        (0, chai_1.assert)(this.getReadyState() === "STOPPED" /* STOPPED */);
         this.StatefulStartable$restored = true;
         this.StatefulStartable$rawRestore(backup);
     }
