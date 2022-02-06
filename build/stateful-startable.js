@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StatefulStartable = void 0;
 const startable_1 = require("./startable");
-const chai_1 = require("chai");
+const assert_1 = require("./assert");
 class StatefulStartable extends startable_1.Startable {
     constructor() {
         super(...arguments);
@@ -28,7 +28,7 @@ class StatefulStartable extends startable_1.Startable {
         return this.StatefulStartable$rawCapture();
     }
     restore(backup) {
-        (0, chai_1.assert)(this.getReadyState() === "STOPPED" /* STOPPED */);
+        (0, assert_1.assert)(this.getReadyState() === "STOPPED" /* STOPPED */);
         this.StatefulStartable$restored = true;
         this.StatefulStartable$rawRestore(backup);
     }

@@ -1,6 +1,7 @@
 import { Startable } from './startable';
 import { ReadyState } from './interfaces';
-import { assert } from 'chai';
+import { assert } from './assert';
+
 
 export interface StatefulLike<Snapshot, Backup = Snapshot> {
 	capture(): Snapshot;
