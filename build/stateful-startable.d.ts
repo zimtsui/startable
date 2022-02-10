@@ -9,8 +9,8 @@ export declare abstract class StatefulStartable<Snapshot, Backup = Snapshot> ext
     protected abstract StatefulStartable$rawCapture(): Snapshot;
     protected abstract StatefulStartable$rawRestore(backup: Backup): void;
     private StatefulStartable$restored?;
-    protected Startable$start(): Promise<void>;
-    protected Startable$stop(): Promise<void>;
+    protected Startable$rawStart(): Promise<void>;
+    protected Startable$rawStop(): Promise<void>;
     capture(): Snapshot;
     restore(backup: Backup): void;
 }

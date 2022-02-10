@@ -18,7 +18,7 @@ export abstract class StatefulStartable<Snapshot, Backup = Snapshot>
 	protected abstract StatefulStartable$rawRestore(backup: Backup): void;
 	private StatefulStartable$restored?: boolean = false;
 
-	protected async Startable$start() {
+	protected async Startable$rawStart() {
 		/*
 			the type is boolean or undefined,
 			so "=== false" is preferred than "!"
@@ -29,7 +29,7 @@ export abstract class StatefulStartable<Snapshot, Backup = Snapshot>
 		} else this.StatefulStartable$restored = undefined;
 	}
 
-	protected async Startable$stop() {
+	protected async Startable$rawStop() {
 		await this.StatefulStartable$rawStop();
 		this.StatefulStartable$restored = false;
 	}

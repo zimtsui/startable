@@ -8,7 +8,7 @@ class StatefulStartable extends startable_1.Startable {
         super(...arguments);
         this.StatefulStartable$restored = false;
     }
-    async Startable$start() {
+    async Startable$rawStart() {
         /*
             the type is boolean or undefined,
             so "=== false" is preferred than "!"
@@ -20,7 +20,7 @@ class StatefulStartable extends startable_1.Startable {
         else
             this.StatefulStartable$restored = undefined;
     }
-    async Startable$stop() {
+    async Startable$rawStop() {
         await this.StatefulStartable$rawStop();
         this.StatefulStartable$restored = false;
     }
