@@ -1,10 +1,12 @@
-import { EventEmitter } from 'events';
-import { StartableLike, OnStopping, ReadyState } from './interfaces';
-export declare abstract class Startable extends EventEmitter implements StartableLike {
-    protected abstract Startable$rawStart(): Promise<void>;
-    protected abstract Startable$rawStop(): Promise<void>;
-    private Startble$state;
-    start(onStopping?: OnStopping): Promise<void>;
-    stop(err?: Error): Promise<void>;
+import { FriendlyStartableLike } from './friendly-startable-like';
+import { OnStopping, RawStart, RawStop, StartableLike, ReadyState } from './startable-like';
+export declare class Startable implements StartableLike {
+    protected friendly: FriendlyStartableLike;
+    constructor(rawStart: RawStart, rawStop: RawStop);
     getReadyState(): ReadyState;
+    tryStart(onStopping?: OnStopping): Promise<void>;
+    start(onStopping?: OnStopping): Promise<void>;
+    tryStop(err?: Error): Promise<void>;
+    stop(err?: Error): Promise<void>;
+    fail(err: Error): Promise<void>;
 }

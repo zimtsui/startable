@@ -1,39 +1,51 @@
-import { EventEmitter } from 'events';
-import { boundMethod } from 'autobind-decorator';
 import {
-	StartableLike,
+	FriendlyStartableLike,
+} from './friendly-startable-like';
+import {
 	OnStopping,
+	RawStart,
+	RawStop,
+	StartableLike,
 	ReadyState,
-} from './interfaces';
-import { State } from './states';
+} from './startable-like';
+import { boundMethod } from 'autobind-decorator';
+import { FriendlyStartable } from './friendly-startable';
 
-export abstract class Startable extends EventEmitter implements StartableLike {
-	protected abstract Startable$rawStart(): Promise<void>;
-	protected abstract Startable$rawStop(): Promise<void>;
 
-	private Startble$state: State = new State.Stopped(
-		this,
-		state => { this.Startble$state = state; },
-		{
-			rawStart: this.Startable$rawStart,
-			rawStop: this.Startable$rawStop,
-			stoppingPromise: Promise.resolve(),
-		},
-		{},
-	);
+export class Startable implements StartableLike {
+	protected friendly: FriendlyStartableLike;
+
+	constructor(
+		rawStart: RawStart,
+		rawStop: RawStop,
+	) {
+		this.friendly = new FriendlyStartable(rawStart, rawStop);
+	}
+
+	public getReadyState(): ReadyState {
+		return this.friendly.getReadyState();
+	}
+
+	public async tryStart(onStopping?: OnStopping): Promise<void> {
+		await this.friendly.tryStart(onStopping);
+	}
 
 	public async start(onStopping?: OnStopping): Promise<void> {
-		await this.Startble$state.start(onStopping);
+		await this.friendly.start(onStopping);
+	}
+
+	public async tryStop(err?: Error): Promise<void> {
+		await this.friendly.tryStop(err);
 	}
 
 	@boundMethod
 	public stop(err?: Error): Promise<void> {
-		const promise = this.Startble$state.stop(err);
+		const promise = this.friendly.stop(err);
 		promise.catch(() => { });
 		return promise;
 	}
 
-	public getReadyState(): ReadyState {
-		return this.Startble$state.readyState;
+	public async fail(err: Error): Promise<void> {
+		this.friendly.fail(err);
 	}
 }

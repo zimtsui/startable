@@ -7,28 +7,31 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Startable = void 0;
-const events_1 = require("events");
 const autobind_decorator_1 = require("autobind-decorator");
-const states_1 = require("./states");
-class Startable extends events_1.EventEmitter {
-    constructor() {
-        super(...arguments);
-        this.Startble$state = new states_1.State.Stopped(this, state => { this.Startble$state = state; }, {
-            rawStart: this.Startable$rawStart,
-            rawStop: this.Startable$rawStop,
-            stoppingPromise: Promise.resolve(),
-        }, {});
+const friendly_startable_1 = require("./friendly-startable");
+class Startable {
+    constructor(rawStart, rawStop) {
+        this.friendly = new friendly_startable_1.FriendlyStartable(rawStart, rawStop);
+    }
+    getReadyState() {
+        return this.friendly.getReadyState();
+    }
+    async tryStart(onStopping) {
+        await this.friendly.tryStart(onStopping);
     }
     async start(onStopping) {
-        await this.Startble$state.start(onStopping);
+        await this.friendly.start(onStopping);
+    }
+    async tryStop(err) {
+        await this.friendly.tryStop(err);
     }
     stop(err) {
-        const promise = this.Startble$state.stop(err);
+        const promise = this.friendly.stop(err);
         promise.catch(() => { });
         return promise;
     }
-    getReadyState() {
-        return this.Startble$state.readyState;
+    async fail(err) {
+        this.friendly.fail(err);
     }
 }
 __decorate([
