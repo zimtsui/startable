@@ -22,32 +22,34 @@ Startable 是一个 JavaScript 的后台对象框架。初衷是为了适配阿�
 
     比如一个 TCP Socket 连接时就没连上。
 
-## Startable 抽象类
+## Startable 类
 
-将你要定义的后台类继承 Startable，然后将异步的启停过程实现在 `.rawStart` 和 `.rawStop` 中。
+将你要定义的后台类组合 Startable，然后将异步的启停过程实现在 `.rawStart()` 和 `.rawStop()` 中。
 
 ```ts
-class Daemon extends Startable {
+class Daemon {
     protected async rawStart(): Promise<void> { }
     protected async rawStop(): Promise<void> { }
+    public startable = new Startable(
+        () => this.rawStart(),
+        () => this.rawStop(),
+    );
 }
 
 const daemon = new Daemon();
-await daemon.start();
-await daemon.stop();
+await daemon.startable.start();
+await daemon.startable.stop();
 ```
 
 ## 状态循环
 
-一个 Startable 对象的生命周期有 6 个状态，依次循环不可跳跃
-
-![State cycle](./doc/state-cycle.png)
+一个 Startable 对象的生命周期有 4 个状态，依次循环不可跳跃
 
 1. 一个 Startable 刚 new 出来时是 STOPPED 状态。
 1. 此时运行异步的 `.start()` 进入 STARTING 状态，Startable 会调用你实现的 `.rawStart`。
-1. `.rawStart` 结束时，如果 fulfilled 则进入 STARTED 状态，也就是「正常提供服务中」的状态，如果 rejected 则进入 UNSTARTED 状态。
+1. `.rawStart` 结束时，进入 STARTED 状态，也就是「正常提供服务中」的状态。
 1. 此时运行异步的 `.stop()` 进入 STOPPING 状态，Startable 会调用你实现的 `.rawStop`。
-1. `.rawStop` 结束时，如果 fulfilled 则进入 STOPPED 状态，如果 rejected 则进入 UNSTOPPED 状态。
+1. `.rawStop` 结束时，进入 STOPPED 状态。
 
 你可以通过 `readyState` 属性查看当前时刻的状态。
 
@@ -70,9 +72,12 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 - 在停止过程中可以查看上一次启动是否成功
 
     ```ts
-    class Daemon extends Startable {
+    class Daemon {
         protected async rawStop() {
-            console.log(await this.start().then(() => true, () => false));
+            console.log(
+                await this.startable.start()
+                    .then(() => true, () => false),
+            );
         }
     }
     ```
@@ -87,8 +92,8 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 | STOPPING | 什么也不干 | 正在进行的这次停止过程的 Promise |
 
 - 你可以在停止过程中尽情地重复运行 `.stop()` ，而不用担心重复运行你的 `.rawStop` 实现。
-- `.stop()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.stop()` 而不必 `this.stop().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
-- `.stop()` 默认已经绑定到 Startable 上了，因此你可以把 `this.stop` 作为回调而不必 `err => this.stop(err)`。
+- `.stop()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.startable.stop()` 而不必 `this.startable.stop().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
+- `.stop()` 默认已经绑定到 Startable 上了，因此你可以把 `this.startable.stop` 作为回调而不必 `err => this.stop(err)`。
 
 ## 自发启停
 
@@ -97,10 +102,10 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 当自己发生错误时，就应当调用自己的 `.stop()`，参数填一个 Error 表示原因。因为在语义上，此时自己已经结束了「正常提供服务中」的状态。
 
 ```ts
-class Daemon extends Startable {
+class Daemon {
     constructor() {
         super();
-        this.someComponent.on('some fatal error', this.stop);
+        this.someComponent.on('some fatal error', this.startable.stop);
     }
 }
 ```
@@ -112,38 +117,38 @@ class Daemon extends Startable {
 
 const daemon = new Daemon();
 function startDaemon(){
-    daemon.start(err => {
+    daemon.startable.start(err => {
         if (err) handleRunningException(err);
-        daemon.stop().catch(handleStoppingException);
+        daemon.startable.stop().catch(handleStoppingException);
     }).catch(handleStartingException);
 }
 function stopDaemon() {
     // have a think about why .catch(handleStoppingException) is not necessary.
-    daemon.stop();
+    daemon.startable.stop();
 }
 ```
 
 ## 丑陋的写法
 
 ```ts
-class Daemon extends Startable {
+class Daemon {
     constructor() {
         super();
         this.someComponent.on('some fatal error', err => {
             handleRunningException(err); // don't do this.
-            this.stop();
+            this.startable.stop();
         });
     }
 }
 
 const daemon = new Daemon();
 function startDaemon() {
-    daemon.start(() => {
-        daemon.stop().catch(handleStoppingException)
+    daemon.startable.start(() => {
+        daemon.startable.stop().catch(handleStoppingException)
     }).catch(handleStartingException);
 }
 function stopDaemon() {
-    daemon.stop();
+    daemon.startable.stop();
 }
 ```
 
@@ -152,11 +157,11 @@ function stopDaemon() {
 ---
 
 ```ts
-class Daemon extends Startable {
+class Daemon {
     constructor() {
         super();
         this.someComponent.on('some fatal error', err => {
-            this.stop(err)
+            this.startable.stop(err)
                 .catch(handleStoppingException); // don't do this.
         });
     }
@@ -164,12 +169,12 @@ class Daemon extends Startable {
 
 const daemon = new Daemon();
 function startDaemon() {
-    daemon.start(err => {
+    daemon.startable.start(err => {
         if (err) handleRunningException(err);
     }).catch(handleStartingException);
 }
 function stopDaemon() {
-    daemon.stop().catch(handleStoppingException); // don't do this.
+    daemon.startable.stop().catch(handleStoppingException); // don't do this.
 }
 ```
 
@@ -185,30 +190,30 @@ function stopDaemon() {
 - 只要有一个儿子自发开始停止过程，即这个儿子运行了他自己的 `.stop()`，那么爸爸也必须立即开始停止过程。因为在语义上，只要有一个儿子离开了「正常提供服务中」的状态，爸爸就算不上「正常提供服务中」的状态了。
 
 ```ts
-class Parent extends Startable {
-    private child1: Startable;
-    private child2: Startable;
+class Parent {
+    private child1: Daemon;
+    private child2: Daemon;
 
     protected async rawStart(): Promise<void> {
-        await child1.start(this.stop);
-        await child2.start(this.stop);
+        await child1.startable.start(this.stop);
+        await child2.startable.start(this.stop);
     }
     protected async rawStop(): Promise<void> {
-        await child2.stop();
-        await child1.stop();
+        await child2.startable.stop();
+        await child1.startable.stop();
     }
 }
 ```
 
 - 如果在 child2 启动过程中，已经启动完成的 child1 开始自发停止，那么 child1 会通过 onStopping 回调调用 parent 的 `.stop()`，此时 parent 处于 STARTING 状态，导致 parent 的启动过程 rejected。在语义上，一个后台对象启动过程中，他依赖的儿子挂了，这个后台对象的启动过程也确实算不上成功，因此语义与实现是一致的。
-- 如果调用 `parent.stop()`，`parent.stop()` 会调用 `child.stop()`，`child.stop()` 会通过 onStopping 回调再次调用 `parent.stop()`，不过此时 parent 处于 STOPPING 状态，parent 内部的 `.rawStop` 实现不会被调用两次。
+- 如果调用 `parent.startable.stop()`，`parent.startable.stop()` 会调用 `child.startable.stop()`，`child.startable.stop()` 会通过 onStopping 回调再次调用 `parent.startable.stop()`，不过此时 parent 处于 STOPPING 状态，parent 内部的 `.rawStop` 实现不会被调用两次。
 
 ### 外部依赖
 
 一个 Startable 的依赖也可能是外部的 Startable，即 UML 中的 Aggregation 而不是 Composition。将被依赖的外部 Startable 放在上下文对象中，`.rawStart` 在上下文中取出自己的依赖，等待依赖完成启动。
 
 ```diff
-    class Daemon extends Startable {
+    class Daemon {
         constructor(private ctx: {
             dep: Startable;
         }) { super(); }
@@ -218,8 +223,8 @@ class Parent extends Startable {
 -               this.ctx.dep.readyState === ReadyState.STARTING ||
 -               this.ctx.dep.readyState === ReadyState.STARTED
 -           );
--           await this.ctx.dep.start(this.stop);
-+           await this.ctx.dep.assart(this.stop);
+-           await this.ctx.dep.startable.start(this.stop);
++           await this.ctx.dep.startable.assart(this.stop);
         }
     }
 ```
@@ -239,12 +244,8 @@ class Parent extends Startable {
 Startable 用 Promise 搞来搞去，必然存在协程同步问题。例如如果一个 Startable 被多个协程控制，那么在任意一个协程内
 
 ```ts
-await daemon.start();
-console.log(daemon.readyState);
+await daemon.startable.start();
+console.log(daemon.startable.getReadyState());
 ```
 
 的结果不一定是 STARTED，完全有可能是 STOPPING 或 STOPPED。而 Startable 的状态是成环的，搞不好甚至已经转了一圈到了下一次 STARTING 了。
-
-## 浏览器兼容性
-
-Startable 继承于 `node:events` 的 polyfill [events](https://github.com/browserify/events)，与 node 核心模块同名。在 node 中会自动加载核心 events 模块，在浏览器中会自动加载 polyfill。
