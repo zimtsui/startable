@@ -33,6 +33,12 @@ class Stopped extends state_1.State {
     getReadyState() {
         return "STOPPED" /* STOPPED */;
     }
+    skipStart(onStopping) {
+        this.startable.state = this.startable.factories.started.create({
+            startingPromise: Promise.resolve(),
+            onStoppings: onStopping ? [onStopping] : [],
+        });
+    }
 }
 exports.Stopped = Stopped;
 (function (Stopped) {

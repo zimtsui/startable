@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotTryStartDuringStopping = exports.Stopping = void 0;
+exports.CannotSkipStartDuringStopping = exports.CannotTryStartDuringStopping = exports.Stopping = void 0;
 const state_1 = require("../state");
 const manual_promise_1 = require("manual-promise");
 class Stopping extends state_1.State {
@@ -55,6 +55,9 @@ class Stopping extends state_1.State {
     getReadyState() {
         return "STOPPING" /* STOPPING */;
     }
+    skipStart(onStopping) {
+        throw new CannotSkipStartDuringStopping();
+    }
 }
 exports.Stopping = Stopping;
 (function (Stopping) {
@@ -74,4 +77,10 @@ class CannotTryStartDuringStopping extends Error {
     }
 }
 exports.CannotTryStartDuringStopping = CannotTryStartDuringStopping;
+class CannotSkipStartDuringStopping extends state_1.CannotSkipStart {
+    constructor() {
+        super('Cannot call .skipStart() during STOPPING.');
+    }
+}
+exports.CannotSkipStartDuringStopping = CannotSkipStartDuringStopping;
 //# sourceMappingURL=stopping.js.map

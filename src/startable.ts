@@ -48,4 +48,8 @@ export class Startable implements StartableLike {
 	public async fail(err: Error): Promise<void> {
 		this.friendly.fail(err);
 	}
+
+	public skipStart(onStopping?: OnStopping): void {
+		this.friendly.skipStart(onStopping);
+	}
 }

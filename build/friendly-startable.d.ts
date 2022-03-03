@@ -6,6 +6,7 @@ export declare class FriendlyStartable implements FriendlyStartableLike {
     readonly factories: Factories;
     constructor(rawStart: RawStart, rawStop: RawStop);
     getReadyState(): ReadyState;
+    skipStart(onStopping?: OnStopping): void;
     state: StateLike;
     tryStart(onStopping?: OnStopping): Promise<void>;
     start(onStopping?: OnStopping): Promise<void>;

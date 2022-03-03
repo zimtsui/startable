@@ -11,6 +11,7 @@ import {
 	OnStopping,
 	ReadyState,
 } from '../startable-like';
+import assert = require('assert');
 
 
 export class Stopped extends State implements StateLike.Stopped {
@@ -56,6 +57,13 @@ export class Stopped extends State implements StateLike.Stopped {
 
 	public getReadyState(): ReadyState {
 		return ReadyState.STOPPED;
+	}
+
+	public skipStart(onStopping?: OnStopping): void {
+		this.startable.state = this.startable.factories.started.create({
+			startingPromise: Promise.resolve(),
+			onStoppings: onStopping ? [onStopping] : [],
+		});
 	}
 }
 

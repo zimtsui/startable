@@ -2,9 +2,10 @@ export interface StartableLike {
     tryStart(onStopping?: OnStopping): Promise<void>;
     tryStop(err?: Error): Promise<void>;
     fail(err: Error): Promise<void>;
-    start(stopping?: OnStopping): Promise<void>;
+    start(onStopping?: OnStopping): Promise<void>;
     stop(err?: Error): Promise<void>;
     getReadyState(): ReadyState;
+    skipStart(onStopping?: OnStopping): void;
 }
 export declare const enum ReadyState {
     STARTING = "STARTING",

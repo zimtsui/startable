@@ -1,4 +1,4 @@
-import { State } from '../state';
+import { State, CannotSkipStart } from '../state';
 import { FriendlyStartableLike, FactoryLike, StateLike } from '../friendly-startable-like';
 import { OnStopping, ReadyState } from '../startable-like';
 export declare class Starting extends State implements StateLike.Starting {
@@ -15,6 +15,7 @@ export declare class Starting extends State implements StateLike.Starting {
     stop(err?: Error): Promise<void>;
     fail(err: Error): Promise<void>;
     getReadyState(): ReadyState;
+    skipStart(onStopping?: OnStopping): never;
 }
 export declare namespace Starting {
     export import Args = FactoryLike.Starting.Args;
@@ -28,5 +29,8 @@ export declare class StopCalledDuringStarting extends Error {
     constructor();
 }
 export declare class CannotTryStopDuringStarting extends Error {
+    constructor();
+}
+export declare class CannotSkipStartDuringStarting extends CannotSkipStart {
     constructor();
 }

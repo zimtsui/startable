@@ -32,6 +32,10 @@ export class FriendlyStartable implements FriendlyStartableLike {
 		return this.state.getReadyState();
 	}
 
+	public skipStart(onStopping?: OnStopping): void {
+		this.state.skipStart(onStopping);
+	}
+
 	public state: StateLike = this.factories.stopped.create({
 		stoppingPromise: Promise.resolve(),
 	});

@@ -1,6 +1,7 @@
 import {
 	State,
 	CannotFail,
+	CannotSkipStart,
 } from '../state';
 import {
 	FriendlyStartableLike,
@@ -62,6 +63,10 @@ export class Started extends State implements StateLike.Started {
 	public getReadyState(): ReadyState {
 		return ReadyState.STARTED;
 	}
+
+	public skipStart(onStopping?: OnStopping): never {
+		throw new CannotSkipStartDuringStarted();
+	}
 }
 
 export namespace Started {
@@ -81,5 +86,11 @@ export namespace Started {
 export class CannotFailDuringStarted extends CannotFail {
 	constructor() {
 		super('Cannot call .fail() during STARTED.');
+	}
+}
+
+export class CannotSkipStartDuringStarted extends CannotSkipStart {
+	constructor() {
+		super('Cannot call .skipStart() during STARTED.');
 	}
 }

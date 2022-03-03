@@ -22,6 +22,9 @@ class FriendlyStartable {
     getReadyState() {
         return this.state.getReadyState();
     }
+    skipStart(onStopping) {
+        this.state.skipStart(onStopping);
+    }
     async tryStart(onStopping) {
         await this.state.tryStart(onStopping);
     }

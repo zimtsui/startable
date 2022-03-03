@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotFailDuringStarted = exports.Started = void 0;
+exports.CannotSkipStartDuringStarted = exports.CannotFailDuringStarted = exports.Started = void 0;
 const state_1 = require("../state");
 class Started extends state_1.State {
     constructor(startable, args) {
@@ -38,6 +38,9 @@ class Started extends state_1.State {
     getReadyState() {
         return "STARTED" /* STARTED */;
     }
+    skipStart(onStopping) {
+        throw new CannotSkipStartDuringStarted();
+    }
 }
 exports.Started = Started;
 (function (Started) {
@@ -57,4 +60,10 @@ class CannotFailDuringStarted extends state_1.CannotFail {
     }
 }
 exports.CannotFailDuringStarted = CannotFailDuringStarted;
+class CannotSkipStartDuringStarted extends state_1.CannotSkipStart {
+    constructor() {
+        super('Cannot call .skipStart() during STARTED.');
+    }
+}
+exports.CannotSkipStartDuringStarted = CannotSkipStartDuringStarted;
 //# sourceMappingURL=started.js.map

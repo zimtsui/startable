@@ -12,6 +12,7 @@ export declare class Stopped extends State implements StateLike.Stopped {
     stop(): Promise<void>;
     fail(err: Error): Promise<never>;
     getReadyState(): ReadyState;
+    skipStart(onStopping?: OnStopping): void;
 }
 export declare namespace Stopped {
     export import Args = FactoryLike.Stopped.Args;

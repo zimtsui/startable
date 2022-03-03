@@ -1,4 +1,7 @@
-import { State } from '../state';
+import {
+	State,
+	CannotSkipStart,
+} from '../state';
 import {
 	FriendlyStartableLike,
 	FactoryLike,
@@ -77,6 +80,10 @@ export class Stopping extends State implements StateLike.Stopping {
 	public getReadyState(): ReadyState {
 		return ReadyState.STOPPING;
 	}
+
+	public skipStart(onStopping?: OnStopping): never {
+		throw new CannotSkipStartDuringStopping();
+	}
 }
 
 export namespace Stopping {
@@ -96,5 +103,11 @@ export namespace Stopping {
 export class CannotTryStartDuringStopping extends Error {
 	constructor() {
 		super('Cannot call .tryStop() during STOPPING.');
+	}
+}
+
+export class CannotSkipStartDuringStopping extends CannotSkipStart {
+	constructor() {
+		super('Cannot call .skipStart() during STOPPING.');
 	}
 }

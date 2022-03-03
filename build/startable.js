@@ -33,6 +33,9 @@ class Startable {
     async fail(err) {
         this.friendly.fail(err);
     }
+    skipStart(onStopping) {
+        this.friendly.skipStart(onStopping);
+    }
 }
 __decorate([
     autobind_decorator_1.boundMethod

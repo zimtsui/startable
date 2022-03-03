@@ -19,6 +19,8 @@ export abstract class State implements StateLike {
 	public abstract start(onStopping?: OnStopping): Promise<void>;
 	public abstract stop(err?: Error): Promise<void>;
 	public abstract getReadyState(): ReadyState;
+	public abstract skipStart(onStopping?: OnStopping): void;
 }
 
 export class CannotFail extends Error { }
+export class CannotSkipStart extends Error { }

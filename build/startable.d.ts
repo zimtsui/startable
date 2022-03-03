@@ -9,4 +9,5 @@ export declare class Startable implements StartableLike {
     tryStop(err?: Error): Promise<void>;
     stop(err?: Error): Promise<void>;
     fail(err: Error): Promise<void>;
+    skipStart(onStopping?: OnStopping): void;
 }
