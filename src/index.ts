@@ -11,3 +11,5 @@ export {
 } from './states/starting';
 export { CannotFailDuringStarted } from './states/started';
 export { CannotTryStartDuringStopping } from './states/stopping'
+export { StatefulLike } from './stateful-like';
+export { StatefulStartable } from './stateful-startable';

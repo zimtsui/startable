@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotTryStartDuringStopping = exports.CannotFailDuringStarted = exports.StopCalledDuringStarting = exports.CannotTryStopDuringStarting = exports.CannotFailDuringStopped = exports.CannotFail = exports.default = exports.Startable = void 0;
+exports.StatefulStartable = exports.CannotTryStartDuringStopping = exports.CannotFailDuringStarted = exports.StopCalledDuringStarting = exports.CannotTryStopDuringStarting = exports.CannotFailDuringStopped = exports.CannotFail = exports.default = exports.Startable = void 0;
 var startable_1 = require("./startable");
 Object.defineProperty(exports, "Startable", { enumerable: true, get: function () { return startable_1.Startable; } });
 Object.defineProperty(exports, "default", { enumerable: true, get: function () { return startable_1.Startable; } });
@@ -15,4 +15,6 @@ var started_1 = require("./states/started");
 Object.defineProperty(exports, "CannotFailDuringStarted", { enumerable: true, get: function () { return started_1.CannotFailDuringStarted; } });
 var stopping_1 = require("./states/stopping");
 Object.defineProperty(exports, "CannotTryStartDuringStopping", { enumerable: true, get: function () { return stopping_1.CannotTryStartDuringStopping; } });
+var stateful_startable_1 = require("./stateful-startable");
+Object.defineProperty(exports, "StatefulStartable", { enumerable: true, get: function () { return stateful_startable_1.StatefulStartable; } });
 //# sourceMappingURL=index.js.map

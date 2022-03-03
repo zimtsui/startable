@@ -5,3 +5,5 @@ export { CannotFailDuringStopped } from './states/stopped';
 export { CannotTryStopDuringStarting, StopCalledDuringStarting, } from './states/starting';
 export { CannotFailDuringStarted } from './states/started';
 export { CannotTryStartDuringStopping } from './states/stopping';
+export { StatefulLike } from './stateful-like';
+export { StatefulStartable } from './stateful-startable';
