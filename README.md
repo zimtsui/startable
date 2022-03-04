@@ -93,7 +93,7 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 
 - 你可以在停止过程中尽情地重复运行 `.stop()` ，而不用担心重复运行你的 `.rawStop` 实现。
 - `.stop()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.startable.stop()` 而不必 `this.startable.stop().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
-- `.stop()` 默认已经绑定到 Startable 上了，因此你可以把 `this.startable.stop` 作为回调而不必 `err => this.stop(err)`。
+- `.stop()` 默认已经绑定到 Startable 上了，因此你可以把 `this.startable.stop` 作为回调而不必 `err => this.startable.stop(err)`。
 
 ## 自发启停
 
@@ -195,8 +195,8 @@ class Parent {
     private child2: Daemon;
 
     protected async rawStart(): Promise<void> {
-        await child1.startable.start(this.stop);
-        await child2.startable.start(this.stop);
+        await child1.startable.start(this.startable.stop);
+        await child2.startable.start(this.startable.stop);
     }
     protected async rawStop(): Promise<void> {
         await child2.startable.stop();
@@ -223,8 +223,8 @@ class Parent {
 -               this.ctx.dep.readyState === ReadyState.STARTING ||
 -               this.ctx.dep.readyState === ReadyState.STARTED
 -           );
--           await this.ctx.dep.startable.start(this.stop);
-+           await this.ctx.dep.startable.assart(this.stop);
+-           await this.ctx.dep.startable.start(this.startable.stop);
++           await this.ctx.dep.startable.assart(this.startable.stop);
         }
     }
 ```
