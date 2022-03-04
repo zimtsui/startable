@@ -1,10 +1,10 @@
-export interface StatefulLike<Snapshot, Backup = Snapshot> {
+export interface StatefulLike<Snapshot> {
     capture(): Snapshot;
-    restore(backup: Backup): void;
+    restore(backup: Snapshot): void;
 }
 export interface RawCapture<Snapshot> {
     (): Snapshot;
 }
-export interface RawRestore<Backup> {
-    (backup: Backup): void;
+export interface RawRestore<Snapshot> {
+    (backup: Snapshot): void;
 }
