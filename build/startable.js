@@ -21,23 +21,25 @@ const stopping_1 = require("./states/stopping/stopping");
 class Startable {
     constructor(rawStart, rawStop) {
         this.container = new injektor_1.Container();
-        const stoppedFactory = new stopped_1.Stopped.Factory();
-        this.container.register(stopped_like_1.StoppedLike.FactoryLike, () => stoppedFactory);
-        const startingFactory = new starting_1.Starting.Factory();
-        this.container.register(starting_like_1.StartingLike.FactoryLike, () => startingFactory);
-        const startedFactory = new started_1.Started.Factory();
-        this.container.register(started_like_1.StartedLike.FactoryLike, () => startedFactory);
-        const stoppingFactory = new stopping_1.Stopping.Factory();
-        this.container.register(stopping_like_1.StoppingLike.FactoryLike, () => stoppingFactory);
-        this.container.register(friendly_startable_1.FriendlyStartable, () => this.friendly);
+        const factories = {
+            stopped: new stopped_1.Stopped.Factory(),
+            starting: new starting_1.Starting.Factory(),
+            started: new started_1.Started.Factory(),
+            stopping: new stopping_1.Stopping.Factory(),
+        };
         this.friendly = new friendly_startable_1.FriendlyStartable(rawStart, rawStop);
-        this.container.register(friendly_startable_1.initialState, () => stoppedFactory.create({
+        this.container.register(stopped_like_1.StoppedLike.FactoryLike, () => factories.stopped);
+        this.container.register(starting_like_1.StartingLike.FactoryLike, () => factories.starting);
+        this.container.register(started_like_1.StartedLike.FactoryLike, () => factories.started);
+        this.container.register(stopping_like_1.StoppingLike.FactoryLike, () => factories.stopping);
+        this.container.register(friendly_startable_1.FriendlyStartable, () => this.friendly);
+        this.container.inject(factories.stopped);
+        this.container.inject(factories.starting);
+        this.container.inject(factories.started);
+        this.container.inject(factories.stopping);
+        this.container.register(friendly_startable_1.initialState, () => factories.stopped.create({
             stoppingPromise: Promise.resolve(),
         }));
-        this.container.inject(stoppedFactory);
-        this.container.inject(startingFactory);
-        this.container.inject(startedFactory);
-        this.container.inject(stoppingFactory);
         this.container.inject(this.friendly);
     }
     getReadyState() {

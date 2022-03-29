@@ -30,41 +30,45 @@ export class Startable implements StartableLike {
 		rawStart: RawStart,
 		rawStop: RawStop,
 	) {
-		const stoppedFactory = new Stopped.Factory();
+		const factories = {
+			stopped: new Stopped.Factory(),
+			starting: new Starting.Factory(),
+			started: new Started.Factory(),
+			stopping: new Stopping.Factory(),
+		};
+		this.friendly = new FriendlyStartable(rawStart, rawStop);
+
 		this.container.register(
 			StoppedLike.FactoryLike,
-			() => stoppedFactory,
+			() => factories.stopped,
 		);
-		const startingFactory = new Starting.Factory();
 		this.container.register(
 			StartingLike.FactoryLike,
-			() => startingFactory,
+			() => factories.starting,
 		);
-		const startedFactory = new Started.Factory();
 		this.container.register(
 			StartedLike.FactoryLike,
-			() => startedFactory,
+			() => factories.started,
 		);
-		const stoppingFactory = new Stopping.Factory();
 		this.container.register(
 			StoppingLike.FactoryLike,
-			() => stoppingFactory,
+			() => factories.stopping,
 		);
 		this.container.register(
 			FriendlyStartable,
 			() => this.friendly,
 		);
-		this.friendly = new FriendlyStartable(rawStart, rawStop);
+		this.container.inject(factories.stopped);
+		this.container.inject(factories.starting);
+		this.container.inject(factories.started);
+		this.container.inject(factories.stopping);
+
 		this.container.register(
 			initialState,
-			() => stoppedFactory.create({
+			() => factories.stopped.create({
 				stoppingPromise: Promise.resolve(),
 			}),
 		);
-		this.container.inject(stoppedFactory);
-		this.container.inject(startingFactory);
-		this.container.inject(startedFactory);
-		this.container.inject(stoppingFactory);
 		this.container.inject(this.friendly);
 	}
 
