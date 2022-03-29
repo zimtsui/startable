@@ -1,4 +1,4 @@
-import { OnStopping, ReadyState, CannotFail } from '../../startable-like';
+import { OnStopping, ReadyState } from '../../startable-like';
 import { StoppedLike } from './stopped-like';
 import { FriendlyStartable } from '../../friendly-startable';
 export declare class Stopped implements StoppedLike {
@@ -28,6 +28,6 @@ export declare namespace Stopped {
         create(args: Args): Stopped;
     }
 }
-export declare class CannotFailDuringStopped extends CannotFail {
+export declare class CannotFailDuringStopped extends Error {
     constructor();
 }

@@ -23,7 +23,3 @@ export interface RawStart {
 export interface RawStop {
     (): Promise<void>;
 }
-export declare class CannotFail extends Error {
-}
-export declare class CannotSkipStart extends Error {
-}

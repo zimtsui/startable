@@ -1,5 +1,5 @@
 import { FriendlyStartable } from '../../friendly-startable';
-import { OnStopping, ReadyState, CannotFail, CannotSkipStart } from '../../startable-like';
+import { OnStopping, ReadyState } from '../../startable-like';
 import { StartedLike } from './started-like';
 export declare class Started implements StartedLike {
     private startable;
@@ -26,9 +26,9 @@ export declare namespace Started {
         create(args: Args): Started;
     }
 }
-export declare class CannotFailDuringStarted extends CannotFail {
+export declare class CannotFailDuringStarted extends Error {
     constructor();
 }
-export declare class CannotSkipStartDuringStarted extends CannotSkipStart {
+export declare class CannotSkipStartDuringStarted extends Error {
     constructor();
 }

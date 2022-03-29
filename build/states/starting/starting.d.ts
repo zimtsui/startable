@@ -1,4 +1,4 @@
-import { OnStopping, ReadyState, CannotSkipStart } from '../../startable-like';
+import { OnStopping, ReadyState } from '../../startable-like';
 import { StartingLike } from './starting-like';
 import { FriendlyStartable } from '../../friendly-startable';
 export declare class Starting implements StartingLike {
@@ -34,6 +34,6 @@ export declare class StopCalledDuringStarting extends Error {
 export declare class CannotTryStopDuringStarting extends Error {
     constructor();
 }
-export declare class CannotSkipStartDuringStarting extends CannotSkipStart {
+export declare class CannotSkipStartDuringStarting extends Error {
     constructor();
 }

@@ -4,7 +4,6 @@ import {
 import {
 	OnStopping,
 	ReadyState,
-	CannotSkipStart,
 } from '../../startable-like';
 import { ManualPromise } from 'manual-promise';
 import { StoppingLike } from './stopping-like';
@@ -125,7 +124,7 @@ export class CannotTryStartDuringStopping extends Error {
 	}
 }
 
-export class CannotSkipStartDuringStopping extends CannotSkipStart {
+export class CannotSkipStartDuringStopping extends Error {
 	constructor() {
 		super('Cannot call .skipStart() during STOPPING.');
 	}

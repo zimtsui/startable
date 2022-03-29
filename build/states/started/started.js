@@ -8,7 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CannotSkipStartDuringStarted = exports.CannotFailDuringStarted = exports.Started = void 0;
 const friendly_startable_1 = require("../../friendly-startable");
-const startable_like_1 = require("../../startable-like");
 const injektor_1 = require("injektor");
 const stopping_like_1 = require("../stopping/stopping-like");
 class Started {
@@ -73,13 +72,13 @@ exports.Started = Started;
     ], Factory.prototype, "startable", void 0);
     Started.Factory = Factory;
 })(Started = exports.Started || (exports.Started = {}));
-class CannotFailDuringStarted extends startable_like_1.CannotFail {
+class CannotFailDuringStarted extends Error {
     constructor() {
         super('Cannot call .fail() during STARTED.');
     }
 }
 exports.CannotFailDuringStarted = CannotFailDuringStarted;
-class CannotSkipStartDuringStarted extends startable_like_1.CannotSkipStart {
+class CannotSkipStartDuringStarted extends Error {
     constructor() {
         super('Cannot call .skipStart() during STARTED.');
     }

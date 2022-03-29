@@ -8,7 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CannotSkipStartDuringStopping = exports.CannotTryStartDuringStopping = exports.Stopping = void 0;
 const friendly_startable_1 = require("../../friendly-startable");
-const startable_like_1 = require("../../startable-like");
 const manual_promise_1 = require("manual-promise");
 const injektor_1 = require("injektor");
 const stopped_like_1 = require("../stopped/stopped-like");
@@ -96,7 +95,7 @@ class CannotTryStartDuringStopping extends Error {
     }
 }
 exports.CannotTryStartDuringStopping = CannotTryStartDuringStopping;
-class CannotSkipStartDuringStopping extends startable_like_1.CannotSkipStart {
+class CannotSkipStartDuringStopping extends Error {
     constructor() {
         super('Cannot call .skipStart() during STOPPING.');
     }

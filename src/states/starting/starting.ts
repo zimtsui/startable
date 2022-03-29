@@ -2,7 +2,6 @@ import { inject, Container } from 'injektor';
 import {
 	OnStopping,
 	ReadyState,
-	CannotSkipStart,
 } from '../../startable-like';
 import { ManualPromise } from 'manual-promise';
 import { StartingLike } from './starting-like';
@@ -124,7 +123,7 @@ export class CannotTryStopDuringStarting extends Error {
 		super('Cannot call .tryStop() during STARTING.');
 	}
 }
-export class CannotSkipStartDuringStarting extends CannotSkipStart {
+export class CannotSkipStartDuringStarting extends Error {
 	constructor() {
 		super('Cannot call .skipStart() during STARTING.');
 	}

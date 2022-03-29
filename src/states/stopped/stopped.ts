@@ -1,7 +1,6 @@
 import {
 	OnStopping,
 	ReadyState,
-	CannotFail,
 } from '../../startable-like';
 import { StoppedLike } from './stopped-like';
 import assert = require('assert');
@@ -109,7 +108,7 @@ export namespace Stopped {
 	}
 }
 
-export class CannotFailDuringStopped extends CannotFail {
+export class CannotFailDuringStopped extends Error {
 	constructor() {
 		super('Cannot call .fail() during STOPPED.');
 	}

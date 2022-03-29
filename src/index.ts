@@ -1,9 +1,5 @@
+export { ReadyState } from './startable-like';
 export { Startable } from './startable';
-export {
-	ReadyState,
-	CannotFail,
-	CannotSkipStart,
-} from './startable-like';
 export { CannotFailDuringStopped } from './states/stopped/stopped'
 export {
 	CannotTryStopDuringStarting,

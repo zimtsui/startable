@@ -4,8 +4,6 @@ import {
 import {
 	OnStopping,
 	ReadyState,
-	CannotFail,
-	CannotSkipStart,
 } from '../../startable-like';
 import { StartedLike } from './started-like';
 import { inject, Container } from 'injektor';
@@ -100,13 +98,13 @@ export namespace Started {
 	}
 }
 
-export class CannotFailDuringStarted extends CannotFail {
+export class CannotFailDuringStarted extends Error {
 	constructor() {
 		super('Cannot call .fail() during STARTED.');
 	}
 }
 
-export class CannotSkipStartDuringStarted extends CannotSkipStart {
+export class CannotSkipStartDuringStarted extends Error {
 	constructor() {
 		super('Cannot call .skipStart() during STARTED.');
 	}

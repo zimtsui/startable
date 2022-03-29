@@ -7,7 +7,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CannotFailDuringStopped = exports.Stopped = void 0;
-const startable_like_1 = require("../../startable-like");
 const injektor_1 = require("injektor");
 const starting_like_1 = require("../starting/starting-like");
 const started_like_1 = require("../started/started-like");
@@ -80,7 +79,7 @@ exports.Stopped = Stopped;
     ], Factory.prototype, "startable", void 0);
     Stopped.Factory = Factory;
 })(Stopped = exports.Stopped || (exports.Stopped = {}));
-class CannotFailDuringStopped extends startable_like_1.CannotFail {
+class CannotFailDuringStopped extends Error {
     constructor() {
         super('Cannot call .fail() during STOPPED.');
     }
