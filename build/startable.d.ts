@@ -1,7 +1,7 @@
-import { FriendlyStartableLike } from './friendly-startable-like';
 import { OnStopping, RawStart, RawStop, StartableLike, ReadyState } from './startable-like';
 export declare class Startable implements StartableLike {
-    protected friendly: FriendlyStartableLike;
+    private friendly;
+    private container;
     constructor(rawStart: RawStart, rawStop: RawStop);
     getReadyState(): ReadyState;
     tryStart(onStopping?: OnStopping): Promise<void>;

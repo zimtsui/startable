@@ -7,6 +7,7 @@ export interface StartableLike {
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): void;
 }
+export declare const StartableLike: {};
 export declare const enum ReadyState {
     STARTING = "STARTING",
     STARTED = "STARTED",
@@ -21,4 +22,8 @@ export interface RawStart {
 }
 export interface RawStop {
     (): Promise<void>;
+}
+export declare class CannotFail extends Error {
+}
+export declare class CannotSkipStart extends Error {
 }

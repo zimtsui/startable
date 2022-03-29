@@ -1,15 +1,14 @@
+export { Startable } from './startable';
 export {
-	Startable,
-	Startable as default,
-} from './startable';
-export { ReadyState } from './startable-like';
-export { CannotFail } from './state';
-export { CannotFailDuringStopped } from './states/stopped'
+	ReadyState,
+	CannotFail,
+	CannotSkipStart,
+} from './startable-like';
+export { CannotFailDuringStopped } from './states/stopped/stopped'
 export {
 	CannotTryStopDuringStarting,
 	StopCalledDuringStarting,
-} from './states/starting';
-export { CannotFailDuringStarted } from './states/started';
-export { CannotTryStartDuringStopping } from './states/stopping'
+} from './states/starting/starting';
+export { CannotFailDuringStarted } from './states/started/started';
+export { CannotTryStartDuringStopping } from './states/stopping/stopping'
 export { StatefulLike } from './stateful-like';
-export { StatefulStartable } from './stateful-startable';

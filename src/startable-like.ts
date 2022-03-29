@@ -1,5 +1,4 @@
 export interface StartableLike {
-
 	tryStart(onStopping?: OnStopping): Promise<void>;
 	tryStop(err?: Error): Promise<void>;
 	fail(err: Error): Promise<void>;
@@ -8,6 +7,7 @@ export interface StartableLike {
 	getReadyState(): ReadyState;
 	skipStart(onStopping?: OnStopping): void;
 }
+export const StartableLike = {};
 
 export const enum ReadyState {
 	STARTING = 'STARTING',
@@ -27,3 +27,6 @@ export interface RawStart {
 export interface RawStop {
 	(): Promise<void>;
 }
+
+export class CannotFail extends Error { }
+export class CannotSkipStart extends Error { }

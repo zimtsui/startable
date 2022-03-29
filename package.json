@@ -31,6 +31,7 @@
         "@types/assert": "^1.5.6",
         "assert": "^2.0.0",
         "autobind-decorator": "^2.4.0",
+        "injektor": "github:zimtsui/injektor",
         "manual-promise": "github:zimtsui/manual-promise"
     }
 }

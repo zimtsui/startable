@@ -1,13 +1,14 @@
-import { StateLike, Factories, FriendlyStartableLike } from './friendly-startable-like';
-import { OnStopping, RawStart, RawStop, ReadyState } from './startable-like';
-export declare class FriendlyStartable implements FriendlyStartableLike {
-    readonly rawStart: RawStart;
-    readonly rawStop: RawStop;
-    readonly factories: Factories;
+import { OnStopping, RawStart, RawStop, ReadyState, StartableLike } from './startable-like';
+export declare const initialState: {};
+export declare class FriendlyStartable implements StartableLike {
+    rawStart: RawStart;
+    rawStop: RawStop;
+    private state;
     constructor(rawStart: RawStart, rawStop: RawStop);
+    setState(state: StartableLike): void;
+    getState(): StartableLike;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): void;
-    state: StateLike;
     tryStart(onStopping?: OnStopping): Promise<void>;
     start(onStopping?: OnStopping): Promise<void>;
     tryStop(err?: Error): Promise<void>;

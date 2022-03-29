@@ -1,6 +1,8 @@
+import { Container } from 'injektor';
 import {
-	FriendlyStartableLike,
-} from './friendly-startable-like';
+	FriendlyStartable,
+	initialState,
+} from './friendly-startable';
 import {
 	OnStopping,
 	RawStart,
@@ -9,17 +11,61 @@ import {
 	ReadyState,
 } from './startable-like';
 import { boundMethod } from 'autobind-decorator';
-import { FriendlyStartable } from './friendly-startable';
 
+import { StoppedLike } from './states/stopped/stopped-like';
+import { StartingLike } from './states/starting/starting-like';
+import { StartedLike } from './states/started/started-like';
+import { StoppingLike } from './states/stopping/stopping-like';
+
+import { Stopped } from './states/stopped/stopped';
+import { Starting } from './states/starting/starting';
+import { Started } from './states/started/started';
+import { Stopping } from './states/stopping/stopping';
 
 export class Startable implements StartableLike {
-	protected friendly: FriendlyStartableLike;
+	private friendly: FriendlyStartable;
+	private container = new Container();
 
-	constructor(
+	public constructor(
 		rawStart: RawStart,
 		rawStop: RawStop,
 	) {
+		const stoppedFactory = new Stopped.Factory();
+		this.container.register(
+			StoppedLike.FactoryLike,
+			() => stoppedFactory,
+		);
+		const startingFactory = new Starting.Factory();
+		this.container.register(
+			StartingLike.FactoryLike,
+			() => startingFactory,
+		);
+		const startedFactory = new Started.Factory();
+		this.container.register(
+			StartedLike.FactoryLike,
+			() => startedFactory,
+		);
+		const stoppingFactory = new Stopping.Factory();
+		this.container.register(
+			StoppingLike.FactoryLike,
+			() => stoppingFactory,
+		);
+		this.container.register(
+			FriendlyStartable,
+			() => this.friendly,
+		);
 		this.friendly = new FriendlyStartable(rawStart, rawStop);
+		this.container.register(
+			initialState,
+			() => stoppedFactory.create({
+				stoppingPromise: Promise.resolve(),
+			}),
+		);
+		this.container.inject(stoppedFactory);
+		this.container.inject(startingFactory);
+		this.container.inject(startedFactory);
+		this.container.inject(stoppingFactory);
+		this.container.inject(this.friendly);
 	}
 
 	public getReadyState(): ReadyState {
