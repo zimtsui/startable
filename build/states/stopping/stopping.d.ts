@@ -1,13 +1,15 @@
 import { FriendlyStartable } from '../../friendly-startable';
 import { OnStopping, ReadyState } from '../../startable-like';
 import { StoppingLike } from './stopping-like';
+import { StoppedLike } from '../stopped/stopped-like';
 export declare class Stopping implements StoppingLike {
     private startable;
     private startingPromise;
     private stoppingPromise;
     private onStoppings;
     private manualFailure;
-    private stoppedFactory;
+    static FactoryDeps: {};
+    private factories;
     constructor(args: Stopping.Args, startable: FriendlyStartable);
     getStartingPromise(): Promise<void>;
     getStoppingPromise(): Promise<void>;
@@ -21,11 +23,14 @@ export declare class Stopping implements StoppingLike {
     skipStart(onStopping?: OnStopping): never;
 }
 export declare namespace Stopping {
+    interface FactoryDeps {
+        stopped: StoppedLike.FactoryLike;
+    }
     export import Args = StoppingLike.FactoryLike.Args;
     class Factory implements StoppingLike.FactoryLike {
         private container;
+        private factories;
         private startable;
-        private stoppedFactory;
         constructor();
         create(args: Args): Stopping;
     }

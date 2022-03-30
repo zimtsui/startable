@@ -10,7 +10,6 @@ exports.CannotSkipStartDuringStarting = exports.CannotTryStopDuringStarting = ex
 const injektor_1 = require("injektor");
 const manual_promise_1 = require("manual-promise");
 const friendly_startable_1 = require("../../friendly-startable");
-const started_like_1 = require("../started/started-like");
 class Starting {
     constructor(args, startable) {
         this.startable = startable;
@@ -35,7 +34,7 @@ class Starting {
         catch (err) {
             this.startingPromise.reject(err);
         }
-        const nextState = this.startedFactory.create({
+        const nextState = this.factories.started.create({
             onStoppings: this.onStoppings,
             startingPromise: this.startingPromise,
         });
@@ -68,15 +67,16 @@ class Starting {
         throw new CannotSkipStartDuringStarting();
     }
 }
+Starting.FactoryDeps = {};
 __decorate([
-    (0, injektor_1.inject)(started_like_1.StartedLike.FactoryLike)
-], Starting.prototype, "startedFactory", void 0);
+    (0, injektor_1.inject)(Starting.FactoryDeps)
+], Starting.prototype, "factories", void 0);
 exports.Starting = Starting;
 (function (Starting) {
     class Factory {
         constructor() {
             this.container = new injektor_1.Container();
-            this.container.register(started_like_1.StartedLike.FactoryLike, () => this.startedFactory);
+            this.container.register(Starting.FactoryDeps, () => this.factories);
             this.container.register(friendly_startable_1.FriendlyStartable, () => this.startable);
         }
         create(args) {
@@ -84,8 +84,8 @@ exports.Starting = Starting;
         }
     }
     __decorate([
-        (0, injektor_1.inject)(started_like_1.StartedLike.FactoryLike)
-    ], Factory.prototype, "startedFactory", void 0);
+        (0, injektor_1.inject)(Starting.FactoryDeps)
+    ], Factory.prototype, "factories", void 0);
     __decorate([
         (0, injektor_1.inject)(friendly_startable_1.FriendlyStartable)
     ], Factory.prototype, "startable", void 0);

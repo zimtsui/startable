@@ -8,8 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CannotFailDuringStopped = exports.Stopped = void 0;
 const injektor_1 = require("injektor");
-const starting_like_1 = require("../starting/starting-like");
-const started_like_1 = require("../started/started-like");
 const friendly_startable_1 = require("../../friendly-startable");
 class Stopped {
     constructor(args, startable) {
@@ -20,7 +18,7 @@ class Stopped {
         return this.stoppingPromise;
     }
     async tryStart(onStopping) {
-        const nextState = this.startingFactory.create({
+        const nextState = this.factories.starting.create({
             onStopping,
         });
         this.startable.setState(nextState);
@@ -42,26 +40,23 @@ class Stopped {
         return "STOPPED" /* STOPPED */;
     }
     skipStart(onStopping) {
-        const nextState = this.startedFactory.create({
+        const nextState = this.factories.started.create({
             startingPromise: Promise.resolve(),
             onStoppings: onStopping ? [onStopping] : [],
         });
         this.startable.setState(nextState);
     }
 }
+Stopped.FactoryDeps = {};
 __decorate([
-    (0, injektor_1.inject)(starting_like_1.StartingLike.FactoryLike)
-], Stopped.prototype, "startingFactory", void 0);
-__decorate([
-    (0, injektor_1.inject)(started_like_1.StartedLike.FactoryLike)
-], Stopped.prototype, "startedFactory", void 0);
+    (0, injektor_1.inject)(Stopped.FactoryDeps)
+], Stopped.prototype, "factories", void 0);
 exports.Stopped = Stopped;
 (function (Stopped) {
     class Factory {
         constructor() {
             this.container = new injektor_1.Container();
-            this.container.register(starting_like_1.StartingLike.FactoryLike, () => this.startingFactory);
-            this.container.register(started_like_1.StartedLike.FactoryLike, () => this.startedFactory);
+            this.container.register(Stopped.FactoryDeps, () => this.factories);
             this.container.register(friendly_startable_1.FriendlyStartable, () => this.startable);
         }
         create(args) {
@@ -69,11 +64,8 @@ exports.Stopped = Stopped;
         }
     }
     __decorate([
-        (0, injektor_1.inject)(starting_like_1.StartingLike.FactoryLike)
-    ], Factory.prototype, "startingFactory", void 0);
-    __decorate([
-        (0, injektor_1.inject)(started_like_1.StartedLike.FactoryLike)
-    ], Factory.prototype, "startedFactory", void 0);
+        (0, injektor_1.inject)(Stopped.FactoryDeps)
+    ], Factory.prototype, "factories", void 0);
     __decorate([
         (0, injektor_1.inject)(friendly_startable_1.FriendlyStartable)
     ], Factory.prototype, "startable", void 0);

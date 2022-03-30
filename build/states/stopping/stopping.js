@@ -10,7 +10,6 @@ exports.CannotSkipStartDuringStopping = exports.CannotTryStartDuringStopping = e
 const friendly_startable_1 = require("../../friendly-startable");
 const manual_promise_1 = require("manual-promise");
 const injektor_1 = require("injektor");
-const stopped_like_1 = require("../stopped/stopped-like");
 class Stopping {
     constructor(args, startable) {
         this.startable = startable;
@@ -38,7 +37,7 @@ class Stopping {
         catch (err) {
             this.stoppingPromise.reject(err);
         }
-        const nextState = this.stoppedFactory.create({
+        const nextState = this.factories.stopped.create({
             stoppingPromise: this.stoppingPromise,
         });
         this.startable.setState(nextState);
@@ -66,27 +65,28 @@ class Stopping {
         throw new CannotSkipStartDuringStopping();
     }
 }
+Stopping.FactoryDeps = {};
 __decorate([
-    (0, injektor_1.inject)(stopped_like_1.StoppedLike.FactoryLike)
-], Stopping.prototype, "stoppedFactory", void 0);
+    (0, injektor_1.inject)(Stopping.FactoryDeps)
+], Stopping.prototype, "factories", void 0);
 exports.Stopping = Stopping;
 (function (Stopping) {
     class Factory {
         constructor() {
             this.container = new injektor_1.Container();
             this.container.register(friendly_startable_1.FriendlyStartable, () => this.startable);
-            this.container.register(stopped_like_1.StoppedLike.FactoryLike, () => this.stoppedFactory);
+            this.container.register(Stopping.FactoryDeps, () => this.factories);
         }
         create(args) {
             return this.container.inject(new Stopping(args, this.startable));
         }
     }
     __decorate([
+        (0, injektor_1.inject)(Stopping.FactoryDeps)
+    ], Factory.prototype, "factories", void 0);
+    __decorate([
         (0, injektor_1.inject)(friendly_startable_1.FriendlyStartable)
     ], Factory.prototype, "startable", void 0);
-    __decorate([
-        (0, injektor_1.inject)(stopped_like_1.StoppedLike.FactoryLike)
-    ], Factory.prototype, "stoppedFactory", void 0);
     Stopping.Factory = Factory;
 })(Stopping = exports.Stopping || (exports.Stopping = {}));
 class CannotTryStartDuringStopping extends Error {

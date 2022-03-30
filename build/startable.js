@@ -10,10 +10,6 @@ exports.Startable = void 0;
 const injektor_1 = require("injektor");
 const friendly_startable_1 = require("./friendly-startable");
 const autobind_decorator_1 = require("autobind-decorator");
-const stopped_like_1 = require("./states/stopped/stopped-like");
-const starting_like_1 = require("./states/starting/starting-like");
-const started_like_1 = require("./states/started/started-like");
-const stopping_like_1 = require("./states/stopping/stopping-like");
 const stopped_1 = require("./states/stopped/stopped");
 const starting_1 = require("./states/starting/starting");
 const started_1 = require("./states/started/started");
@@ -28,10 +24,10 @@ class Startable {
             stopping: new stopping_1.Stopping.Factory(),
         };
         this.friendly = new friendly_startable_1.FriendlyStartable(rawStart, rawStop);
-        this.container.register(stopped_like_1.StoppedLike.FactoryLike, () => factories.stopped);
-        this.container.register(starting_like_1.StartingLike.FactoryLike, () => factories.starting);
-        this.container.register(started_like_1.StartedLike.FactoryLike, () => factories.started);
-        this.container.register(stopping_like_1.StoppingLike.FactoryLike, () => factories.stopping);
+        this.container.register(stopped_1.Stopped.FactoryDeps, () => factories);
+        this.container.register(starting_1.Starting.FactoryDeps, () => factories);
+        this.container.register(started_1.Started.FactoryDeps, () => factories);
+        this.container.register(stopping_1.Stopping.FactoryDeps, () => factories);
         this.container.register(friendly_startable_1.FriendlyStartable, () => this.friendly);
         this.container.inject(factories.stopped);
         this.container.inject(factories.starting);

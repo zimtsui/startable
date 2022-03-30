@@ -3,21 +3,19 @@ import {
 	ReadyState,
 } from '../../startable-like';
 import { StoppedLike } from './stopped-like';
-import assert = require('assert');
 import { inject, Container } from 'injektor';
+import { FriendlyStartable } from '../../friendly-startable';
 
 import { StartingLike } from '../starting/starting-like';
 import { StartedLike } from '../started/started-like';
-import { FriendlyStartable } from '../../friendly-startable';
 
 
 export class Stopped implements StoppedLike {
 	private stoppingPromise: Promise<void>;
 
-	@inject(StartingLike.FactoryLike)
-	private startingFactory!: StartingLike.FactoryLike;
-	@inject(StartedLike.FactoryLike)
-	private startedFactory!: StartedLike.FactoryLike;
+	public static FactoryDeps = {};
+	@inject(Stopped.FactoryDeps)
+	private factories!: Stopped.FactoryDeps;
 
 	public constructor(
 		args: StoppedLike.FactoryLike.Args,
@@ -31,7 +29,7 @@ export class Stopped implements StoppedLike {
 	}
 
 	public async tryStart(onStopping?: OnStopping): Promise<void> {
-		const nextState = this.startingFactory.create({
+		const nextState = this.factories.starting.create({
 			onStopping,
 		});
 		this.startable.setState(nextState);
@@ -59,7 +57,7 @@ export class Stopped implements StoppedLike {
 	}
 
 	public skipStart(onStopping?: OnStopping): void {
-		const nextState = this.startedFactory.create({
+		const nextState = this.factories.started.create({
 			startingPromise: Promise.resolve(),
 			onStoppings: onStopping ? [onStopping] : [],
 		});
@@ -69,27 +67,26 @@ export class Stopped implements StoppedLike {
 
 
 export namespace Stopped {
+	export interface FactoryDeps {
+		starting: StartingLike.FactoryLike;
+		started: StartedLike.FactoryLike;
+	}
+
 	import FactoryLike = StoppedLike.FactoryLike;
 	import Args = StoppedLike.FactoryLike.Args;
 
 	export class Factory implements FactoryLike {
 		private container = new Container();
-		@inject(StartingLike.FactoryLike)
-		private startingFactory!: StartingLike.FactoryLike;
-		@inject(StartedLike.FactoryLike)
-		private startedFactory!: StartedLike.FactoryLike;
+		@inject(Stopped.FactoryDeps)
+		private factories!: Stopped.FactoryDeps;
 		@inject(FriendlyStartable)
 		private startable!: FriendlyStartable;
 
 
 		public constructor() {
 			this.container.register(
-				StartingLike.FactoryLike,
-				() => this.startingFactory,
-			);
-			this.container.register(
-				StartedLike.FactoryLike,
-				() => this.startedFactory,
+				Stopped.FactoryDeps,
+				() => this.factories,
 			);
 			this.container.register(
 				FriendlyStartable,

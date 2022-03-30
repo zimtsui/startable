@@ -12,11 +12,6 @@ import {
 } from './startable-like';
 import { boundMethod } from 'autobind-decorator';
 
-import { StoppedLike } from './states/stopped/stopped-like';
-import { StartingLike } from './states/starting/starting-like';
-import { StartedLike } from './states/started/started-like';
-import { StoppingLike } from './states/stopping/stopping-like';
-
 import { Stopped } from './states/stopped/stopped';
 import { Starting } from './states/starting/starting';
 import { Started } from './states/started/started';
@@ -38,26 +33,11 @@ export class Startable implements StartableLike {
 		};
 		this.friendly = new FriendlyStartable(rawStart, rawStop);
 
-		this.container.register(
-			StoppedLike.FactoryLike,
-			() => factories.stopped,
-		);
-		this.container.register(
-			StartingLike.FactoryLike,
-			() => factories.starting,
-		);
-		this.container.register(
-			StartedLike.FactoryLike,
-			() => factories.started,
-		);
-		this.container.register(
-			StoppingLike.FactoryLike,
-			() => factories.stopping,
-		);
-		this.container.register(
-			FriendlyStartable,
-			() => this.friendly,
-		);
+		this.container.register<Stopped.FactoryDeps>(Stopped.FactoryDeps, () => factories);
+		this.container.register<Starting.FactoryDeps>(Starting.FactoryDeps, () => factories);
+		this.container.register<Started.FactoryDeps>(Started.FactoryDeps, () => factories);
+		this.container.register<Stopping.FactoryDeps>(Stopping.FactoryDeps, () => factories);
+		this.container.register(FriendlyStartable, () => this.friendly);
 		this.container.inject(factories.stopped);
 		this.container.inject(factories.starting);
 		this.container.inject(factories.started);

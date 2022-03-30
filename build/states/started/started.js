@@ -9,7 +9,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CannotSkipStartDuringStarted = exports.CannotFailDuringStarted = exports.Started = void 0;
 const friendly_startable_1 = require("../../friendly-startable");
 const injektor_1 = require("injektor");
-const stopping_like_1 = require("../stopping/stopping-like");
 class Started {
     constructor(args, startable) {
         this.startable = startable;
@@ -28,7 +27,7 @@ class Started {
         await this.tryStart(onStopping);
     }
     async tryStop(err) {
-        const nextState = this.stoppingFactory.create({
+        const nextState = this.factories.stopping.create({
             startingPromise: this.startingPromise,
             onStoppings: this.onStoppings,
             err,
@@ -49,15 +48,16 @@ class Started {
         throw new CannotSkipStartDuringStarted();
     }
 }
+Started.FactoryDeps = {};
 __decorate([
-    (0, injektor_1.inject)(stopping_like_1.StoppingLike.FactoryLike)
-], Started.prototype, "stoppingFactory", void 0);
+    (0, injektor_1.inject)(Started.FactoryDeps)
+], Started.prototype, "factories", void 0);
 exports.Started = Started;
 (function (Started) {
     class Factory {
         constructor() {
             this.container = new injektor_1.Container();
-            this.container.register(stopping_like_1.StoppingLike.FactoryLike, () => this.stoppingFactory);
+            this.container.register(Started.FactoryDeps, () => this.factories);
             this.container.register(friendly_startable_1.FriendlyStartable, () => this.startable);
         }
         create(args) {
@@ -65,8 +65,8 @@ exports.Started = Started;
         }
     }
     __decorate([
-        (0, injektor_1.inject)(stopping_like_1.StoppingLike.FactoryLike)
-    ], Factory.prototype, "stoppingFactory", void 0);
+        (0, injektor_1.inject)(Started.FactoryDeps)
+    ], Factory.prototype, "factories", void 0);
     __decorate([
         (0, injektor_1.inject)(friendly_startable_1.FriendlyStartable)
     ], Factory.prototype, "startable", void 0);
