@@ -7,13 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CannotSkipStartDuringStopping = exports.CannotTryStartDuringStopping = exports.Stopping = void 0;
-const friendly_startable_1 = require("../../friendly-startable");
-const manual_promise_1 = require("manual-promise");
+const public_manual_promise_1 = require("../../public-manual-promise");
+const friendly_startable_like_1 = require("../../friendly-startable-like");
 const injektor_1 = require("injektor");
 class Stopping {
     constructor(args, startable) {
         this.startable = startable;
-        this.stoppingPromise = new manual_promise_1.ManualPromise();
+        this.stoppingPromise = public_manual_promise_1.PublicManualPromise.create();
         this.manualFailure = null;
         this.startingPromise = args.startingPromise;
         this.onStoppings = args.onStoppings;
@@ -74,7 +74,7 @@ exports.Stopping = Stopping;
     class Factory {
         constructor() {
             this.container = new injektor_1.Container();
-            this.container.register(friendly_startable_1.FriendlyStartable, () => this.startable);
+            this.container.register(friendly_startable_like_1.FriendlyStartableLike, () => this.startable);
             this.container.register(Stopping.FactoryDeps, () => this.factories);
         }
         create(args) {
@@ -85,7 +85,7 @@ exports.Stopping = Stopping;
         (0, injektor_1.inject)(Stopping.FactoryDeps)
     ], Factory.prototype, "factories", void 0);
     __decorate([
-        (0, injektor_1.inject)(friendly_startable_1.FriendlyStartable)
+        (0, injektor_1.inject)(friendly_startable_like_1.FriendlyStartableLike)
     ], Factory.prototype, "startable", void 0);
     Stopping.Factory = Factory;
 })(Stopping = exports.Stopping || (exports.Stopping = {}));

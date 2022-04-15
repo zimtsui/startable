@@ -4,7 +4,7 @@ import {
 } from '../../startable-like';
 import { StoppedLike } from './stopped-like';
 import { inject, Container } from 'injektor';
-import { FriendlyStartable } from '../../friendly-startable';
+import { FriendlyStartableLike } from '../../friendly-startable-like';
 
 import { StartingLike } from '../starting/starting-like';
 import { StartedLike } from '../started/started-like';
@@ -19,7 +19,7 @@ export class Stopped implements StoppedLike {
 
 	public constructor(
 		args: StoppedLike.FactoryLike.Args,
-		private startable: FriendlyStartable,
+		private startable: FriendlyStartableLike,
 	) {
 		this.stoppingPromise = args.stoppingPromise;
 	}
@@ -79,8 +79,8 @@ export namespace Stopped {
 		private container = new Container();
 		@inject(Stopped.FactoryDeps)
 		private factories!: Stopped.FactoryDeps;
-		@inject(FriendlyStartable)
-		private startable!: FriendlyStartable;
+		@inject(FriendlyStartableLike)
+		private startable!: FriendlyStartableLike;
 
 
 		public constructor() {
@@ -89,7 +89,7 @@ export namespace Stopped {
 				() => this.factories,
 			);
 			this.container.register(
-				FriendlyStartable,
+				FriendlyStartableLike,
 				() => this.startable,
 			);
 		}

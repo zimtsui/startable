@@ -3,15 +3,15 @@ import {
 	ReadyState,
 } from '../../startable-like';
 import { inject, Container } from 'injektor';
-import { ManualPromise } from 'manual-promise';
+import { PublicManualPromise } from '../../public-manual-promise';
 import { StartingLike } from './starting-like';
-import { FriendlyStartable } from '../../friendly-startable';
+import { FriendlyStartableLike } from '../../friendly-startable-like';
 
 import { StartedLike } from '../started/started-like';
 
 
 export class Starting implements StartingLike {
-	private startingPromise = new ManualPromise();
+	private startingPromise = PublicManualPromise.create();
 	private onStoppings: OnStopping[] = [];
 	private manualFailure: null | Error = null;
 
@@ -21,7 +21,7 @@ export class Starting implements StartingLike {
 
 	constructor(
 		args: Starting.Args,
-		private startable: FriendlyStartable,
+		private startable: FriendlyStartableLike,
 	) {
 		if (args.onStopping) this.onStoppings.push(args.onStopping);
 
@@ -93,8 +93,8 @@ export namespace Starting {
 		private container = new Container();
 		@inject(Starting.FactoryDeps)
 		private factories!: Starting.FactoryDeps;
-		@inject(FriendlyStartable)
-		private startable!: FriendlyStartable;
+		@inject(FriendlyStartableLike)
+		private startable!: FriendlyStartableLike;
 
 		public constructor() {
 			this.container.register(
@@ -102,7 +102,7 @@ export namespace Starting {
 				() => this.factories,
 			);
 			this.container.register(
-				FriendlyStartable,
+				FriendlyStartableLike,
 				() => this.startable,
 			);
 		}

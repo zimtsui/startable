@@ -1,5 +1,5 @@
-import { FriendlyStartable } from '../../friendly-startable';
 import { OnStopping, ReadyState } from '../../startable-like';
+import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { StoppingLike } from './stopping-like';
 import { StoppedLike } from '../stopped/stopped-like';
 export declare class Stopping implements StoppingLike {
@@ -10,7 +10,7 @@ export declare class Stopping implements StoppingLike {
     private manualFailure;
     static FactoryDeps: {};
     private factories;
-    constructor(args: Stopping.Args, startable: FriendlyStartable);
+    constructor(args: Stopping.Args, startable: FriendlyStartableLike);
     getStartingPromise(): Promise<void>;
     getStoppingPromise(): Promise<void>;
     private setup;

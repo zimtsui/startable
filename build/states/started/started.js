@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CannotSkipStartDuringStarted = exports.CannotFailDuringStarted = exports.Started = void 0;
-const friendly_startable_1 = require("../../friendly-startable");
+const friendly_startable_like_1 = require("../../friendly-startable-like");
 const injektor_1 = require("injektor");
 class Started {
     constructor(args, startable) {
@@ -58,7 +58,7 @@ exports.Started = Started;
         constructor() {
             this.container = new injektor_1.Container();
             this.container.register(Started.FactoryDeps, () => this.factories);
-            this.container.register(friendly_startable_1.FriendlyStartable, () => this.startable);
+            this.container.register(friendly_startable_like_1.FriendlyStartableLike, () => this.startable);
         }
         create(args) {
             return this.container.inject(new Started(args, this.startable));
@@ -68,7 +68,7 @@ exports.Started = Started;
         (0, injektor_1.inject)(Started.FactoryDeps)
     ], Factory.prototype, "factories", void 0);
     __decorate([
-        (0, injektor_1.inject)(friendly_startable_1.FriendlyStartable)
+        (0, injektor_1.inject)(friendly_startable_like_1.FriendlyStartableLike)
     ], Factory.prototype, "startable", void 0);
     Started.Factory = Factory;
 })(Started = exports.Started || (exports.Started = {}));

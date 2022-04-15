@@ -2,7 +2,7 @@ import {
 	OnStopping,
 	ReadyState,
 } from '../../startable-like';
-import { FriendlyStartable } from '../../friendly-startable';
+import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { inject, Container } from 'injektor';
 
 import { StartedLike } from './started-like';
@@ -19,7 +19,7 @@ export class Started implements StartedLike {
 
 	public constructor(
 		args: Started.Args,
-		private startable: FriendlyStartable,
+		private startable: FriendlyStartableLike,
 	) {
 		this.startingPromise = args.startingPromise;
 		this.onStoppings = args.onStoppings;
@@ -77,8 +77,8 @@ export namespace Started {
 		private container = new Container();
 		@inject(Started.FactoryDeps)
 		private factories!: Started.FactoryDeps;
-		@inject(FriendlyStartable)
-		private startable!: FriendlyStartable;
+		@inject(FriendlyStartableLike)
+		private startable!: FriendlyStartableLike;
 
 		public constructor() {
 			this.container.register(
@@ -86,7 +86,7 @@ export namespace Started {
 				() => this.factories,
 			);
 			this.container.register(
-				FriendlyStartable,
+				FriendlyStartableLike,
 				() => this.startable,
 			);
 		}

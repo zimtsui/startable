@@ -1,5 +1,5 @@
-import { StartableLike } from '../../startable-like';
-export interface StoppedLike extends StartableLike {
+import { StateLike } from '../../state-like';
+export interface StoppedLike extends StateLike {
     getStoppingPromise(): Promise<void>;
 }
 export declare namespace StoppedLike {

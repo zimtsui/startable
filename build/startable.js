@@ -7,59 +7,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Startable = void 0;
-const injektor_1 = require("injektor");
 const friendly_startable_1 = require("./friendly-startable");
 const autobind_decorator_1 = require("autobind-decorator");
-const stopped_1 = require("./states/stopped/stopped");
-const starting_1 = require("./states/starting/starting");
-const started_1 = require("./states/started/started");
-const stopping_1 = require("./states/stopping/stopping");
-class Startable {
+class Startable extends friendly_startable_1.FriendlyStartable {
+    static create(rawStart, rawStop) {
+        return new Startable(rawStart, rawStop);
+    }
     constructor(rawStart, rawStop) {
-        this.container = new injektor_1.Container();
-        const factories = {
-            stopped: new stopped_1.Stopped.Factory(),
-            starting: new starting_1.Starting.Factory(),
-            started: new started_1.Started.Factory(),
-            stopping: new stopping_1.Stopping.Factory(),
-        };
-        this.friendly = new friendly_startable_1.FriendlyStartable(rawStart, rawStop);
-        this.container.register(stopped_1.Stopped.FactoryDeps, () => factories);
-        this.container.register(starting_1.Starting.FactoryDeps, () => factories);
-        this.container.register(started_1.Started.FactoryDeps, () => factories);
-        this.container.register(stopping_1.Stopping.FactoryDeps, () => factories);
-        this.container.register(friendly_startable_1.FriendlyStartable, () => this.friendly);
-        this.container.inject(factories.stopped);
-        this.container.inject(factories.starting);
-        this.container.inject(factories.started);
-        this.container.inject(factories.stopping);
-        this.container.register(friendly_startable_1.initialState, () => factories.stopped.create({
-            stoppingPromise: Promise.resolve(),
-        }));
-        this.container.inject(this.friendly);
-    }
-    getReadyState() {
-        return this.friendly.getReadyState();
-    }
-    async tryStart(onStopping) {
-        await this.friendly.tryStart(onStopping);
-    }
-    async start(onStopping) {
-        await this.friendly.start(onStopping);
-    }
-    async tryStop(err) {
-        await this.friendly.tryStop(err);
+        super(rawStart, rawStop);
     }
     stop(err) {
-        const promise = this.friendly.stop(err);
+        const promise = super.stop(err);
         promise.catch(() => { });
         return promise;
-    }
-    async fail(err) {
-        this.friendly.fail(err);
-    }
-    skipStart(onStopping) {
-        this.friendly.skipStart(onStopping);
     }
 }
 __decorate([

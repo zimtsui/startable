@@ -10,7 +10,7 @@ chai.use(chaiAsPromised);
 const { assert } = chai;
 (0, ava_1.default)('start succ stop succ', async (t) => {
     const f = fake();
-    const s = new index_1.Startable(async () => {
+    const s = index_1.Startable.create(async () => {
         f();
         return Promise.resolve();
     }, async () => {
@@ -25,7 +25,7 @@ const { assert } = chai;
 });
 (0, ava_1.default)('start succ stop fail', async (t) => {
     const f = fake();
-    const s = new index_1.Startable(async () => {
+    const s = index_1.Startable.create(async () => {
         f();
         return Promise.resolve();
     }, async () => {
@@ -39,7 +39,7 @@ const { assert } = chai;
 });
 (0, ava_1.default)('start fail stop succ', async (t) => {
     const f = fake();
-    const s = new index_1.Startable(async () => {
+    const s = index_1.Startable.create(async () => {
         f();
         return Promise.reject(new Error('start'));
     }, async () => {
@@ -54,7 +54,7 @@ const { assert } = chai;
 });
 (0, ava_1.default)('start fail stop fail', async (t) => {
     const f = fake();
-    const s = new index_1.Startable(async () => {
+    const s = index_1.Startable.create(async () => {
         f();
         return Promise.reject(new Error('start'));
     }, async () => {
@@ -70,7 +70,7 @@ const { assert } = chai;
 (0, ava_1.default)('stop during starting', async (t) => {
     const f = fake();
     let resolveStart;
-    const s = new index_1.Startable(async () => {
+    const s = index_1.Startable.create(async () => {
         f();
         return new Promise(resolve => {
             resolveStart = resolve;

@@ -1,9 +1,8 @@
-import {
-	StartableLike,
-	OnStopping,
-} from '../../startable-like';
+import { StateLike } from '../../state-like';
+import { OnStopping } from '../../startable-like';
 
-export interface StartedLike extends StartableLike {
+
+export interface StartedLike extends StateLike {
 	getStartingPromise(): Promise<void>;
 }
 

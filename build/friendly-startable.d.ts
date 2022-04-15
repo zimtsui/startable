@@ -1,8 +1,8 @@
 import { OnStopping, RawStart, RawStop, ReadyState, StartableLike } from './startable-like';
-export declare const initialState: {};
 export declare class FriendlyStartable implements StartableLike {
     rawStart: RawStart;
     rawStop: RawStop;
+    private container;
     private state;
     constructor(rawStart: RawStart, rawStop: RawStop);
     setState(state: StartableLike): void;
