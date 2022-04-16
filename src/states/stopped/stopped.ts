@@ -1,5 +1,5 @@
 import { OnStopping, ReadyState } from '../../startable-like';
-import { StateLike } from '../../state-like';
+import { StateLike, STATE_LIKE_TYPE } from '../../state-like';
 import { StoppedLike, CannotStopDuringStopped } from './stopped-like';
 import { inject, Container } from 'injektor';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
@@ -9,6 +9,7 @@ import { StartedLike } from '../started/started-like';
 
 
 export class Stopped implements StateLike {
+	[STATE_LIKE_TYPE]: void;
 	private stoppingPromise: Promise<void>;
 
 	public static FactoryDeps = {};

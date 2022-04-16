@@ -1,10 +1,11 @@
 import { OnStopping, ReadyState } from '../../startable-like';
-import { StateLike } from '../../state-like';
+import { StateLike, STATE_LIKE_TYPE } from '../../state-like';
 import { StartingLike } from './starting-like';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { StartedLike } from '../started/started-like';
 export declare class Starting implements StateLike {
     private startable;
+    [STATE_LIKE_TYPE]: void;
     private startingPromise;
     private stoppingPromise;
     private onStoppings;

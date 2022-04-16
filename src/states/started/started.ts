@@ -1,5 +1,5 @@
 import { OnStopping, ReadyState } from '../../startable-like';
-import { StateLike } from '../../state-like';
+import { StateLike, STATE_LIKE_TYPE } from '../../state-like';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { inject, Container } from 'injektor';
 
@@ -8,6 +8,8 @@ import { StoppingLike } from '../stopping/stopping-like';
 
 
 export class Started implements StateLike {
+	[STATE_LIKE_TYPE]: void;
+
 	private startingPromise: Promise<void>;
 	private onStoppings: OnStopping[];
 

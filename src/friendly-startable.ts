@@ -6,6 +6,7 @@ import {
 	ReadyState,
 	StartableLike,
 } from './startable-like';
+import { StateLike } from './state-like';
 import { FriendlyStartableLike } from './friendly-startable-like';
 
 import { Stopped } from './states/stopped/stopped';
@@ -16,24 +17,23 @@ import { Stopping } from './states/stopping/stopping';
 
 export class FriendlyStartable implements StartableLike {
 	private container = new Container();
-	private state: StartableLike;
+	private state: StateLike;
 
 	public constructor(
 		public rawStart: RawStart,
 		public rawStop: RawStop,
 	) {
+		this.container.register<Stopped.FactoryDeps>(Stopped.FactoryDeps, () => factories);
+		this.container.register<Starting.FactoryDeps>(Starting.FactoryDeps, () => factories);
+		this.container.register<Started.FactoryDeps>(Started.FactoryDeps, () => factories);
+		this.container.register<Stopping.FactoryDeps>(Stopping.FactoryDeps, () => factories);
+		this.container.register(FriendlyStartableLike, () => this);
 		const factories = {
 			stopped: new Stopped.Factory(),
 			starting: new Starting.Factory(),
 			started: new Started.Factory(),
 			stopping: new Stopping.Factory(),
 		};
-
-		this.container.register<Stopped.FactoryDeps>(Stopped.FactoryDeps, () => factories);
-		this.container.register<Starting.FactoryDeps>(Starting.FactoryDeps, () => factories);
-		this.container.register<Started.FactoryDeps>(Started.FactoryDeps, () => factories);
-		this.container.register<Stopping.FactoryDeps>(Stopping.FactoryDeps, () => factories);
-		this.container.register(FriendlyStartableLike, () => this);
 		this.container.inject(factories.stopped);
 		this.container.inject(factories.starting);
 		this.container.inject(factories.started);
@@ -44,11 +44,11 @@ export class FriendlyStartable implements StartableLike {
 		});
 	}
 
-	public setState(state: StartableLike): void {
+	public setState(state: StateLike): void {
 		this.state = state;
 	}
 
-	public getState(): StartableLike {
+	public getState(): StateLike {
 		return this.state;
 	}
 
