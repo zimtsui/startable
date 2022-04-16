@@ -49,6 +49,10 @@ export class Starting implements StateLike {
 		await this.startingPromise;
 	}
 
+	public async assart(onStopping?: OnStopping): Promise<void> {
+		await this.start(onStopping);
+	}
+
 	public async stop(err?: Error): Promise<void> {
 		await this.stoppingPromise;
 	}

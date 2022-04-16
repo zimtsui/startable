@@ -20,6 +20,9 @@ class Started {
             this.onStoppings.push(onStopping);
         await this.startingPromise;
     }
+    async assart(onStopping) {
+        await this.start(onStopping);
+    }
     async stop(err) {
         const nextState = this.factories.stopping.create({
             startingPromise: this.startingPromise,

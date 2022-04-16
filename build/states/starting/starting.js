@@ -43,6 +43,9 @@ class Starting {
             this.onStoppings.push(onStopping);
         await this.startingPromise;
     }
+    async assart(onStopping) {
+        await this.start(onStopping);
+    }
     async stop(err) {
         await this.stoppingPromise;
     }

@@ -28,6 +28,10 @@ export class Started implements StateLike {
 		await this.startingPromise;
 	}
 
+	public async assart(onStopping?: OnStopping): Promise<void> {
+		await this.start(onStopping);
+	}
+
 	public async stop(err?: Error): Promise<void> {
 		const nextState = this.factories.stopping.create({
 			startingPromise: this.startingPromise,

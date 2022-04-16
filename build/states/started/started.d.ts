@@ -11,6 +11,7 @@ export declare class Started implements StateLike {
     private factories;
     constructor(args: StartedLike.FactoryLike.Args, startable: FriendlyStartableLike);
     start(onStopping?: OnStopping): Promise<void>;
+    assart(onStopping?: OnStopping): Promise<void>;
     stop(err?: Error): Promise<void>;
     starp(err?: Error): Promise<void>;
     getReadyState(): ReadyState;

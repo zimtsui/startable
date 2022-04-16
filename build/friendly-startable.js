@@ -46,6 +46,9 @@ class FriendlyStartable {
     async start(onStopping) {
         await this.state.start(onStopping);
     }
+    async assart(onStopping) {
+        await this.state.assart(onStopping);
+    }
     async starp(err) {
         await this.state.starp(err);
     }

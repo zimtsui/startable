@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotSkipStartDuringStopping = exports.Stopping = void 0;
+exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.Stopping = void 0;
 const public_manual_promise_1 = require("../../public-manual-promise");
 const friendly_startable_like_1 = require("../../friendly-startable-like");
 const injektor_1 = require("injektor");
@@ -38,6 +38,9 @@ class Stopping {
     }
     async start(onStopping) {
         await this.startingPromise;
+    }
+    async assart(onStopping) {
+        throw new CannotAssartDuringStopping();
     }
     async stop(err) {
         await this.stoppingPromise;
@@ -82,4 +85,10 @@ class CannotSkipStartDuringStopping extends Error {
     }
 }
 exports.CannotSkipStartDuringStopping = CannotSkipStartDuringStopping;
+class CannotAssartDuringStopping extends Error {
+    constructor() {
+        super('Cannot call .assart() during STOPPING.');
+    }
+}
+exports.CannotAssartDuringStopping = CannotAssartDuringStopping;
 //# sourceMappingURL=stopping.js.map

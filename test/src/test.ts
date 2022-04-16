@@ -36,7 +36,7 @@ test('start succ stop fail', async t => {
         return Promise.reject(new Error('stop'));
     });
     await s.start();
-    s.stop();
+    s.stop().catch(() => { });
     await assert.isRejected(s.stop(), /^stop$/);
     assert(f.callCount === 2);
 });
@@ -69,7 +69,7 @@ test('start fail stop fail', async t => {
     });
     s.start().catch(() => { });
     await assert.isRejected(s.start(), /^start$/);
-    s.stop();
+    s.stop().catch(() => { });
     await assert.isRejected(s.stop(), /^stop$/);
     assert(f.callCount === 2);
 });

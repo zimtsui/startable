@@ -64,6 +64,10 @@ export class FriendlyStartable implements StartableLike {
 		await this.state.start(onStopping);
 	}
 
+	public async assart(onStopping?: OnStopping): Promise<void> {
+		await this.state.assart(onStopping);
+	}
+
 	public async starp(err?: Error): Promise<void> {
 		await this.state.starp(err);
 	}

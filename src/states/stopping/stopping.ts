@@ -48,6 +48,10 @@ export class Stopping implements StateLike {
 		await this.startingPromise;
 	}
 
+	public async assart(onStopping?: OnStopping): Promise<never> {
+		throw new CannotAssartDuringStopping();
+	}
+
 	public async stop(err?: Error): Promise<void> {
 		await this.stoppingPromise;
 	}
@@ -102,5 +106,11 @@ export namespace Stopping {
 export class CannotSkipStartDuringStopping extends Error {
 	public constructor() {
 		super('Cannot call .skipStart() during STOPPING.');
+	}
+}
+
+export class CannotAssartDuringStopping extends Error {
+	public constructor() {
+		super('Cannot call .assart() during STOPPING.');
 	}
 }

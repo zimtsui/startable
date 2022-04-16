@@ -1,5 +1,6 @@
 export interface StartableLike {
 	start(onStopping?: OnStopping): Promise<void>;
+	assart(onStopping?: OnStopping): Promise<void>;
 	stop(err?: Error): Promise<void>;
 	starp(err?: Error): Promise<void>;
 	getReadyState(): ReadyState;

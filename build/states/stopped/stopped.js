@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotStarpDuringStopped = exports.Stopped = void 0;
+exports.CannotAssartDuringStopped = exports.CannotStarpDuringStopped = exports.Stopped = void 0;
 const stopped_like_1 = require("./stopped-like");
 const injektor_1 = require("injektor");
 const friendly_startable_like_1 = require("../../friendly-startable-like");
@@ -25,6 +25,9 @@ class Stopped {
         });
         this.startable.setState(nextState);
         await this.startable.start();
+    }
+    async assart(onStopping) {
+        throw new CannotAssartDuringStopped();
     }
     async stop() {
         throw new stopped_like_1.CannotStopDuringStopped();
@@ -73,4 +76,10 @@ class CannotStarpDuringStopped extends Error {
     }
 }
 exports.CannotStarpDuringStopped = CannotStarpDuringStopped;
+class CannotAssartDuringStopped extends Error {
+    constructor() {
+        super('Cannot call .assart() during STOPPED.');
+    }
+}
+exports.CannotAssartDuringStopped = CannotAssartDuringStopped;
 //# sourceMappingURL=stopped.js.map
