@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotStarpDuringStarted = exports.CannotSkipStartDuringStarted = exports.Started = void 0;
+exports.CannotSkipStartDuringStarted = exports.Started = void 0;
 const friendly_startable_like_1 = require("../../friendly-startable-like");
 const injektor_1 = require("injektor");
 class Started {
@@ -30,7 +30,7 @@ class Started {
         await this.startable.stop();
     }
     async starp(err) {
-        throw new CannotStarpDuringStarted();
+        await this.stop(err);
     }
     getReadyState() {
         return "STARTED" /* STARTED */;
@@ -69,10 +69,4 @@ class CannotSkipStartDuringStarted extends Error {
     }
 }
 exports.CannotSkipStartDuringStarted = CannotSkipStartDuringStarted;
-class CannotStarpDuringStarted extends Error {
-    constructor() {
-        super('Cannot call .starp() during STARTED.');
-    }
-}
-exports.CannotStarpDuringStarted = CannotStarpDuringStarted;
 //# sourceMappingURL=started.js.map

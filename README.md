@@ -51,10 +51,10 @@ await daemon.startable.stop();
 1. 此时运行异步的 `.stop()` 进入 STOPPING 状态，Startable 会调用你实现的 `.rawStop`。
 1. `.rawStop` 结束时，进入 STOPPED 状态。
 
-你可以通过 `readyState` 属性查看当前时刻的状态。
+### 查看当前时刻的状态。
 
 ```ts
-console.log(daemon.readyState === ReadyState.STOPPED);
+console.log(daemon.getReadyState() === ReadyState.STOPPED);
 ```
 
 ## 启停方法
@@ -63,9 +63,9 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 
 | 状态 | `.start()` 的行为 | `.start()` 的值 |
 |---|---|---|
-| STOPPED/UNSTOPPED | 开始启动过程 | 本次 `.start()` 所开始的这次启动过程的 Promise |
+| STOPPED | 开始启动过程 | 本次启动过程的 Promise |
 | STARTING | 什么也不干 | 正在进行的这次启动过程的 Promise |
-| STARTED/UNSTARTED | 什么也不干 | 刚刚结束的那次启动过程的 Promise |
+| STARTED | 什么也不干 | 刚刚结束的那次启动过程的 Promise |
 | STOPPING | 什么也不干 | 上一次启动过程的 Promise |
 
 - 你可以在启动过程中尽情地重复运行 `.start()` ，而不用担心重复运行你的 `.rawStart` 实现。
@@ -86,20 +86,28 @@ console.log(daemon.readyState === ReadyState.STOPPED);
 
 | 状态 | `.stop()` 的行为 | `.stop()` 的值 |
 |---|---|---|
-| STOPPED/UNSTOPPED | 什么也不干 | 刚刚结束的这次停止过程的 Promise |
-| STARTING | 使正在进行的这次启动过程最终 rejected，并在启动过程结束后开始停止过程 | 本次 `.stop()` 所开始的这次停止过程的 Promise |
-| STARTED/UNSTARTED | 开始停止过程 | 本次 `.stop()` 所开始的这次停止过程的 Promise |
+| STOPPED | 什么也不干 | 刚刚结束的这次停止过程的 Promise |
+| STARTING | 什么也不干 | 上一次停止过程的 Promise |
+| STARTED | 开始停止过程 | 本次停止过程的 Promise |
 | STOPPING | 什么也不干 | 正在进行的这次停止过程的 Promise |
 
 - 你可以在停止过程中尽情地重复运行 `.stop()` ，而不用担心重复运行你的 `.rawStop` 实现。
-- `.stop()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.startable.stop()` 而不必 `this.startable.stop().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
-- `.stop()` 默认已经绑定到 Startable 上了，因此你可以把 `this.startable.stop` 作为回调而不必 `err => this.startable.stop(err)`。
+
+### 确保停止
+
+| 状态 | `.starp()` 的行为 | `.starp()` 的值 |
+|---|---|---|
+| STOPPED | 什么也不干 | 抛出异常 |
+| STARTING | 使正在进行的这次启动过程最终失败，并立即开始停止过程 | 本次停止过程的 Promise |
+| STARTED | 开始停止过程 | 本次停止过程的 Promise |
+| STOPPING | 什么也不干 | 正在进行的这次停止过程的 Promise |
+
+- `.starp()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.startable.starp()` 而不必 `this.startable.starp().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
+- `.starp()` 默认已经绑定到 Startable 上了，因此你可以把 `this.startable.starp` 作为回调而不必 `err => this.startable.starp(err)`。
 
 ## 自发启停
 
-一个 Startable 自己可以调用自己的 `.stop()` 和 `.start()`。
-
-当自己发生错误时，就应当调用自己的 `.stop()`，参数填一个 Error 表示原因。因为在语义上，此时自己已经结束了「正常提供服务中」的状态。
+当自己发生内部错误时，就应当调用自己的 `.starp()`，因为在语义上，此时自己已经结束了「正常提供服务中」的状态。
 
 ```ts
 class Daemon {
@@ -110,7 +118,9 @@ class Daemon {
 }
 ```
 
-`.start()` 可以接受一个 onStopping 钩子作为回调，用于在停止过程开始时通知外部。当这个 `.stop()` 运行时会同步地调用这个回调，并将你填进 `.stop()` 的参数传递给这个回调。你可以自行定义这个 Error 参数的语义，然后在回调中根据参数判断停止的原因。一般来说，如果是自发停止则传参，如果是从外部被动停止则不传参，这样就可以在回调中根据参数是否存在来判断是不是自发停止。
+`.start()` 可以接受一个 onStopping 钩子作为回调，用于在停止过程开始时通知外部。当停止过程开始时会先同步地调用这个回调，并将你填进 `.stop()` 的参数传递给这个回调。你可以自行定义这个 Error 参数的语义，然后在回调中根据参数判断停止的原因。
+
+一般来说，如果是自发停止则传参，如果是从外部被动停止则不传参，这样就可以在回调中根据参数是否存在来判断是不是自发停止。
 
 ```ts
 // main coroutine
@@ -182,7 +192,7 @@ function stopDaemon() {
 
 ## 依赖
 
-### 内部依赖
+### Composition
 
 如果一个 Startable 依赖于其内部的其他 Startable，即
 
@@ -195,8 +205,8 @@ class Parent {
     private child2: Daemon;
 
     protected async rawStart(): Promise<void> {
-        await child1.startable.start(this.startable.stop);
-        await child2.startable.start(this.startable.stop);
+        await child1.startable.start(this.startable.starp);
+        await child2.startable.start(this.startable.starp);
     }
     protected async rawStop(): Promise<void> {
         await child2.startable.stop();
@@ -208,9 +218,9 @@ class Parent {
 - 如果在 child2 启动过程中，已经启动完成的 child1 开始自发停止，那么 child1 会通过 onStopping 回调调用 parent 的 `.stop()`，此时 parent 处于 STARTING 状态，导致 parent 的启动过程 rejected。在语义上，一个后台对象启动过程中，他依赖的儿子挂了，这个后台对象的启动过程也确实算不上成功，因此语义与实现是一致的。
 - 如果调用 `parent.startable.stop()`，`parent.startable.stop()` 会调用 `child.startable.stop()`，`child.startable.stop()` 会通过 onStopping 回调再次调用 `parent.startable.stop()`，不过此时 parent 处于 STOPPING 状态，parent 内部的 `.rawStop` 实现不会被调用两次。
 
-### 外部依赖
+### Aggregation
 
-一个 Startable 的依赖也可能是外部的 Startable，即 UML 中的 Aggregation 而不是 Composition。将被依赖的外部 Startable 放在上下文对象中，`.rawStart` 在上下文中取出自己的依赖，等待依赖完成启动。
+一个 Startable 的依赖也可能是外部注入的 Startable。
 
 ```diff
     class Daemon {
@@ -220,11 +230,11 @@ class Parent {
 
         protected async rawStart() {
 -           assert(
--               this.ctx.dep.readyState === ReadyState.STARTING ||
--               this.ctx.dep.readyState === ReadyState.STARTED
+-               this.ctx.dep.getReadyState() === ReadyState.STARTING ||
+-               this.ctx.dep.getReadyState() === ReadyState.STARTED
 -           );
--           await this.ctx.dep.startable.start(this.startable.stop);
-+           await this.ctx.dep.startable.assart(this.startable.stop);
+-           await this.ctx.dep.startable.start(this.startable.starp);
++           await this.ctx.dep.startable.assart(this.startable.starp);
         }
     }
 ```
@@ -233,7 +243,7 @@ class Parent {
 
 ## 可复用性
 
-如果想要让 Startable 可复用的话，`.rawStop` 的语义必须很严格：`.rawStop` 返回时对这个后台对象的停止工作已完全结束，可以立即开始新一轮启动。
+如果想要让一个 Startable 对象可复用的话，`.rawStop` 的语义必须很严格：`.rawStop` 返回时对这个后台对象的停止工作已完全结束，可以立即开始新一轮启动。
 
 如果 Startable 不需要复用的话，`.rawStop` 的语义可以比较宽松：`.rawStop` 返回时停止工作已经结束，但还没有为新一轮启动做好准备，比如内部某协程还差几个无关紧要事件循环没有跑完。
 

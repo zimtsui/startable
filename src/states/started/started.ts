@@ -38,8 +38,8 @@ export class Started implements StateLike {
 		await this.startable.stop();
 	}
 
-	public async starp(err?: Error): Promise<never> {
-		throw new CannotStarpDuringStarted();
+	public async starp(err?: Error): Promise<void> {
+		await this.stop(err);
 	}
 
 	public getReadyState(): ReadyState {
@@ -88,11 +88,5 @@ export namespace Started {
 export class CannotSkipStartDuringStarted extends Error {
 	public constructor() {
 		super('Cannot call .skipStart() during STARTED.');
-	}
-}
-
-export class CannotStarpDuringStarted extends Error {
-	public constructor() {
-		super('Cannot call .starp() during STARTED.');
 	}
 }

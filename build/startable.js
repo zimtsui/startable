@@ -16,14 +16,14 @@ class Startable extends friendly_startable_1.FriendlyStartable {
     constructor(rawStart, rawStop) {
         super(rawStart, rawStop);
     }
-    stop(err) {
-        const promise = super.stop(err);
+    starp(err) {
+        const promise = super.starp(err);
         promise.catch(() => { });
         return promise;
     }
 }
 __decorate([
     autobind_decorator_1.boundMethod
-], Startable.prototype, "stop", null);
+], Startable.prototype, "starp", null);
 exports.Startable = Startable;
 //# sourceMappingURL=startable.js.map

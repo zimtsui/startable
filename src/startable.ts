@@ -22,8 +22,8 @@ export class Startable extends FriendlyStartable {
 	}
 
 	@boundMethod
-	public stop(err?: Error): Promise<void> {
-		const promise = super.stop(err);
+	public starp(err?: Error): Promise<void> {
+		const promise = super.starp(err);
 		promise.catch(() => { });
 		return promise;
 	}

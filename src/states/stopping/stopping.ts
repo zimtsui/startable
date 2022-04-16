@@ -52,8 +52,8 @@ export class Stopping implements StateLike {
 		await this.stoppingPromise;
 	}
 
-	public async starp(err?: Error): Promise<never> {
-		throw new CannotStarpDuringStopping();
+	public async starp(err?: Error): Promise<void> {
+		await this.stop(err);
 	}
 
 	public getReadyState(): ReadyState {
@@ -96,12 +96,6 @@ export namespace Stopping {
 				),
 			);
 		}
-	}
-}
-
-export class CannotStarpDuringStopping extends Error {
-	public constructor() {
-		super('Cannot call .starp() during STOPPING.');
 	}
 }
 

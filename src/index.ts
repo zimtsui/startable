@@ -9,9 +9,7 @@ export {
 } from './states/starting/starting';
 export {
 	CannotSkipStartDuringStarted,
-	CannotStarpDuringStarted,
 } from './states/started/started';
 export {
 	CannotSkipStartDuringStopping,
-	CannotStarpDuringStopping,
 } from './states/stopping/stopping'

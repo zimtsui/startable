@@ -12,7 +12,7 @@ export declare class Started implements StateLike {
     constructor(args: StartedLike.FactoryLike.Args, startable: FriendlyStartableLike);
     start(onStopping?: OnStopping): Promise<void>;
     stop(err?: Error): Promise<void>;
-    starp(err?: Error): Promise<never>;
+    starp(err?: Error): Promise<void>;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): never;
 }
@@ -29,8 +29,5 @@ export declare namespace Started {
     }
 }
 export declare class CannotSkipStartDuringStarted extends Error {
-    constructor();
-}
-export declare class CannotStarpDuringStarted extends Error {
     constructor();
 }

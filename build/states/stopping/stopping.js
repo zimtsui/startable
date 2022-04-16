@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotSkipStartDuringStopping = exports.CannotStarpDuringStopping = exports.Stopping = void 0;
+exports.CannotSkipStartDuringStopping = exports.Stopping = void 0;
 const public_manual_promise_1 = require("../../public-manual-promise");
 const friendly_startable_like_1 = require("../../friendly-startable-like");
 const injektor_1 = require("injektor");
@@ -43,7 +43,7 @@ class Stopping {
         await this.stoppingPromise;
     }
     async starp(err) {
-        throw new CannotStarpDuringStopping();
+        await this.stop(err);
     }
     getReadyState() {
         return "STOPPING" /* STOPPING */;
@@ -76,12 +76,6 @@ exports.Stopping = Stopping;
     ], Factory.prototype, "startable", void 0);
     Stopping.Factory = Factory;
 })(Stopping = exports.Stopping || (exports.Stopping = {}));
-class CannotStarpDuringStopping extends Error {
-    constructor() {
-        super('Cannot call .starp() during STOPPING.');
-    }
-}
-exports.CannotStarpDuringStopping = CannotStarpDuringStopping;
 class CannotSkipStartDuringStopping extends Error {
     constructor() {
         super('Cannot call .skipStart() during STOPPING.');
