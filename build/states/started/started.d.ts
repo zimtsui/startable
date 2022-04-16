@@ -1,20 +1,18 @@
 import { OnStopping, ReadyState } from '../../startable-like';
+import { StateLike } from '../../state-like';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { StartedLike } from './started-like';
 import { StoppingLike } from '../stopping/stopping-like';
-export declare class Started implements StartedLike {
+export declare class Started implements StateLike {
     private startable;
     private startingPromise;
     private onStoppings;
     static FactoryDeps: {};
     private factories;
-    constructor(args: Started.Args, startable: FriendlyStartableLike);
-    getStartingPromise(): Promise<void>;
-    tryStart(onStopping?: OnStopping): Promise<void>;
+    constructor(args: StartedLike.FactoryLike.Args, startable: FriendlyStartableLike);
     start(onStopping?: OnStopping): Promise<void>;
-    tryStop(err?: Error): Promise<void>;
     stop(err?: Error): Promise<void>;
-    fail(err: Error): Promise<never>;
+    starp(err?: Error): Promise<never>;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): never;
 }
@@ -22,18 +20,17 @@ export declare namespace Started {
     interface FactoryDeps {
         stopping: StoppingLike.FactoryLike;
     }
-    export import Args = StartedLike.FactoryLike.Args;
     class Factory implements StartedLike.FactoryLike {
         private container;
         private factories;
         private startable;
         constructor();
-        create(args: Args): Started;
+        create(args: StartedLike.FactoryLike.Args): Started;
     }
 }
-export declare class CannotFailDuringStarted extends Error {
+export declare class CannotSkipStartDuringStarted extends Error {
     constructor();
 }
-export declare class CannotSkipStartDuringStarted extends Error {
+export declare class CannotStarpDuringStarted extends Error {
     constructor();
 }

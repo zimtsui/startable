@@ -43,20 +43,14 @@ class FriendlyStartable {
     skipStart(onStopping) {
         this.state.skipStart(onStopping);
     }
-    async tryStart(onStopping) {
-        await this.state.tryStart(onStopping);
-    }
     async start(onStopping) {
         await this.state.start(onStopping);
     }
-    async tryStop(err) {
-        await this.state.tryStop(err);
+    async starp(err) {
+        await this.state.starp(err);
     }
     async stop(err) {
         await this.state.stop(err);
-    }
-    async fail(err) {
-        await this.state.fail(err);
     }
 }
 exports.FriendlyStartable = FriendlyStartable;

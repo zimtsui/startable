@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotSkipStartDuringStarted = exports.CannotFailDuringStarted = exports.Started = void 0;
+exports.CannotStarpDuringStarted = exports.CannotSkipStartDuringStarted = exports.Started = void 0;
 const friendly_startable_like_1 = require("../../friendly-startable-like");
 const injektor_1 = require("injektor");
 class Started {
@@ -15,31 +15,22 @@ class Started {
         this.startingPromise = args.startingPromise;
         this.onStoppings = args.onStoppings;
     }
-    getStartingPromise() {
-        return this.startingPromise;
-    }
-    async tryStart(onStopping) {
+    async start(onStopping) {
         if (onStopping)
             this.onStoppings.push(onStopping);
         await this.startingPromise;
     }
-    async start(onStopping) {
-        await this.tryStart(onStopping);
-    }
-    async tryStop(err) {
+    async stop(err) {
         const nextState = this.factories.stopping.create({
             startingPromise: this.startingPromise,
             onStoppings: this.onStoppings,
             err,
         });
         this.startable.setState(nextState);
-        await nextState.getStoppingPromise();
+        await this.startable.stop();
     }
-    async stop(err) {
-        await this.tryStop(err);
-    }
-    async fail(err) {
-        throw new CannotFailDuringStarted();
+    async starp(err) {
+        throw new CannotStarpDuringStarted();
     }
     getReadyState() {
         return "STARTED" /* STARTED */;
@@ -72,16 +63,16 @@ exports.Started = Started;
     ], Factory.prototype, "startable", void 0);
     Started.Factory = Factory;
 })(Started = exports.Started || (exports.Started = {}));
-class CannotFailDuringStarted extends Error {
-    constructor() {
-        super('Cannot call .fail() during STARTED.');
-    }
-}
-exports.CannotFailDuringStarted = CannotFailDuringStarted;
 class CannotSkipStartDuringStarted extends Error {
     constructor() {
         super('Cannot call .skipStart() during STARTED.');
     }
 }
 exports.CannotSkipStartDuringStarted = CannotSkipStartDuringStarted;
+class CannotStarpDuringStarted extends Error {
+    constructor() {
+        super('Cannot call .starp() during STARTED.');
+    }
+}
+exports.CannotStarpDuringStarted = CannotStarpDuringStarted;
 //# sourceMappingURL=started.js.map

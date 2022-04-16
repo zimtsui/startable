@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const index_1 = require("../../build/index");
+const __1 = require("../..");
 const sinon = require("sinon");
 const ava_1 = require("ava");
 const chai = require("chai");
@@ -10,7 +10,7 @@ chai.use(chaiAsPromised);
 const { assert } = chai;
 (0, ava_1.default)('start succ stop succ', async (t) => {
     const f = fake();
-    const s = index_1.Startable.create(async () => {
+    const s = __1.Startable.create(async () => {
         f();
         return Promise.resolve();
     }, async () => {
@@ -25,7 +25,7 @@ const { assert } = chai;
 });
 (0, ava_1.default)('start succ stop fail', async (t) => {
     const f = fake();
-    const s = index_1.Startable.create(async () => {
+    const s = __1.Startable.create(async () => {
         f();
         return Promise.resolve();
     }, async () => {
@@ -39,7 +39,7 @@ const { assert } = chai;
 });
 (0, ava_1.default)('start fail stop succ', async (t) => {
     const f = fake();
-    const s = index_1.Startable.create(async () => {
+    const s = __1.Startable.create(async () => {
         f();
         return Promise.reject(new Error('start'));
     }, async () => {
@@ -54,7 +54,7 @@ const { assert } = chai;
 });
 (0, ava_1.default)('start fail stop fail', async (t) => {
     const f = fake();
-    const s = index_1.Startable.create(async () => {
+    const s = __1.Startable.create(async () => {
         f();
         return Promise.reject(new Error('start'));
     }, async () => {
@@ -67,10 +67,10 @@ const { assert } = chai;
     await assert.isRejected(s.stop(), /^stop$/);
     assert(f.callCount === 2);
 });
-(0, ava_1.default)('stop during starting', async (t) => {
+(0, ava_1.default)('starp during starting', async (t) => {
     const f = fake();
     let resolveStart;
-    const s = index_1.Startable.create(async () => {
+    const s = __1.Startable.create(async () => {
         f();
         return new Promise(resolve => {
             resolveStart = resolve;
@@ -81,10 +81,10 @@ const { assert } = chai;
     });
     const pStart = s.start();
     pStart.catch(() => { });
-    const pStop = s.stop();
+    const pStarp = s.starp();
     resolveStart();
-    await assert.isRejected(pStart, new index_1.StopCalledDuringStarting().message);
-    await assert.isFulfilled(pStop);
+    await assert.isRejected(pStart, new __1.StarpCalledDuringStarting().message);
+    await assert.isFulfilled(pStarp);
     assert(f.callCount === 2);
 });
 //# sourceMappingURL=test.js.map

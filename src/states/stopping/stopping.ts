@@ -1,7 +1,5 @@
-import {
-	OnStopping,
-	ReadyState,
-} from '../../startable-like';
+import { OnStopping, ReadyState } from '../../startable-like';
+import { StateLike } from '../../state-like';
 import { PublicManualPromise } from '../../public-manual-promise';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { StoppingLike } from './stopping-like';
@@ -10,7 +8,7 @@ import { inject, Container } from 'injektor';
 import { StoppedLike } from '../stopped/stopped-like';
 
 
-export class Stopping implements StoppingLike {
+export class Stopping implements StateLike {
 	private startingPromise: Promise<void>;
 	private stoppingPromise = PublicManualPromise.create();
 	private onStoppings: OnStopping[];
@@ -21,7 +19,7 @@ export class Stopping implements StoppingLike {
 	private factories!: Stopping.FactoryDeps;
 
 	public constructor(
-		args: Stopping.Args,
+		args: StoppingLike.FactoryLike.Args,
 		private startable: FriendlyStartableLike,
 	) {
 		this.startingPromise = args.startingPromise;
@@ -30,14 +28,6 @@ export class Stopping implements StoppingLike {
 		for (const onStopping of this.onStoppings) onStopping(args.err);
 
 		this.setup();
-	}
-
-	public getStartingPromise(): Promise<void> {
-		return this.startingPromise;
-	}
-
-	public getStoppingPromise(): Promise<void> {
-		return this.stoppingPromise;
 	}
 
 	private async setup(): Promise<void> {
@@ -54,25 +44,16 @@ export class Stopping implements StoppingLike {
 		this.startable.setState(nextState);
 	}
 
-	public async tryStart(onStopping?: OnStopping): Promise<never> {
-		throw new CannotTryStartDuringStopping();
-	}
-
 	public async start(onStopping?: OnStopping): Promise<void> {
 		await this.startingPromise;
 	}
 
-	public async tryStop(err?: Error): Promise<void> {
+	public async stop(err?: Error): Promise<void> {
 		await this.stoppingPromise;
 	}
 
-	public async stop(err?: Error): Promise<void> {
-		await this.tryStop(err);
-	}
-
-	public async fail(err: Error): Promise<void> {
-		this.manualFailure = err;
-		await this.stoppingPromise.catch(() => { });
+	public async starp(err?: Error): Promise<never> {
+		throw new CannotStarpDuringStopping();
 	}
 
 	public getReadyState(): ReadyState {
@@ -88,8 +69,6 @@ export namespace Stopping {
 	export interface FactoryDeps {
 		stopped: StoppedLike.FactoryLike;
 	}
-
-	export import Args = StoppingLike.FactoryLike.Args;
 
 	export class Factory implements StoppingLike.FactoryLike {
 		private container = new Container();
@@ -109,7 +88,7 @@ export namespace Stopping {
 			);
 		}
 
-		public create(args: Args): Stopping {
+		public create(args: StoppingLike.FactoryLike.Args): Stopping {
 			return this.container.inject(
 				new Stopping(
 					args,
@@ -120,14 +99,14 @@ export namespace Stopping {
 	}
 }
 
-export class CannotTryStartDuringStopping extends Error {
-	constructor() {
-		super('Cannot call .tryStop() during STOPPING.');
+export class CannotStarpDuringStopping extends Error {
+	public constructor() {
+		super('Cannot call .starp() during STOPPING.');
 	}
 }
 
 export class CannotSkipStartDuringStopping extends Error {
-	constructor() {
+	public constructor() {
 		super('Cannot call .skipStart() during STOPPING.');
 	}
 }

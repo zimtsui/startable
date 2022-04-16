@@ -6,7 +6,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotFailDuringStopped = exports.Stopped = void 0;
+exports.CannotStarpDuringStopped = exports.Stopped = void 0;
+const stopped_like_1 = require("./stopped-like");
 const injektor_1 = require("injektor");
 const friendly_startable_like_1 = require("../../friendly-startable-like");
 class Stopped {
@@ -17,24 +18,19 @@ class Stopped {
     getStoppingPromise() {
         return this.stoppingPromise;
     }
-    async tryStart(onStopping) {
+    async start(onStopping) {
         const nextState = this.factories.starting.create({
             onStopping,
+            stoppingPromise: this.stoppingPromise,
         });
         this.startable.setState(nextState);
-        await nextState.getStartingPromise();
-    }
-    async start(onStopping) {
-        await this.tryStart(onStopping);
-    }
-    async tryStop(err) {
-        await this.stoppingPromise;
+        await this.startable.start();
     }
     async stop() {
-        await this.tryStop();
+        throw new stopped_like_1.CannotStopDuringStopped();
     }
-    async fail(err) {
-        throw new CannotFailDuringStopped();
+    async starp(err) {
+        throw new CannotStarpDuringStopped();
     }
     getReadyState() {
         return "STOPPED" /* STOPPED */;
@@ -71,10 +67,10 @@ exports.Stopped = Stopped;
     ], Factory.prototype, "startable", void 0);
     Stopped.Factory = Factory;
 })(Stopped = exports.Stopped || (exports.Stopped = {}));
-class CannotFailDuringStopped extends Error {
+class CannotStarpDuringStopped extends Error {
     constructor() {
-        super('Cannot call .fail() during STOPPED.');
+        super('Cannot call .starp() during STOPPED.');
     }
 }
-exports.CannotFailDuringStopped = CannotFailDuringStopped;
+exports.CannotStarpDuringStopped = CannotStarpDuringStopped;
 //# sourceMappingURL=stopped.js.map

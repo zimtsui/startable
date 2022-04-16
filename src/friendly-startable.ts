@@ -60,23 +60,15 @@ export class FriendlyStartable implements StartableLike {
 		this.state.skipStart(onStopping);
 	}
 
-	public async tryStart(onStopping?: OnStopping): Promise<void> {
-		await this.state.tryStart(onStopping);
-	}
-
 	public async start(onStopping?: OnStopping): Promise<void> {
 		await this.state.start(onStopping);
 	}
 
-	public async tryStop(err?: Error): Promise<void> {
-		await this.state.tryStop(err);
+	public async starp(err?: Error): Promise<void> {
+		await this.state.starp(err);
 	}
 
 	public async stop(err?: Error): Promise<void> {
 		await this.state.stop(err);
-	}
-
-	public async fail(err: Error): Promise<void> {
-		await this.state.fail(err);
 	}
 }

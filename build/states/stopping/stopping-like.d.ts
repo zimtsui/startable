@@ -1,12 +1,8 @@
 import { OnStopping } from '../../startable-like';
 import { StateLike } from '../../state-like';
-export interface StoppingLike extends StateLike {
-    getStartingPromise(): Promise<void>;
-    getStoppingPromise(): Promise<void>;
-}
 export declare namespace StoppingLike {
     interface FactoryLike {
-        create(args: FactoryLike.Args): StoppingLike;
+        create(args: FactoryLike.Args): StateLike;
     }
     const FactoryLike: {};
     namespace FactoryLike {

@@ -1,8 +1,6 @@
-import {
-	OnStopping,
-	ReadyState,
-} from '../../startable-like';
-import { StoppedLike } from './stopped-like';
+import { OnStopping, ReadyState } from '../../startable-like';
+import { StateLike } from '../../state-like';
+import { StoppedLike, CannotStopDuringStopped } from './stopped-like';
 import { inject, Container } from 'injektor';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
 
@@ -10,7 +8,7 @@ import { StartingLike } from '../starting/starting-like';
 import { StartedLike } from '../started/started-like';
 
 
-export class Stopped implements StoppedLike {
+export class Stopped implements StateLike {
 	private stoppingPromise: Promise<void>;
 
 	public static FactoryDeps = {};
@@ -28,28 +26,21 @@ export class Stopped implements StoppedLike {
 		return this.stoppingPromise;
 	}
 
-	public async tryStart(onStopping?: OnStopping): Promise<void> {
+	public async start(onStopping?: OnStopping): Promise<void> {
 		const nextState = this.factories.starting.create({
 			onStopping,
+			stoppingPromise: this.stoppingPromise,
 		});
 		this.startable.setState(nextState);
-		await nextState.getStartingPromise();
+		await this.startable.start();
 	}
 
-	public async start(onStopping?: OnStopping): Promise<void> {
-		await this.tryStart(onStopping);
+	public async stop(): Promise<never> {
+		throw new CannotStopDuringStopped();
 	}
 
-	public async tryStop(err?: Error): Promise<void> {
-		await this.stoppingPromise;
-	}
-
-	public async stop(): Promise<void> {
-		await this.tryStop();
-	}
-
-	public async fail(err: Error): Promise<never> {
-		throw new CannotFailDuringStopped();
+	public async starp(err?: Error): Promise<never> {
+		throw new CannotStarpDuringStopped();
 	}
 
 	public getReadyState(): ReadyState {
@@ -72,10 +63,7 @@ export namespace Stopped {
 		started: StartedLike.FactoryLike;
 	}
 
-	import FactoryLike = StoppedLike.FactoryLike;
-	import Args = StoppedLike.FactoryLike.Args;
-
-	export class Factory implements FactoryLike {
+	export class Factory implements StoppedLike.FactoryLike {
 		private container = new Container();
 		@inject(Stopped.FactoryDeps)
 		private factories!: Stopped.FactoryDeps;
@@ -94,7 +82,7 @@ export namespace Stopped {
 			);
 		}
 
-		public create(args: Args): Stopped {
+		public create(args: StoppedLike.FactoryLike.Args): Stopped {
 			return this.container.inject(
 				new Stopped(
 					args,
@@ -105,8 +93,8 @@ export namespace Stopped {
 	}
 }
 
-export class CannotFailDuringStopped extends Error {
-	constructor() {
-		super('Cannot call .fail() during STOPPED.');
+export class CannotStarpDuringStopped extends Error {
+	public constructor() {
+		super('Cannot call .starp() during STOPPED.');
 	}
 }

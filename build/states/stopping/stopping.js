@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotSkipStartDuringStopping = exports.CannotTryStartDuringStopping = exports.Stopping = void 0;
+exports.CannotSkipStartDuringStopping = exports.CannotStarpDuringStopping = exports.Stopping = void 0;
 const public_manual_promise_1 = require("../../public-manual-promise");
 const friendly_startable_like_1 = require("../../friendly-startable-like");
 const injektor_1 = require("injektor");
@@ -20,12 +20,6 @@ class Stopping {
         for (const onStopping of this.onStoppings)
             onStopping(args.err);
         this.setup();
-    }
-    getStartingPromise() {
-        return this.startingPromise;
-    }
-    getStoppingPromise() {
-        return this.stoppingPromise;
     }
     async setup() {
         try {
@@ -42,21 +36,14 @@ class Stopping {
         });
         this.startable.setState(nextState);
     }
-    async tryStart(onStopping) {
-        throw new CannotTryStartDuringStopping();
-    }
     async start(onStopping) {
         await this.startingPromise;
     }
-    async tryStop(err) {
+    async stop(err) {
         await this.stoppingPromise;
     }
-    async stop(err) {
-        await this.tryStop(err);
-    }
-    async fail(err) {
-        this.manualFailure = err;
-        await this.stoppingPromise.catch(() => { });
+    async starp(err) {
+        throw new CannotStarpDuringStopping();
     }
     getReadyState() {
         return "STOPPING" /* STOPPING */;
@@ -89,12 +76,12 @@ exports.Stopping = Stopping;
     ], Factory.prototype, "startable", void 0);
     Stopping.Factory = Factory;
 })(Stopping = exports.Stopping || (exports.Stopping = {}));
-class CannotTryStartDuringStopping extends Error {
+class CannotStarpDuringStopping extends Error {
     constructor() {
-        super('Cannot call .tryStop() during STOPPING.');
+        super('Cannot call .starp() during STOPPING.');
     }
 }
-exports.CannotTryStartDuringStopping = CannotTryStartDuringStopping;
+exports.CannotStarpDuringStopping = CannotStarpDuringStopping;
 class CannotSkipStartDuringStopping extends Error {
     constructor() {
         super('Cannot call .skipStart() during STOPPING.');

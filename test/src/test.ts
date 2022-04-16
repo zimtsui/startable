@@ -1,7 +1,7 @@
 import {
     Startable,
-    StopCalledDuringStarting,
-} from '../../build/index';
+    StarpCalledDuringStarting,
+} from '../..';
 import sinon = require('sinon');
 import test from 'ava';
 import chai = require('chai');
@@ -74,7 +74,7 @@ test('start fail stop fail', async t => {
     assert(f.callCount === 2);
 });
 
-test('stop during starting', async t => {
+test('starp during starting', async t => {
     const f = fake();
     let resolveStart: () => void;
     const s = Startable.create(async () => {
@@ -88,9 +88,9 @@ test('stop during starting', async t => {
     });
     const pStart = s.start();
     pStart.catch(() => { });
-    const pStop = s.stop();
+    const pStarp = s.starp();
     resolveStart!();
-    await assert.isRejected(pStart, new StopCalledDuringStarting().message);
-    await assert.isFulfilled(pStop);
+    await assert.isRejected(pStart, new StarpCalledDuringStarting().message);
+    await assert.isFulfilled(pStarp);
     assert(f.callCount === 2);
 });

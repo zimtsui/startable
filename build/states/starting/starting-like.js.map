@@ -1,1 +1,1 @@
-{"version":3,"file":"starting-like.js","sourceRoot":"","sources":["../../../src/states/starting/starting-like.ts"],"names":[],"mappings":";;;AAQA,IAAiB,YAAY,CAY5B;AAZD,WAAiB,YAAY;IAKf,wBAAW,GAAG,EAAE,CAAC;AAO/B,CAAC,EAZgB,YAAY,GAAZ,oBAAY,KAAZ,oBAAY,QAY5B"}
+{"version":3,"file":"starting-like.js","sourceRoot":"","sources":["../../../src/states/starting/starting-like.ts"],"names":[],"mappings":";;;AAIA,IAAiB,YAAY,CAa5B;AAbD,WAAiB,YAAY;IAKf,wBAAW,GAAG,EAAE,CAAC;AAQ/B,CAAC,EAbgB,YAAY,GAAZ,oBAAY,KAAZ,oBAAY,QAa5B"}

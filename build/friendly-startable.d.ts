@@ -9,9 +9,7 @@ export declare class FriendlyStartable implements StartableLike {
     getState(): StartableLike;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): void;
-    tryStart(onStopping?: OnStopping): Promise<void>;
     start(onStopping?: OnStopping): Promise<void>;
-    tryStop(err?: Error): Promise<void>;
+    starp(err?: Error): Promise<void>;
     stop(err?: Error): Promise<void>;
-    fail(err: Error): Promise<void>;
 }

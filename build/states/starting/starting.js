@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotSkipStartDuringStarting = exports.CannotTryStopDuringStarting = exports.StopCalledDuringStarting = exports.Starting = void 0;
+exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.Starting = void 0;
 const injektor_1 = require("injektor");
 const public_manual_promise_1 = require("../../public-manual-promise");
 const friendly_startable_like_1 = require("../../friendly-startable-like");
@@ -18,11 +18,9 @@ class Starting {
         this.manualFailure = null;
         if (args.onStopping)
             this.onStoppings.push(args.onStopping);
+        this.stoppingPromise = args.stoppingPromise;
         // https://github.com/microsoft/TypeScript/issues/38929
         this.setup();
-    }
-    getStartingPromise() {
-        return this.startingPromise;
     }
     async setup() {
         try {
@@ -40,25 +38,18 @@ class Starting {
         });
         this.startable.setState(nextState);
     }
-    async tryStart(onStopping) {
+    async start(onStopping) {
         if (onStopping)
             this.onStoppings.push(onStopping);
         await this.startingPromise;
     }
-    async start(onStopping) {
-        await this.tryStart(onStopping);
-    }
-    async tryStop(err) {
-        throw new CannotTryStopDuringStarting();
-    }
     async stop(err) {
-        this.fail(new StopCalledDuringStarting());
+        await this.stoppingPromise;
+    }
+    async starp(err) {
+        this.manualFailure = new StarpCalledDuringStarting();
         await this.startingPromise.catch(() => { });
         await this.startable.stop(err);
-    }
-    async fail(err) {
-        this.manualFailure = err;
-        await this.startingPromise.catch(() => { });
     }
     getReadyState() {
         return "STARTING" /* STARTING */;
@@ -91,18 +82,12 @@ exports.Starting = Starting;
     ], Factory.prototype, "startable", void 0);
     Starting.Factory = Factory;
 })(Starting = exports.Starting || (exports.Starting = {}));
-class StopCalledDuringStarting extends Error {
+class StarpCalledDuringStarting extends Error {
     constructor() {
-        super('.stop() is called during STARTING.');
+        super('.starp() is called during STARTING.');
     }
 }
-exports.StopCalledDuringStarting = StopCalledDuringStarting;
-class CannotTryStopDuringStarting extends Error {
-    constructor() {
-        super('Cannot call .tryStop() during STARTING.');
-    }
-}
-exports.CannotTryStopDuringStarting = CannotTryStopDuringStarting;
+exports.StarpCalledDuringStarting = StarpCalledDuringStarting;
 class CannotSkipStartDuringStarting extends Error {
     constructor() {
         super('Cannot call .skipStart() during STARTING.');

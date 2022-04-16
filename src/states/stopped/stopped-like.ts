@@ -1,13 +1,9 @@
 import { StateLike } from '../../state-like';
 
 
-export interface StoppedLike extends StateLike {
-	getStoppingPromise(): Promise<void>;
-}
-
 export namespace StoppedLike {
 	export interface FactoryLike {
-		create(args: FactoryLike.Args): StoppedLike;
+		create(args: FactoryLike.Args): StateLike;
 	}
 
 	export const FactoryLike = {};
@@ -16,5 +12,11 @@ export namespace StoppedLike {
 		export interface Args {
 			stoppingPromise: Promise<void>;
 		}
+	}
+}
+
+export class CannotStopDuringStopped extends Error {
+	public constructor() {
+		super('Cannot call .stop() during STOPPED.');
 	}
 }

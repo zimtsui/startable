@@ -1,7 +1,5 @@
-import {
-	OnStopping,
-	ReadyState,
-} from '../../startable-like';
+import { OnStopping, ReadyState } from '../../startable-like';
+import { StateLike } from '../../state-like';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { inject, Container } from 'injektor';
 
@@ -9,7 +7,7 @@ import { StartedLike } from './started-like';
 import { StoppingLike } from '../stopping/stopping-like';
 
 
-export class Started implements StartedLike {
+export class Started implements StateLike {
 	private startingPromise: Promise<void>;
 	private onStoppings: OnStopping[];
 
@@ -18,43 +16,30 @@ export class Started implements StartedLike {
 	private factories!: Started.FactoryDeps;
 
 	public constructor(
-		args: Started.Args,
+		args: StartedLike.FactoryLike.Args,
 		private startable: FriendlyStartableLike,
 	) {
 		this.startingPromise = args.startingPromise;
 		this.onStoppings = args.onStoppings;
 	}
 
-	public getStartingPromise(): Promise<void> {
-		return this.startingPromise;
-	}
-
-	public async tryStart(onStopping?: OnStopping): Promise<void> {
+	public async start(onStopping?: OnStopping): Promise<void> {
 		if (onStopping) this.onStoppings.push(onStopping);
 		await this.startingPromise;
 	}
 
-	public async start(onStopping?: OnStopping): Promise<void> {
-		await this.tryStart(onStopping);
-	}
-
-	public async tryStop(err?: Error): Promise<void> {
-		const nextState: StoppingLike =
-			this.factories.stopping.create({
-				startingPromise: this.startingPromise,
-				onStoppings: this.onStoppings,
-				err,
-			});
-		this.startable.setState(nextState);
-		await nextState.getStoppingPromise();
-	}
-
 	public async stop(err?: Error): Promise<void> {
-		await this.tryStop(err);
+		const nextState = this.factories.stopping.create({
+			startingPromise: this.startingPromise,
+			onStoppings: this.onStoppings,
+			err,
+		});
+		this.startable.setState(nextState);
+		await this.startable.stop();
 	}
 
-	public async fail(err: Error): Promise<never> {
-		throw new CannotFailDuringStarted();
+	public async starp(err?: Error): Promise<never> {
+		throw new CannotStarpDuringStarted();
 	}
 
 	public getReadyState(): ReadyState {
@@ -70,8 +55,6 @@ export namespace Started {
 	export interface FactoryDeps {
 		stopping: StoppingLike.FactoryLike;
 	}
-
-	export import Args = StartedLike.FactoryLike.Args;
 
 	export class Factory implements StartedLike.FactoryLike {
 		private container = new Container();
@@ -91,7 +74,7 @@ export namespace Started {
 			);
 		}
 
-		public create(args: Args): Started {
+		public create(args: StartedLike.FactoryLike.Args): Started {
 			return this.container.inject(
 				new Started(
 					args,
@@ -102,14 +85,14 @@ export namespace Started {
 	}
 }
 
-export class CannotFailDuringStarted extends Error {
-	constructor() {
-		super('Cannot call .fail() during STARTED.');
+export class CannotSkipStartDuringStarted extends Error {
+	public constructor() {
+		super('Cannot call .skipStart() during STARTED.');
 	}
 }
 
-export class CannotSkipStartDuringStarted extends Error {
-	constructor() {
-		super('Cannot call .skipStart() during STARTED.');
+export class CannotStarpDuringStarted extends Error {
+	public constructor() {
+		super('Cannot call .starp() during STARTED.');
 	}
 }
