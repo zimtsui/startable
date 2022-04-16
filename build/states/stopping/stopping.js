@@ -6,16 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.Stopping = void 0;
+exports.Stopping = void 0;
 const state_like_1 = require("../../state-like");
 const public_manual_promise_1 = require("../../public-manual-promise");
 const friendly_startable_like_1 = require("../../friendly-startable-like");
+const stopping_like_1 = require("./stopping-like");
 const injektor_1 = require("injektor");
 class Stopping {
     constructor(args, startable) {
         this.startable = startable;
         this.stoppingPromise = public_manual_promise_1.PublicManualPromise.create();
-        this.manualFailure = null;
         this.startingPromise = args.startingPromise;
         this.onStoppings = args.onStoppings;
         for (const onStopping of this.onStoppings)
@@ -25,14 +25,12 @@ class Stopping {
     async setup() {
         try {
             await this.startable.rawStop();
-            if (this.manualFailure)
-                throw this.manualFailure;
             this.stoppingPromise.resolve();
         }
         catch (err) {
             this.stoppingPromise.reject(err);
         }
-        const nextState = this.factories.stopped.create({
+        const nextState = this.startable.factories.stopped.create({
             stoppingPromise: this.stoppingPromise,
         });
         this.startable.setState(nextState);
@@ -41,7 +39,7 @@ class Stopping {
         await this.startingPromise;
     }
     async assart(onStopping) {
-        throw new CannotAssartDuringStopping();
+        throw new stopping_like_1.CannotAssartDuringStopping();
     }
     async stop(err) {
         await this.stoppingPromise;
@@ -53,43 +51,22 @@ class Stopping {
         return "STOPPING" /* STOPPING */;
     }
     skipStart(onStopping) {
-        throw new CannotSkipStartDuringStopping();
+        throw new stopping_like_1.CannotSkipStartDuringStopping();
     }
 }
-Stopping.FactoryDeps = {};
-__decorate([
-    (0, injektor_1.inject)(Stopping.FactoryDeps)
-], Stopping.prototype, "factories", void 0);
 exports.Stopping = Stopping;
 (function (Stopping) {
     class Factory {
         constructor() {
             this.container = new injektor_1.Container();
-            this.container.register(friendly_startable_like_1.FriendlyStartableLike, () => this.startable);
-            this.container.register(Stopping.FactoryDeps, () => this.factories);
         }
         create(args) {
             return this.container.inject(new Stopping(args, this.startable));
         }
     }
     __decorate([
-        (0, injektor_1.inject)(Stopping.FactoryDeps)
-    ], Factory.prototype, "factories", void 0);
-    __decorate([
         (0, injektor_1.inject)(friendly_startable_like_1.FriendlyStartableLike)
     ], Factory.prototype, "startable", void 0);
     Stopping.Factory = Factory;
 })(Stopping = exports.Stopping || (exports.Stopping = {}));
-class CannotSkipStartDuringStopping extends Error {
-    constructor() {
-        super('Cannot call .skipStart() during STOPPING.');
-    }
-}
-exports.CannotSkipStartDuringStopping = CannotSkipStartDuringStopping;
-class CannotAssartDuringStopping extends Error {
-    constructor() {
-        super('Cannot call .assart() during STOPPING.');
-    }
-}
-exports.CannotAssartDuringStopping = CannotAssartDuringStopping;
 //# sourceMappingURL=stopping.js.map

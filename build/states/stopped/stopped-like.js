@@ -1,14 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotStopDuringStopped = exports.StoppedLike = void 0;
-var StoppedLike;
-(function (StoppedLike) {
-    StoppedLike.FactoryLike = {};
-})(StoppedLike = exports.StoppedLike || (exports.StoppedLike = {}));
-class CannotStopDuringStopped extends Error {
+exports.CannotAssartDuringStopped = exports.CannotStarpDuringStopped = void 0;
+class CannotStarpDuringStopped extends Error {
     constructor() {
-        super('Cannot call .stop() during STOPPED.');
+        super('Cannot call .starp() during STOPPED.');
     }
 }
-exports.CannotStopDuringStopped = CannotStopDuringStopped;
+exports.CannotStarpDuringStopped = CannotStarpDuringStopped;
+class CannotAssartDuringStopped extends Error {
+    constructor() {
+        super('Cannot call .assart() during STOPPED.');
+    }
+}
+exports.CannotAssartDuringStopped = CannotAssartDuringStopped;
 //# sourceMappingURL=stopped-like.js.map

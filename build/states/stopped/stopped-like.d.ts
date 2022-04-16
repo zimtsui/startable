@@ -3,13 +3,15 @@ export declare namespace StoppedLike {
     interface FactoryLike {
         create(args: FactoryLike.Args): StateLike;
     }
-    const FactoryLike: {};
     namespace FactoryLike {
         interface Args {
             stoppingPromise: Promise<void>;
         }
     }
 }
-export declare class CannotStopDuringStopped extends Error {
+export declare class CannotStarpDuringStopped extends Error {
+    constructor();
+}
+export declare class CannotAssartDuringStopped extends Error {
     constructor();
 }

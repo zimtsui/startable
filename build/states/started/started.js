@@ -6,10 +6,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotSkipStartDuringStarted = exports.Started = void 0;
+exports.Started = void 0;
 const state_like_1 = require("../../state-like");
 const friendly_startable_like_1 = require("../../friendly-startable-like");
 const injektor_1 = require("injektor");
+const started_like_1 = require("./started-like");
 class Started {
     constructor(args, startable) {
         this.startable = startable;
@@ -25,7 +26,7 @@ class Started {
         await this.start(onStopping);
     }
     async stop(err) {
-        const nextState = this.factories.stopping.create({
+        const nextState = this.startable.factories.stopping.create({
             startingPromise: this.startingPromise,
             onStoppings: this.onStoppings,
             err,
@@ -40,37 +41,22 @@ class Started {
         return "STARTED" /* STARTED */;
     }
     skipStart(onStopping) {
-        throw new CannotSkipStartDuringStarted();
+        throw new started_like_1.CannotSkipStartDuringStarted();
     }
 }
-Started.FactoryDeps = {};
-__decorate([
-    (0, injektor_1.inject)(Started.FactoryDeps)
-], Started.prototype, "factories", void 0);
 exports.Started = Started;
 (function (Started) {
     class Factory {
         constructor() {
             this.container = new injektor_1.Container();
-            this.container.register(Started.FactoryDeps, () => this.factories);
-            this.container.register(friendly_startable_like_1.FriendlyStartableLike, () => this.startable);
         }
         create(args) {
             return this.container.inject(new Started(args, this.startable));
         }
     }
     __decorate([
-        (0, injektor_1.inject)(Started.FactoryDeps)
-    ], Factory.prototype, "factories", void 0);
-    __decorate([
         (0, injektor_1.inject)(friendly_startable_like_1.FriendlyStartableLike)
     ], Factory.prototype, "startable", void 0);
     Started.Factory = Factory;
 })(Started = exports.Started || (exports.Started = {}));
-class CannotSkipStartDuringStarted extends Error {
-    constructor() {
-        super('Cannot call .skipStart() during STARTED.');
-    }
-}
-exports.CannotSkipStartDuringStarted = CannotSkipStartDuringStarted;
 //# sourceMappingURL=started.js.map

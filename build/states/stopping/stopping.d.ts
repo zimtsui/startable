@@ -1,18 +1,15 @@
 import { OnStopping, ReadyState } from '../../startable-like';
-import { StateLike, STATE_LIKE_TYPE } from '../../state-like';
+import { StateLike, STATE_LIKE_NOMINAL } from '../../state-like';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { StoppingLike } from './stopping-like';
 import { StoppedLike } from '../stopped/stopped-like';
 export declare class Stopping implements StateLike {
     private startable;
-    [STATE_LIKE_TYPE]: void;
+    [STATE_LIKE_NOMINAL]: void;
     private startingPromise;
     private stoppingPromise;
     private onStoppings;
-    private manualFailure;
-    static FactoryDeps: {};
-    private factories;
-    constructor(args: StoppingLike.FactoryLike.Args, startable: FriendlyStartableLike);
+    constructor(args: StoppingLike.FactoryLike.Args, startable: FriendlyStartableLike<Stopping.FactoryDeps>);
     private setup;
     start(onStopping?: OnStopping): Promise<void>;
     assart(onStopping?: OnStopping): Promise<never>;
@@ -27,15 +24,7 @@ export declare namespace Stopping {
     }
     class Factory implements StoppingLike.FactoryLike {
         private container;
-        private factories;
         private startable;
-        constructor();
         create(args: StoppingLike.FactoryLike.Args): Stopping;
     }
-}
-export declare class CannotSkipStartDuringStopping extends Error {
-    constructor();
-}
-export declare class CannotAssartDuringStopping extends Error {
-    constructor();
 }

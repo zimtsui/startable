@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StartedLike = void 0;
-var StartedLike;
-(function (StartedLike) {
-    StartedLike.FactoryLike = {};
-})(StartedLike = exports.StartedLike || (exports.StartedLike = {}));
+exports.CannotSkipStartDuringStarted = void 0;
+class CannotSkipStartDuringStarted extends Error {
+    constructor() {
+        super('Cannot call .skipStart() during STARTED.');
+    }
+}
+exports.CannotSkipStartDuringStarted = CannotSkipStartDuringStarted;
 //# sourceMappingURL=started-like.js.map

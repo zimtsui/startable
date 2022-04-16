@@ -5,6 +5,7 @@ export declare class FriendlyStartable implements StartableLike {
     rawStop: RawStop;
     private container;
     private state;
+    private factories;
     constructor(rawStart: RawStart, rawStop: RawStop);
     setState(state: StateLike): void;
     getState(): StateLike;

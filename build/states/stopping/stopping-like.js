@@ -1,8 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StoppingLike = void 0;
-var StoppingLike;
-(function (StoppingLike) {
-    StoppingLike.FactoryLike = {};
-})(StoppingLike = exports.StoppingLike || (exports.StoppingLike = {}));
+exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = void 0;
+class CannotSkipStartDuringStopping extends Error {
+    constructor() {
+        super('Cannot call .skipStart() during STOPPING.');
+    }
+}
+exports.CannotSkipStartDuringStopping = CannotSkipStartDuringStopping;
+class CannotAssartDuringStopping extends Error {
+    constructor() {
+        super('Cannot call .assart() during STOPPING.');
+    }
+}
+exports.CannotAssartDuringStopping = CannotAssartDuringStopping;
 //# sourceMappingURL=stopping-like.js.map

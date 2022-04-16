@@ -1,6 +1,10 @@
 import { OnStopping, ReadyState } from '../../startable-like';
-import { StateLike, STATE_LIKE_TYPE } from '../../state-like';
-import { StoppedLike, CannotStopDuringStopped } from './stopped-like';
+import { StateLike, STATE_LIKE_NOMINAL } from '../../state-like';
+import {
+	StoppedLike,
+	CannotAssartDuringStopped,
+	CannotStarpDuringStopped,
+} from './stopped-like';
 import { inject, Container } from 'injektor';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
 
@@ -9,26 +13,18 @@ import { StartedLike } from '../started/started-like';
 
 
 export class Stopped implements StateLike {
-	[STATE_LIKE_TYPE]: void;
+	[STATE_LIKE_NOMINAL]: void;
 	private stoppingPromise: Promise<void>;
-
-	public static FactoryDeps = {};
-	@inject(Stopped.FactoryDeps)
-	private factories!: Stopped.FactoryDeps;
 
 	public constructor(
 		args: StoppedLike.FactoryLike.Args,
-		private startable: FriendlyStartableLike,
+		private startable: FriendlyStartableLike<Stopped.FactoryDeps>,
 	) {
 		this.stoppingPromise = args.stoppingPromise;
 	}
 
-	public getStoppingPromise(): Promise<void> {
-		return this.stoppingPromise;
-	}
-
 	public async start(onStopping?: OnStopping): Promise<void> {
-		const nextState = this.factories.starting.create({
+		const nextState = this.startable.factories.starting.create({
 			onStopping,
 			stoppingPromise: this.stoppingPromise,
 		});
@@ -40,8 +36,8 @@ export class Stopped implements StateLike {
 		throw new CannotAssartDuringStopped();
 	}
 
-	public async stop(): Promise<never> {
-		throw new CannotStopDuringStopped();
+	public async stop(): Promise<void> {
+		await this.stoppingPromise;
 	}
 
 	public async starp(err?: Error): Promise<never> {
@@ -53,7 +49,7 @@ export class Stopped implements StateLike {
 	}
 
 	public skipStart(onStopping?: OnStopping): void {
-		const nextState = this.factories.started.create({
+		const nextState = this.startable.factories.started.create({
 			startingPromise: Promise.resolve(),
 			onStoppings: onStopping ? [onStopping] : [],
 		});
@@ -70,22 +66,8 @@ export namespace Stopped {
 
 	export class Factory implements StoppedLike.FactoryLike {
 		private container = new Container();
-		@inject(Stopped.FactoryDeps)
-		private factories!: Stopped.FactoryDeps;
 		@inject(FriendlyStartableLike)
-		private startable!: FriendlyStartableLike;
-
-
-		public constructor() {
-			this.container.register(
-				Stopped.FactoryDeps,
-				() => this.factories,
-			);
-			this.container.register(
-				FriendlyStartableLike,
-				() => this.startable,
-			);
-		}
+		private startable!: FriendlyStartableLike<Stopped.FactoryDeps>;
 
 		public create(args: StoppedLike.FactoryLike.Args): Stopped {
 			return this.container.inject(
@@ -95,17 +77,5 @@ export namespace Stopped {
 				),
 			);
 		}
-	}
-}
-
-export class CannotStarpDuringStopped extends Error {
-	public constructor() {
-		super('Cannot call .starp() during STOPPED.');
-	}
-}
-
-export class CannotAssartDuringStopped extends Error {
-	public constructor() {
-		super('Cannot call .assart() during STOPPED.');
 	}
 }

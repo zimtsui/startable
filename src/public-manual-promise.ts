@@ -12,8 +12,4 @@ export class PublicManualPromise extends ManualPromise {
 
 	public resolve!: () => void;
 	public reject!: (err: Error) => void;
-
-	protected constructor() {
-		super();
-	}
 }

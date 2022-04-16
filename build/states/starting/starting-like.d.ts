@@ -4,11 +4,13 @@ export declare namespace StartingLike {
     interface FactoryLike {
         create(args: FactoryLike.Args): StateLike;
     }
-    const FactoryLike: {};
     namespace FactoryLike {
         interface Args {
             stoppingPromise: Promise<void>;
             onStopping?: OnStopping;
         }
     }
+}
+export declare class CannotSkipStartDuringStarting extends Error {
+    constructor();
 }

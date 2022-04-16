@@ -1,28 +1,24 @@
 import { OnStopping, ReadyState } from '../../startable-like';
-import { StateLike, STATE_LIKE_TYPE } from '../../state-like';
+import { StateLike, STATE_LIKE_NOMINAL } from '../../state-like';
 import { inject, Container } from 'injektor';
 import { PublicManualPromise } from '../../public-manual-promise';
-import { StartingLike } from './starting-like';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
+import { StartingLike, CannotSkipStartDuringStarting } from './starting-like';
 
 import { StartedLike } from '../started/started-like';
 
 
 export class Starting implements StateLike {
-	[STATE_LIKE_TYPE]: void;
+	[STATE_LIKE_NOMINAL]: void;
 
 	private startingPromise = PublicManualPromise.create();
 	private stoppingPromise: Promise<void>;
 	private onStoppings: OnStopping[] = [];
 	private manualFailure: null | Error = null;
 
-	public static FactoryDeps = {};
-	@inject(Starting.FactoryDeps)
-	private factories!: Starting.FactoryDeps;
-
 	public constructor(
 		args: StartingLike.FactoryLike.Args,
-		private startable: FriendlyStartableLike,
+		private startable: FriendlyStartableLike<Starting.FactoryDeps>,
 	) {
 		if (args.onStopping) this.onStoppings.push(args.onStopping);
 		this.stoppingPromise = args.stoppingPromise;
@@ -39,7 +35,7 @@ export class Starting implements StateLike {
 		} catch (err) {
 			this.startingPromise.reject(<Error>err);
 		}
-		const nextState = this.factories.started.create({
+		const nextState = this.startable.factories.started.create({
 			onStoppings: this.onStoppings,
 			startingPromise: this.startingPromise,
 		});
@@ -82,21 +78,9 @@ export namespace Starting {
 
 	export class Factory implements StartingLike.FactoryLike {
 		private container = new Container();
-		@inject(Starting.FactoryDeps)
-		private factories!: Starting.FactoryDeps;
 		@inject(FriendlyStartableLike)
-		private startable!: FriendlyStartableLike;
+		private startable!: FriendlyStartableLike<Starting.FactoryDeps>;
 
-		public constructor() {
-			this.container.register(
-				Starting.FactoryDeps,
-				() => this.factories,
-			);
-			this.container.register(
-				FriendlyStartableLike,
-				() => this.startable,
-			);
-		}
 		public create(args: StartingLike.FactoryLike.Args): Starting {
 			return this.container.inject(
 				new Starting(
@@ -111,11 +95,5 @@ export namespace Starting {
 export class StarpCalledDuringStarting extends Error {
 	public constructor() {
 		super('.starp() is called during STARTING.');
-	}
-}
-
-export class CannotSkipStartDuringStarting extends Error {
-	public constructor() {
-		super('Cannot call .skipStart() during STARTING.');
 	}
 }

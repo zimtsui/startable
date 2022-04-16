@@ -7,5 +7,4 @@ export declare class PublicManualPromise extends ManualPromise {
     static create(): PublicManualPromiseLike;
     resolve: () => void;
     reject: (err: Error) => void;
-    protected constructor();
 }

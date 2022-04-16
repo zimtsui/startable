@@ -1,1 +1,1 @@
-{"version":3,"file":"public-manual-promise.js","sourceRoot":"","sources":["../src/public-manual-promise.ts"],"names":[],"mappings":";;;AAAA,mDAA+C;AAO/C,MAAa,mBAAoB,SAAQ,8BAAa;IAQrD;QACC,KAAK,EAAE,CAAC;IACT,CAAC;IATM,MAAM,CAAC,MAAM;QACnB,OAAO,IAAI,mBAAmB,EAAE,CAAC;IAClC,CAAC;CAQD;AAXD,kDAWC"}
+{"version":3,"file":"public-manual-promise.js","sourceRoot":"","sources":["../src/public-manual-promise.ts"],"names":[],"mappings":";;;AAAA,mDAA+C;AAO/C,MAAa,mBAAoB,SAAQ,8BAAa;IAC9C,MAAM,CAAC,MAAM;QACnB,OAAO,IAAI,mBAAmB,EAAE,CAAC;IAClC,CAAC;CAID;AAPD,kDAOC"}

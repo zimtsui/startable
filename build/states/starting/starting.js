@@ -6,11 +6,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.Starting = void 0;
+exports.StarpCalledDuringStarting = exports.Starting = void 0;
 const state_like_1 = require("../../state-like");
 const injektor_1 = require("injektor");
 const public_manual_promise_1 = require("../../public-manual-promise");
 const friendly_startable_like_1 = require("../../friendly-startable-like");
+const starting_like_1 = require("./starting-like");
 class Starting {
     constructor(args, startable) {
         this.startable = startable;
@@ -33,7 +34,7 @@ class Starting {
         catch (err) {
             this.startingPromise.reject(err);
         }
-        const nextState = this.factories.started.create({
+        const nextState = this.startable.factories.started.create({
             onStoppings: this.onStoppings,
             startingPromise: this.startingPromise,
         });
@@ -59,28 +60,19 @@ class Starting {
         return "STARTING" /* STARTING */;
     }
     skipStart(onStopping) {
-        throw new CannotSkipStartDuringStarting();
+        throw new starting_like_1.CannotSkipStartDuringStarting();
     }
 }
-Starting.FactoryDeps = {};
-__decorate([
-    (0, injektor_1.inject)(Starting.FactoryDeps)
-], Starting.prototype, "factories", void 0);
 exports.Starting = Starting;
 (function (Starting) {
     class Factory {
         constructor() {
             this.container = new injektor_1.Container();
-            this.container.register(Starting.FactoryDeps, () => this.factories);
-            this.container.register(friendly_startable_like_1.FriendlyStartableLike, () => this.startable);
         }
         create(args) {
             return this.container.inject(new Starting(args, this.startable));
         }
     }
-    __decorate([
-        (0, injektor_1.inject)(Starting.FactoryDeps)
-    ], Factory.prototype, "factories", void 0);
     __decorate([
         (0, injektor_1.inject)(friendly_startable_like_1.FriendlyStartableLike)
     ], Factory.prototype, "startable", void 0);
@@ -92,10 +84,4 @@ class StarpCalledDuringStarting extends Error {
     }
 }
 exports.StarpCalledDuringStarting = StarpCalledDuringStarting;
-class CannotSkipStartDuringStarting extends Error {
-    constructor() {
-        super('Cannot call .skipStart() during STARTING.');
-    }
-}
-exports.CannotSkipStartDuringStarting = CannotSkipStartDuringStarting;
 //# sourceMappingURL=starting.js.map

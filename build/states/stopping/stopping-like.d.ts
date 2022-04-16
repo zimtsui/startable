@@ -4,7 +4,6 @@ export declare namespace StoppingLike {
     interface FactoryLike {
         create(args: FactoryLike.Args): StateLike;
     }
-    const FactoryLike: {};
     namespace FactoryLike {
         interface Args {
             startingPromise: Promise<void>;
@@ -12,4 +11,10 @@ export declare namespace StoppingLike {
             err?: Error;
         }
     }
+}
+export declare class CannotSkipStartDuringStopping extends Error {
+    constructor();
+}
+export declare class CannotAssartDuringStopping extends Error {
+    constructor();
 }

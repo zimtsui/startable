@@ -7,12 +7,16 @@ export namespace StartingLike {
 		create(args: FactoryLike.Args): StateLike;
 	}
 
-	export const FactoryLike = {};
-
 	export namespace FactoryLike {
 		export interface Args {
 			stoppingPromise: Promise<void>;
 			onStopping?: OnStopping;
 		}
+	}
+}
+
+export class CannotSkipStartDuringStarting extends Error {
+	public constructor() {
+		super('Cannot call .skipStart() during STARTING.');
 	}
 }

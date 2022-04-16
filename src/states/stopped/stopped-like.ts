@@ -6,8 +6,6 @@ export namespace StoppedLike {
 		create(args: FactoryLike.Args): StateLike;
 	}
 
-	export const FactoryLike = {};
-
 	export namespace FactoryLike {
 		export interface Args {
 			stoppingPromise: Promise<void>;
@@ -15,8 +13,14 @@ export namespace StoppedLike {
 	}
 }
 
-export class CannotStopDuringStopped extends Error {
+export class CannotStarpDuringStopped extends Error {
 	public constructor() {
-		super('Cannot call .stop() during STOPPED.');
+		super('Cannot call .starp() during STOPPED.');
+	}
+}
+
+export class CannotAssartDuringStopped extends Error {
+	public constructor() {
+		super('Cannot call .assart() during STOPPED.');
 	}
 }

@@ -1,4 +1,4 @@
-import { inject, Container } from 'injektor';
+import { Container } from 'injektor';
 import {
 	OnStopping,
 	RawStart,
@@ -14,32 +14,34 @@ import { Starting } from './states/starting/starting';
 import { Started } from './states/started/started';
 import { Stopping } from './states/stopping/stopping';
 
+interface Factories extends
+	Stopped.FactoryDeps,
+	Starting.FactoryDeps,
+	Started.FactoryDeps,
+	Stopping.FactoryDeps { }
 
 export class FriendlyStartable implements StartableLike {
 	private container = new Container();
 	private state: StateLike;
+	private factories: Factories;
 
 	public constructor(
 		public rawStart: RawStart,
 		public rawStop: RawStop,
 	) {
-		this.container.register<Stopped.FactoryDeps>(Stopped.FactoryDeps, () => factories);
-		this.container.register<Starting.FactoryDeps>(Starting.FactoryDeps, () => factories);
-		this.container.register<Started.FactoryDeps>(Started.FactoryDeps, () => factories);
-		this.container.register<Stopping.FactoryDeps>(Stopping.FactoryDeps, () => factories);
 		this.container.register(FriendlyStartableLike, () => this);
-		const factories = {
+		this.factories = {
 			stopped: new Stopped.Factory(),
 			starting: new Starting.Factory(),
 			started: new Started.Factory(),
 			stopping: new Stopping.Factory(),
 		};
-		this.container.inject(factories.stopped);
-		this.container.inject(factories.starting);
-		this.container.inject(factories.started);
-		this.container.inject(factories.stopping);
+		this.container.inject(this.factories.stopped);
+		this.container.inject(this.factories.starting);
+		this.container.inject(this.factories.started);
+		this.container.inject(this.factories.stopping);
 
-		this.state = factories.stopped.create({
+		this.state = this.factories.stopped.create({
 			stoppingPromise: Promise.resolve(),
 		});
 	}

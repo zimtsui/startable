@@ -7,13 +7,23 @@ export namespace StoppingLike {
 		create(args: FactoryLike.Args): StateLike;
 	}
 
-	export const FactoryLike = {};
-
 	export namespace FactoryLike {
 		export interface Args {
 			startingPromise: Promise<void>;
 			onStoppings: OnStopping[];
 			err?: Error;
 		}
+	}
+}
+
+export class CannotSkipStartDuringStopping extends Error {
+	public constructor() {
+		super('Cannot call .skipStart() during STOPPING.');
+	}
+}
+
+export class CannotAssartDuringStopping extends Error {
+	public constructor() {
+		super('Cannot call .assart() during STOPPING.');
 	}
 }

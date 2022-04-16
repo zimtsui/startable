@@ -1,25 +1,21 @@
 import { OnStopping, ReadyState } from '../../startable-like';
-import { StateLike, STATE_LIKE_TYPE } from '../../state-like';
+import { StateLike, STATE_LIKE_NOMINAL } from '../../state-like';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { inject, Container } from 'injektor';
+import { StartedLike, CannotSkipStartDuringStarted } from './started-like';
 
-import { StartedLike } from './started-like';
 import { StoppingLike } from '../stopping/stopping-like';
 
 
 export class Started implements StateLike {
-	[STATE_LIKE_TYPE]: void;
+	[STATE_LIKE_NOMINAL]: void;
 
 	private startingPromise: Promise<void>;
 	private onStoppings: OnStopping[];
 
-	public static FactoryDeps = {};
-	@inject(Started.FactoryDeps)
-	private factories!: Started.FactoryDeps;
-
 	public constructor(
 		args: StartedLike.FactoryLike.Args,
-		private startable: FriendlyStartableLike,
+		private startable: FriendlyStartableLike<Started.FactoryDeps>,
 	) {
 		this.startingPromise = args.startingPromise;
 		this.onStoppings = args.onStoppings;
@@ -35,7 +31,7 @@ export class Started implements StateLike {
 	}
 
 	public async stop(err?: Error): Promise<void> {
-		const nextState = this.factories.stopping.create({
+		const nextState = this.startable.factories.stopping.create({
 			startingPromise: this.startingPromise,
 			onStoppings: this.onStoppings,
 			err,
@@ -64,21 +60,8 @@ export namespace Started {
 
 	export class Factory implements StartedLike.FactoryLike {
 		private container = new Container();
-		@inject(Started.FactoryDeps)
-		private factories!: Started.FactoryDeps;
 		@inject(FriendlyStartableLike)
-		private startable!: FriendlyStartableLike;
-
-		public constructor() {
-			this.container.register(
-				Started.FactoryDeps,
-				() => this.factories,
-			);
-			this.container.register(
-				FriendlyStartableLike,
-				() => this.startable,
-			);
-		}
+		private startable!: FriendlyStartableLike<Started.FactoryDeps>;
 
 		public create(args: StartedLike.FactoryLike.Args): Started {
 			return this.container.inject(
@@ -88,11 +71,5 @@ export namespace Started {
 				),
 			);
 		}
-	}
-}
-
-export class CannotSkipStartDuringStarted extends Error {
-	public constructor() {
-		super('Cannot call .skipStart() during STARTED.');
 	}
 }
