@@ -1,4 +1,4 @@
-export { ReadyState } from './startable-like';
+export * from './startable-like';
 export { Startable } from './startable';
 export { CannotStarpDuringStopped } from './states/stopped/stopped-like';
 export { StarpCalledDuringStarting } from './states/starting/starting';
