@@ -7,7 +7,7 @@ import {
 	CannotAssartDuringStopping,
 	CannotSkipStartDuringStopping,
 } from './stopping-like';
-import { inject, Container } from 'injektor';
+import { instantInject, Container } from 'injektor';
 
 import { StoppedLike } from '../stopped/stopped-like';
 
@@ -76,15 +76,13 @@ export namespace Stopping {
 
 	export class Factory implements StoppingLike.FactoryLike {
 		private container = new Container();
-		@inject(FriendlyStartableLike)
+		@instantInject(FriendlyStartableLike)
 		private startable!: FriendlyStartableLike<Stopping.FactoryDeps>;
 
 		public create(args: StoppingLike.FactoryLike.Args): Stopping {
-			return this.container.inject(
-				new Stopping(
-					args,
-					this.startable,
-				),
+			return new Stopping(
+				args,
+				this.startable,
 			);
 		}
 	}

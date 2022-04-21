@@ -29,17 +29,17 @@ export class FriendlyStartable implements StartableLike {
 		public rawStart: RawStart,
 		public rawStop: RawStop,
 	) {
-		this.container.register(FriendlyStartableLike, () => this);
+		this.container.registerFactorySingleton(FriendlyStartableLike, () => this);
+		this.container.registerConstructorSingleton(Stopped.Factory, Stopped.Factory);
+		this.container.registerConstructorSingleton(Starting.Factory, Starting.Factory);
+		this.container.registerConstructorSingleton(Started.Factory, Started.Factory);
+		this.container.registerConstructorSingleton(Stopping.Factory, Stopping.Factory);
 		this.factories = {
-			stopped: new Stopped.Factory(),
-			starting: new Starting.Factory(),
-			started: new Started.Factory(),
-			stopping: new Stopping.Factory(),
+			stopped: this.container.initiate(Stopped.Factory),
+			starting: this.container.initiate(Starting.Factory),
+			started: this.container.initiate(Started.Factory),
+			stopping: this.container.initiate(Stopping.Factory),
 		};
-		this.container.inject(this.factories.stopped);
-		this.container.inject(this.factories.starting);
-		this.container.inject(this.factories.started);
-		this.container.inject(this.factories.stopping);
 
 		this.state = this.factories.stopped.create({
 			stoppingPromise: Promise.resolve(),

@@ -5,7 +5,7 @@ import {
 	CannotAssartDuringStopped,
 	CannotStarpDuringStopped,
 } from './stopped-like';
-import { inject, Container } from 'injektor';
+import { instantInject, Container } from 'injektor';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
 
 import { StartingLike } from '../starting/starting-like';
@@ -66,15 +66,13 @@ export namespace Stopped {
 
 	export class Factory implements StoppedLike.FactoryLike {
 		private container = new Container();
-		@inject(FriendlyStartableLike)
+		@instantInject(FriendlyStartableLike)
 		private startable!: FriendlyStartableLike<Stopped.FactoryDeps>;
 
 		public create(args: StoppedLike.FactoryLike.Args): Stopped {
-			return this.container.inject(
-				new Stopped(
-					args,
-					this.startable,
-				),
+			return new Stopped(
+				args,
+				this.startable,
 			);
 		}
 	}

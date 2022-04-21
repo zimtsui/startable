@@ -51,11 +51,11 @@ exports.Started = Started;
             this.container = new injektor_1.Container();
         }
         create(args) {
-            return this.container.inject(new Started(args, this.startable));
+            return new Started(args, this.startable);
         }
     }
     __decorate([
-        (0, injektor_1.inject)(friendly_startable_like_1.FriendlyStartableLike)
+        (0, injektor_1.instantInject)(friendly_startable_like_1.FriendlyStartableLike)
     ], Factory.prototype, "startable", void 0);
     Started.Factory = Factory;
 })(Started = exports.Started || (exports.Started = {}));

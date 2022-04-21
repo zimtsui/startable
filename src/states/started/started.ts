@@ -1,7 +1,7 @@
 import { OnStopping, ReadyState } from '../../startable-like';
 import { StateLike, STATE_LIKE_NOMINAL } from '../../state-like';
 import { FriendlyStartableLike } from '../../friendly-startable-like';
-import { inject, Container } from 'injektor';
+import { instantInject, Container } from 'injektor';
 import { StartedLike, CannotSkipStartDuringStarted } from './started-like';
 
 import { StoppingLike } from '../stopping/stopping-like';
@@ -60,15 +60,13 @@ export namespace Started {
 
 	export class Factory implements StartedLike.FactoryLike {
 		private container = new Container();
-		@inject(FriendlyStartableLike)
+		@instantInject(FriendlyStartableLike)
 		private startable!: FriendlyStartableLike<Started.FactoryDeps>;
 
 		public create(args: StartedLike.FactoryLike.Args): Started {
-			return this.container.inject(
-				new Started(
-					args,
-					this.startable,
-				),
+			return new Started(
+				args,
+				this.startable,
 			);
 		}
 	}
