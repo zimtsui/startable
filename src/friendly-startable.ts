@@ -4,7 +4,6 @@ import {
 	RawStart,
 	RawStop,
 	ReadyState,
-	StartableLike,
 } from './startable-like';
 import { StateLike } from './state-like';
 import { FriendlyStartableLike } from './friendly-startable-like';
@@ -20,10 +19,10 @@ interface Factories extends
 	Started.FactoryDeps,
 	Stopping.FactoryDeps { }
 
-export class FriendlyStartable implements StartableLike {
+export class FriendlyStartable implements FriendlyStartableLike<Factories> {
 	private container = new Container();
 	private state: StateLike;
-	private factories: Factories;
+	public factories: Factories;
 
 	public constructor(
 		public rawStart: RawStart,
