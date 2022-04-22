@@ -10,7 +10,7 @@ interface Factories extends Stopped.FactoryDeps, Starting.FactoryDeps, Started.F
 export declare class FriendlyStartable implements FriendlyStartableLike<Factories> {
     rawStart: RawStart;
     rawStop: RawStop;
-    private container;
+    private c;
     private state;
     factories: Factories;
     constructor(rawStart: RawStart, rawStop: RawStop);

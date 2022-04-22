@@ -11,17 +11,17 @@ class FriendlyStartable {
     constructor(rawStart, rawStop) {
         this.rawStart = rawStart;
         this.rawStop = rawStop;
-        this.container = new injektor_1.Container();
-        this.container.rfs(friendly_startable_like_1.FriendlyStartableLike, () => this);
-        this.container.rcs(stopped_1.Stopped.Factory, stopped_1.Stopped.Factory);
-        this.container.rcs(starting_1.Starting.Factory, starting_1.Starting.Factory);
-        this.container.rcs(started_1.Started.Factory, started_1.Started.Factory);
-        this.container.rcs(stopping_1.Stopping.Factory, stopping_1.Stopping.Factory);
+        this.c = new injektor_1.Container();
+        this.c.rv(friendly_startable_like_1.FriendlyStartableLike, this);
+        this.c.rcs(stopped_1.Stopped.Factory, stopped_1.Stopped.Factory);
+        this.c.rcs(starting_1.Starting.Factory, starting_1.Starting.Factory);
+        this.c.rcs(started_1.Started.Factory, started_1.Started.Factory);
+        this.c.rcs(stopping_1.Stopping.Factory, stopping_1.Stopping.Factory);
         this.factories = {
-            stopped: this.container.initiate(stopped_1.Stopped.Factory),
-            starting: this.container.initiate(starting_1.Starting.Factory),
-            started: this.container.initiate(started_1.Started.Factory),
-            stopping: this.container.initiate(stopping_1.Stopping.Factory),
+            stopped: this.c.i(stopped_1.Stopped.Factory),
+            starting: this.c.i(starting_1.Starting.Factory),
+            started: this.c.i(started_1.Started.Factory),
+            stopping: this.c.i(stopping_1.Stopping.Factory),
         };
         this.state = this.factories.stopped.create({
             stoppingPromise: Promise.resolve(),

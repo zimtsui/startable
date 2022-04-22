@@ -20,7 +20,7 @@ interface Factories extends
 	Stopping.FactoryDeps { }
 
 export class FriendlyStartable implements FriendlyStartableLike<Factories> {
-	private container = new Container();
+	private c = new Container();
 	private state: StateLike;
 	public factories: Factories;
 
@@ -28,16 +28,16 @@ export class FriendlyStartable implements FriendlyStartableLike<Factories> {
 		public rawStart: RawStart,
 		public rawStop: RawStop,
 	) {
-		this.container.rfs(FriendlyStartableLike, () => this);
-		this.container.rcs(Stopped.Factory, Stopped.Factory);
-		this.container.rcs(Starting.Factory, Starting.Factory);
-		this.container.rcs(Started.Factory, Started.Factory);
-		this.container.rcs(Stopping.Factory, Stopping.Factory);
+		this.c.rv(FriendlyStartableLike, this);
+		this.c.rcs(Stopped.Factory, Stopped.Factory);
+		this.c.rcs(Starting.Factory, Starting.Factory);
+		this.c.rcs(Started.Factory, Started.Factory);
+		this.c.rcs(Stopping.Factory, Stopping.Factory);
 		this.factories = {
-			stopped: this.container.initiate(Stopped.Factory),
-			starting: this.container.initiate(Starting.Factory),
-			started: this.container.initiate(Started.Factory),
-			stopping: this.container.initiate(Stopping.Factory),
+			stopped: this.c.i(Stopped.Factory),
+			starting: this.c.i(Starting.Factory),
+			started: this.c.i(Started.Factory),
+			stopping: this.c.i(Stopping.Factory),
 		};
 
 		this.state = this.factories.stopped.create({
