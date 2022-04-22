@@ -12,11 +12,11 @@ class FriendlyStartable {
         this.rawStart = rawStart;
         this.rawStop = rawStop;
         this.container = new injektor_1.Container();
-        this.container.registerFactorySingleton(friendly_startable_like_1.FriendlyStartableLike, () => this);
-        this.container.registerConstructorSingleton(stopped_1.Stopped.Factory, stopped_1.Stopped.Factory);
-        this.container.registerConstructorSingleton(starting_1.Starting.Factory, starting_1.Starting.Factory);
-        this.container.registerConstructorSingleton(started_1.Started.Factory, started_1.Started.Factory);
-        this.container.registerConstructorSingleton(stopping_1.Stopping.Factory, stopping_1.Stopping.Factory);
+        this.container.rfs(friendly_startable_like_1.FriendlyStartableLike, () => this);
+        this.container.rcs(stopped_1.Stopped.Factory, stopped_1.Stopped.Factory);
+        this.container.rcs(starting_1.Starting.Factory, starting_1.Starting.Factory);
+        this.container.rcs(started_1.Started.Factory, started_1.Started.Factory);
+        this.container.rcs(stopping_1.Stopping.Factory, stopping_1.Stopping.Factory);
         this.factories = {
             stopped: this.container.initiate(stopped_1.Stopped.Factory),
             starting: this.container.initiate(starting_1.Starting.Factory),

@@ -29,11 +29,11 @@ export class FriendlyStartable implements StartableLike {
 		public rawStart: RawStart,
 		public rawStop: RawStop,
 	) {
-		this.container.registerFactorySingleton(FriendlyStartableLike, () => this);
-		this.container.registerConstructorSingleton(Stopped.Factory, Stopped.Factory);
-		this.container.registerConstructorSingleton(Starting.Factory, Starting.Factory);
-		this.container.registerConstructorSingleton(Started.Factory, Started.Factory);
-		this.container.registerConstructorSingleton(Stopping.Factory, Stopping.Factory);
+		this.container.rfs(FriendlyStartableLike, () => this);
+		this.container.rcs(Stopped.Factory, Stopped.Factory);
+		this.container.rcs(Starting.Factory, Starting.Factory);
+		this.container.rcs(Started.Factory, Started.Factory);
+		this.container.rcs(Stopping.Factory, Stopping.Factory);
 		this.factories = {
 			stopped: this.container.initiate(Stopped.Factory),
 			starting: this.container.initiate(Starting.Factory),
