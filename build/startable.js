@@ -9,15 +9,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Startable = void 0;
 const friendly_startable_1 = require("./friendly-startable");
 const autobind_decorator_1 = require("autobind-decorator");
-class Startable extends friendly_startable_1.FriendlyStartable {
-    static create(rawStart, rawStop) {
-        return new Startable(rawStart, rawStop);
-    }
+class Startable {
     constructor(rawStart, rawStop) {
-        super(rawStart, rawStop);
+        this.friendly = new friendly_startable_1.FriendlyStartable(rawStart, rawStop);
+    }
+    getReadyState() {
+        return this.friendly.getReadyState();
+    }
+    skipStart(onStopping) {
+        this.friendly.skipStart(onStopping);
+    }
+    async start(onStopping) {
+        await this.friendly.start(onStopping);
+    }
+    async assart(onStopping) {
+        await this.friendly.assart(onStopping);
+    }
+    async stop(err) {
+        await this.friendly.stop(err);
     }
     starp(err) {
-        const promise = super.starp(err);
+        const promise = this.friendly.starp(err);
         promise.catch(() => { });
         return promise;
     }

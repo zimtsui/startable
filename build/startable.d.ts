@@ -1,7 +1,11 @@
-import { FriendlyStartable } from './friendly-startable';
-import { RawStart, RawStop, StartableLike } from './startable-like';
-export declare class Startable extends FriendlyStartable {
-    static create(rawStart: RawStart, rawStop: RawStop): StartableLike;
-    protected constructor(rawStart: RawStart, rawStop: RawStop);
+import { RawStart, RawStop, StartableLike, OnStopping, ReadyState } from './startable-like';
+export declare class Startable implements StartableLike {
+    private friendly;
+    constructor(rawStart: RawStart, rawStop: RawStop);
+    getReadyState(): ReadyState;
+    skipStart(onStopping?: OnStopping): void;
+    start(onStopping?: OnStopping): Promise<void>;
+    assart(onStopping?: OnStopping): Promise<void>;
+    stop(err?: Error): Promise<void>;
     starp(err?: Error): Promise<void>;
 }
