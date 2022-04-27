@@ -18,22 +18,18 @@ class Stopping {
         this.stoppingPromise = public_manual_promise_1.PublicManualPromise.create();
         this.startingPromise = args.startingPromise;
         this.onStoppings = args.onStoppings;
+        this.startable.setState(this);
         for (const onStopping of this.onStoppings)
             onStopping(args.err);
-        this.setup();
-    }
-    async setup() {
-        try {
-            await this.startable.rawStop();
+        this.startable.rawStop().then(() => {
             this.stoppingPromise.resolve();
-        }
-        catch (err) {
+        }).catch((err) => {
             this.stoppingPromise.reject(err);
-        }
-        const nextState = this.startable.factories.stopped.create({
-            stoppingPromise: this.stoppingPromise,
+        }).then(() => {
+            this.startable.factories.stopped.create({
+                stoppingPromise: this.stoppingPromise,
+            });
         });
-        this.startable.setState(nextState);
     }
     async start(onStopping) {
         await this.startingPromise;

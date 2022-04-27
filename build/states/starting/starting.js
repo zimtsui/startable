@@ -21,24 +21,19 @@ class Starting {
         if (args.onStopping)
             this.onStoppings.push(args.onStopping);
         this.stoppingPromise = args.stoppingPromise;
-        // https://github.com/microsoft/TypeScript/issues/38929
-        this.setup();
-    }
-    async setup() {
-        try {
-            await this.startable.rawStart();
+        this.startable.setState(this);
+        this.startable.rawStart().then(() => {
             if (this.manualFailure)
                 throw this.manualFailure;
             this.startingPromise.resolve();
-        }
-        catch (err) {
+        }).catch((err) => {
             this.startingPromise.reject(err);
-        }
-        const nextState = this.startable.factories.started.create({
-            onStoppings: this.onStoppings,
-            startingPromise: this.startingPromise,
+        }).then(() => {
+            this.startable.factories.started.create({
+                onStoppings: this.onStoppings,
+                startingPromise: this.startingPromise,
+            });
         });
-        this.startable.setState(nextState);
     }
     async start(onStopping) {
         if (onStopping)

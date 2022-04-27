@@ -16,6 +16,7 @@ class Started {
         this.startable = startable;
         this.startingPromise = args.startingPromise;
         this.onStoppings = args.onStoppings;
+        this.startable.setState(this);
     }
     async start(onStopping) {
         if (onStopping)
@@ -26,12 +27,11 @@ class Started {
         await this.start(onStopping);
     }
     async stop(err) {
-        const nextState = this.startable.factories.stopping.create({
+        this.startable.factories.stopping.create({
             startingPromise: this.startingPromise,
             onStoppings: this.onStoppings,
             err,
         });
-        this.startable.setState(nextState);
         await this.startable.stop();
     }
     async starp(err) {

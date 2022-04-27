@@ -10,7 +10,6 @@ export declare class Stopping implements StateLike {
     private stoppingPromise;
     private onStoppings;
     constructor(args: StoppingLike.FactoryLike.Args, startable: FriendlyStartableLike<Stopping.FactoryDeps>);
-    private setup;
     start(onStopping?: OnStopping): Promise<void>;
     assart(onStopping?: OnStopping): Promise<never>;
     stop(err?: Error): Promise<void>;

@@ -23,23 +23,19 @@ export class Starting implements StateLike {
 		if (args.onStopping) this.onStoppings.push(args.onStopping);
 		this.stoppingPromise = args.stoppingPromise;
 
-		// https://github.com/microsoft/TypeScript/issues/38929
-		this.setup();
-	}
+		this.startable.setState(this);
 
-	private async setup(): Promise<void> {
-		try {
-			await this.startable.rawStart();
+		this.startable.rawStart().then(() => {
 			if (this.manualFailure) throw this.manualFailure;
 			this.startingPromise.resolve();
-		} catch (err) {
-			this.startingPromise.reject(<Error>err);
-		}
-		const nextState = this.startable.factories.started.create({
-			onStoppings: this.onStoppings,
-			startingPromise: this.startingPromise,
+		}).catch((err: Error) => {
+			this.startingPromise.reject(err);
+		}).then(() => {
+			this.startable.factories.started.create({
+				onStoppings: this.onStoppings,
+				startingPromise: this.startingPromise,
+			})
 		});
-		this.startable.setState(nextState);
 	}
 
 	public async start(onStopping?: OnStopping): Promise<void> {

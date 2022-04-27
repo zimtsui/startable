@@ -21,14 +21,14 @@ export class Stopped implements StateLike {
 		private startable: FriendlyStartableLike<Stopped.FactoryDeps>,
 	) {
 		this.stoppingPromise = args.stoppingPromise;
+		this.startable.setState(this);
 	}
 
 	public async start(onStopping?: OnStopping): Promise<void> {
-		const nextState = this.startable.factories.starting.create({
+		this.startable.factories.starting.create({
 			onStopping,
 			stoppingPromise: this.stoppingPromise,
 		});
-		this.startable.setState(nextState);
 		await this.startable.start();
 	}
 

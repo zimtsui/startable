@@ -12,9 +12,11 @@ const { assert } = chai;
     const f = fake();
     const s = new __1.Startable(async () => {
         f();
+        assert(s.getReadyState() === "STARTING" /* STARTING */);
         return Promise.resolve();
     }, async () => {
         f();
+        assert(s.getReadyState() === "STOPPING" /* STOPPING */);
         return Promise.resolve();
     });
     s.start();

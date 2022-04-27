@@ -1,6 +1,7 @@
 import {
     Startable,
     StarpCalledDuringStarting,
+    ReadyState,
 } from '../..';
 import sinon = require('sinon');
 import test from 'ava';
@@ -14,9 +15,11 @@ test('start succ stop succ', async t => {
     const f = fake();
     const s = new Startable(async () => {
         f();
+        assert(s.getReadyState() === ReadyState.STARTING);
         return Promise.resolve();
     }, async () => {
         f();
+        assert(s.getReadyState() === ReadyState.STOPPING);
         return Promise.resolve();
     });
     s.start();

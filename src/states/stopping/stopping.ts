@@ -26,22 +26,19 @@ export class Stopping implements StateLike {
 		this.startingPromise = args.startingPromise;
 		this.onStoppings = args.onStoppings;
 
+		this.startable.setState(this);
+
 		for (const onStopping of this.onStoppings) onStopping(args.err);
 
-		this.setup();
-	}
-
-	private async setup(): Promise<void> {
-		try {
-			await this.startable.rawStop();
+		this.startable.rawStop().then(() => {
 			this.stoppingPromise.resolve();
-		} catch (err) {
-			this.stoppingPromise.reject(<Error>err);
-		}
-		const nextState = this.startable.factories.stopped.create({
-			stoppingPromise: this.stoppingPromise,
+		}).catch((err: Error) => {
+			this.stoppingPromise.reject(err);
+		}).then(() => {
+			this.startable.factories.stopped.create({
+				stoppingPromise: this.stoppingPromise,
+			});
 		});
-		this.startable.setState(nextState);
 	}
 
 	public async start(onStopping?: OnStopping): Promise<void> {

@@ -15,13 +15,13 @@ class Stopped {
     constructor(args, startable) {
         this.startable = startable;
         this.stoppingPromise = args.stoppingPromise;
+        this.startable.setState(this);
     }
     async start(onStopping) {
-        const nextState = this.startable.factories.starting.create({
+        this.startable.factories.starting.create({
             onStopping,
             stoppingPromise: this.stoppingPromise,
         });
-        this.startable.setState(nextState);
         await this.startable.start();
     }
     async assart(onStopping) {

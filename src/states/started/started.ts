@@ -19,6 +19,7 @@ export class Started implements StateLike {
 	) {
 		this.startingPromise = args.startingPromise;
 		this.onStoppings = args.onStoppings;
+		this.startable.setState(this);
 	}
 
 	public async start(onStopping?: OnStopping): Promise<void> {
@@ -31,12 +32,11 @@ export class Started implements StateLike {
 	}
 
 	public async stop(err?: Error): Promise<void> {
-		const nextState = this.startable.factories.stopping.create({
+		this.startable.factories.stopping.create({
 			startingPromise: this.startingPromise,
 			onStoppings: this.onStoppings,
 			err,
 		});
-		this.startable.setState(nextState);
 		await this.startable.stop();
 	}
 
