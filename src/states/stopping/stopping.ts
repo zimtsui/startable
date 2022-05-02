@@ -30,7 +30,7 @@ export class Stopping implements StateLike {
 
 		for (const onStopping of this.onStoppings) onStopping(args.err);
 
-		this.startable.rawStop().then(() => {
+		this.startable.rawStop(args.err).then(() => {
 			this.stoppingPromise.resolve();
 		}).catch((err: Error) => {
 			this.stoppingPromise.reject(err);

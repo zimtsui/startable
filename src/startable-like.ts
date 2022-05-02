@@ -24,5 +24,5 @@ export interface RawStart {
 }
 
 export interface RawStop {
-	(): Promise<void>;
+	(err?: Error): Promise<void>;
 }
