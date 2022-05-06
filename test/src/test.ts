@@ -5,11 +5,20 @@ import {
 } from '../..';
 import sinon = require('sinon');
 import test from 'ava';
-import chai = require('chai');
-import chaiAsPromised = require('chai-as-promised');
 const { fake } = sinon;
-chai.use(chaiAsPromised);
-const { assert } = chai;
+import assert = require('assert');
+
+
+class StartError extends Error {
+    public constructor() {
+        super('');
+    }
+}
+class StopError extends Error {
+    public constructor() {
+        super('');
+    }
+}
 
 test('start succ stop succ', async t => {
     const f = fake();
@@ -36,11 +45,11 @@ test('start succ stop fail', async t => {
         return Promise.resolve();
     }, async () => {
         f();
-        return Promise.reject(new Error('stop'));
+        return Promise.reject(new StopError());
     });
     await s.start();
     s.stop().catch(() => { });
-    await assert.isRejected(s.stop(), /^stop$/);
+    await assert.rejects(s.stop(), StopError);
     assert(f.callCount === 2);
 });
 
@@ -48,13 +57,13 @@ test('start fail stop succ', async t => {
     const f = fake();
     const s = new Startable(async () => {
         f();
-        return Promise.reject(new Error('start'));
+        return Promise.reject(new StartError());
     }, async () => {
         f();
         return Promise.resolve();
     });
     s.start().catch(() => { });
-    await assert.isRejected(s.start(), /^start$/);
+    await assert.rejects(s.start(), StartError);
     s.stop();
     await s.stop();
     assert(f.callCount === 2);
@@ -64,16 +73,16 @@ test('start fail stop fail', async t => {
     const f = fake();
     const s = new Startable(async () => {
         f();
-        return Promise.reject(new Error('start'));
+        return Promise.reject(new StartError());
 
     }, async () => {
         f();
-        return Promise.reject(new Error('stop'));
+        return Promise.reject(new StopError());
     });
     s.start().catch(() => { });
-    await assert.isRejected(s.start(), /^start$/);
+    await assert.rejects(s.start(), StartError);
     s.stop().catch(() => { });
-    await assert.isRejected(s.stop(), /^stop$/);
+    await assert.rejects(s.stop(), StopError);
     assert(f.callCount === 2);
 });
 
@@ -93,7 +102,7 @@ test('starp during starting', async t => {
     pStart.catch(() => { });
     const pStarp = s.starp();
     resolveStart!();
-    await assert.isRejected(pStart, new StarpCalledDuringStarting().message);
-    await assert.isFulfilled(pStarp);
+    await assert.rejects(pStart, StarpCalledDuringStarting);
+    await pStarp;
     assert(f.callCount === 2);
 });
