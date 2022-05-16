@@ -190,7 +190,7 @@ function stopDaemon() {
 
 这个例子的问题在于，一个后台对象的自发停止过程发生异常而失败，这个异常的 handle 代码不应写在 `.stop()` 的 caller 中，因为 caller 有很多个，不得不写很多遍。
 
-## 依赖
+## 嵌套
 
 ### Composition
 
@@ -259,3 +259,13 @@ console.log(daemon.startable.getReadyState());
 ```
 
 的结果不一定是 STARTED，完全有可能是 STOPPING 或 STOPPED。而 Startable 的状态是成环的，搞不好甚至已经转了一圈到了下一次 STARTING 了。
+
+## 最少知识原则
+
+```ts
+class Daemon {
+    public startable: Startable;
+}
+```
+
+看似违反迪米特法则，其实不违反。因为 startable 这个 public 属性，从语义上说就是 Daemon 类的接口的一部分，因此访问 Daemon 对象的人访问这个属性不算越俎代庖。
