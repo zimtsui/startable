@@ -1,4 +1,4 @@
-import { ManualPromise } from 'manual-promise';
+import { ManualPromise } from '@zimtsui/manual-promise';
 export interface PublicManualPromiseLike extends Promise<void> {
     resolve(): void;
     reject(err: Error): void;
