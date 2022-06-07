@@ -1,4 +1,6 @@
 import { FriendlyStartable } from './friendly-startable';
+import { BaseContainer } from '@zimtsui/injektor';
+import { TYPES } from './injection/types';
 import {
 	RawStart,
 	RawStop,
@@ -8,6 +10,13 @@ import {
 } from './startable-like';
 import { boundMethod } from 'autobind-decorator';
 
+import * as Stopped from './states/stopped/factory';
+import * as Starting from './states/starting/factory';
+import * as Started from './states/started/factory';
+import * as Stopping from './states/stopping/factory';
+import { Factories } from './factories';
+
+
 export class Startable implements StartableLike {
 	private friendly: FriendlyStartable;
 
@@ -15,7 +24,21 @@ export class Startable implements StartableLike {
 		rawStart: RawStart,
 		rawStop: RawStop,
 	) {
-		this.friendly = new FriendlyStartable(rawStart, rawStop);
+		class Container extends BaseContainer {
+			public [TYPES.StoppedFactory] = this.rcs(Stopped.Factory);
+			public [TYPES.StartingFactory] = this.rcs(Starting.Factory);
+			public [TYPES.StartedFactory] = this.rcs(Started.Factory);
+			public [TYPES.StoppingFactory] = this.rcs(Stopping.Factory);
+			public [TYPES.FriendlyStartable] = this.rcs(FriendlyStartable);
+			public [TYPES.Factories] = this.rcs(Factories);
+			public [TYPES.RawStart] = this.rv(rawStart);
+			public [TYPES.RawStop] = this.rv(rawStop);
+		}
+		const c = new Container();
+		this.friendly = c[TYPES.FriendlyStartable]();
+		c[TYPES.StoppedFactory]().create({
+			stoppingPromise: Promise.resolve(),
+		});
 	}
 
 	public getReadyState(): ReadyState {

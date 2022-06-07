@@ -1,31 +1,24 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FriendlyStartable = void 0;
-const injektor_1 = require("injektor");
-const friendly_startable_like_1 = require("./friendly-startable-like");
-const stopped_1 = require("./states/stopped/stopped");
-const starting_1 = require("./states/starting/starting");
-const started_1 = require("./states/started/started");
-const stopping_1 = require("./states/stopping/stopping");
-class FriendlyStartable {
+const types_1 = require("./injection/types");
+const injektor_1 = require("@zimtsui/injektor");
+let FriendlyStartable = class FriendlyStartable {
     constructor(rawStart, rawStop) {
         this.rawStart = rawStart;
         this.rawStop = rawStop;
-        this.c = new injektor_1.Container();
-        this.c.rv(friendly_startable_like_1.FriendlyStartableLike, this);
-        this.c.rcs(stopped_1.Stopped.Factory, stopped_1.Stopped.Factory);
-        this.c.rcs(starting_1.Starting.Factory, starting_1.Starting.Factory);
-        this.c.rcs(started_1.Started.Factory, started_1.Started.Factory);
-        this.c.rcs(stopping_1.Stopping.Factory, stopping_1.Stopping.Factory);
-        this.factories = {
-            stopped: this.c.i(stopped_1.Stopped.Factory),
-            starting: this.c.i(starting_1.Starting.Factory),
-            started: this.c.i(started_1.Started.Factory),
-            stopping: this.c.i(stopping_1.Stopping.Factory),
-        };
-        this.state = this.factories.stopped.create({
-            stoppingPromise: Promise.resolve(),
-        });
+        // this.factories.stopped.create({
+        // 	stoppingPromise: Promise.resolve(),
+        // });
     }
     setState(state) {
         this.state = state;
@@ -51,6 +44,10 @@ class FriendlyStartable {
     async stop(err) {
         await this.state.stop(err);
     }
-}
+};
+FriendlyStartable = __decorate([
+    __param(0, (0, injektor_1.inject)(types_1.TYPES.RawStart)),
+    __param(1, (0, injektor_1.inject)(types_1.TYPES.RawStop))
+], FriendlyStartable);
 exports.FriendlyStartable = FriendlyStartable;
 //# sourceMappingURL=friendly-startable.js.map

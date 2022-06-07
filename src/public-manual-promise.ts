@@ -5,7 +5,7 @@ export interface PublicManualPromiseLike extends Promise<void> {
 	reject(err: Error): void;
 }
 
-export class PublicManualPromise extends ManualPromise {
+export class PublicManualPromise extends ManualPromise<void> {
 	public static create(): PublicManualPromiseLike {
 		return new PublicManualPromise();
 	}
