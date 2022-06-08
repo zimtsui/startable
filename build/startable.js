@@ -35,9 +35,11 @@ class Startable {
         _a = types_1.TYPES.StoppedFactory, _b = types_1.TYPES.StartingFactory, _c = types_1.TYPES.StartedFactory, _d = types_1.TYPES.StoppingFactory, _e = types_1.TYPES.FriendlyStartable, _f = types_1.TYPES.Factories, _g = types_1.TYPES.RawStart, _h = types_1.TYPES.RawStop;
         const c = new Container();
         this.friendly = c[types_1.TYPES.FriendlyStartable]();
-        c[types_1.TYPES.StoppedFactory]().create({
+        const initialState = c[types_1.TYPES.StoppedFactory]().create({
             stoppingPromise: Promise.resolve(),
         });
+        this.friendly.setState(initialState);
+        initialState.postActivate();
     }
     getReadyState() {
         return this.friendly.getReadyState();

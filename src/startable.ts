@@ -36,9 +36,11 @@ export class Startable implements StartableLike {
 		}
 		const c = new Container();
 		this.friendly = c[TYPES.FriendlyStartable]();
-		c[TYPES.StoppedFactory]().create({
+		const initialState = c[TYPES.StoppedFactory]().create({
 			stoppingPromise: Promise.resolve(),
 		});
+		this.friendly.setState(initialState);
+		initialState.postActivate();
 	}
 
 	public getReadyState(): ReadyState {

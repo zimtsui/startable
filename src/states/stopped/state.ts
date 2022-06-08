@@ -16,14 +16,17 @@ export class Stopped implements StateLike {
 		private factories: FactoryDeps,
 	) {
 		this.stoppingPromise = args.stoppingPromise;
-		this.startable.setState(this);
 	}
 
+	public postActivate(): void { }
+
 	public async start(onStopping?: OnStopping): Promise<void> {
-		this.factories.starting.create({
+		const nextState = this.factories.starting.create({
 			onStopping,
 			stoppingPromise: this.stoppingPromise,
 		});
+		this.startable.setState(nextState);
+		nextState.postActivate();
 		await this.startable.start();
 	}
 
@@ -49,6 +52,7 @@ export class Stopped implements StateLike {
 			onStoppings: onStopping ? [onStopping] : [],
 		});
 		this.startable.setState(nextState);
+		nextState.postActivate();
 	}
 }
 

@@ -10,6 +10,7 @@ export declare class Started implements StateLike {
     private startingPromise;
     private onStoppings;
     constructor(args: Args, startable: FriendlyStartableLike, factories: FactoryDeps);
+    postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;
     assart(onStopping?: OnStopping): Promise<void>;
     stop(err?: Error): Promise<void>;

@@ -15,25 +15,28 @@ export class Stopping implements StateLike {
 	private onStoppings: OnStopping[];
 
 	public constructor(
-		args: Args,
+		private args: Args,
 		private startable: FriendlyStartableLike,
 		private factories: FactoryDeps,
 	) {
 		this.startingPromise = args.startingPromise;
 		this.onStoppings = args.onStoppings;
+	}
 
-		this.startable.setState(this);
+	public postActivate(): void {
+		for (const onStopping of this.onStoppings)
+			onStopping(this.args.err);
 
-		for (const onStopping of this.onStoppings) onStopping(args.err);
-
-		this.startable.rawStop(args.err).then(() => {
+		this.startable.rawStop(this.args.err).then(() => {
 			this.stoppingPromise.resolve();
 		}).catch((err: Error) => {
 			this.stoppingPromise.reject(err);
 		}).then(() => {
-			this.factories.stopped.create({
+			const nextState = this.factories.stopped.create({
 				stoppingPromise: this.stoppingPromise,
 			});
+			this.startable.setState(nextState);
+			nextState.postActivate();
 		});
 	}
 
@@ -60,12 +63,6 @@ export class Stopping implements StateLike {
 	public skipStart(onStopping?: OnStopping): never {
 		throw new CannotSkipStartDuringStopping();
 	}
-}
-
-export namespace Stopping {
-
-
-
 }
 
 export class CannotSkipStartDuringStopping extends Error {

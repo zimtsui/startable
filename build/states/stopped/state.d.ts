@@ -9,6 +9,7 @@ export declare class Stopped implements StateLike {
     [STATE_LIKE_NOMINAL]: void;
     private stoppingPromise;
     constructor(args: Args, startable: FriendlyStartableLike, factories: FactoryDeps);
+    postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;
     assart(onStopping?: OnStopping): Promise<never>;
     stop(): Promise<void>;

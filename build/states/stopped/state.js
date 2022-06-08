@@ -7,13 +7,15 @@ class Stopped {
         this.startable = startable;
         this.factories = factories;
         this.stoppingPromise = args.stoppingPromise;
-        this.startable.setState(this);
     }
+    postActivate() { }
     async start(onStopping) {
-        this.factories.starting.create({
+        const nextState = this.factories.starting.create({
             onStopping,
             stoppingPromise: this.stoppingPromise,
         });
+        this.startable.setState(nextState);
+        nextState.postActivate();
         await this.startable.start();
     }
     async assart(onStopping) {
@@ -34,6 +36,7 @@ class Stopped {
             onStoppings: onStopping ? [onStopping] : [],
         });
         this.startable.setState(nextState);
+        nextState.postActivate();
     }
 }
 exports.Stopped = Stopped;

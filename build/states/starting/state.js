@@ -13,7 +13,8 @@ class Starting {
         if (args.onStopping)
             this.onStoppings.push(args.onStopping);
         this.stoppingPromise = args.stoppingPromise;
-        this.startable.setState(this);
+    }
+    postActivate() {
         this.startable.rawStart().then(() => {
             if (this.manualFailure)
                 throw this.manualFailure;
@@ -21,10 +22,12 @@ class Starting {
         }).catch((err) => {
             this.startingPromise.reject(err);
         }).then(() => {
-            this.factories.started.create({
+            const nextState = this.factories.started.create({
                 onStoppings: this.onStoppings,
                 startingPromise: this.startingPromise,
             });
+            this.startable.setState(nextState);
+            nextState.postActivate();
         });
     }
     async start(onStopping) {

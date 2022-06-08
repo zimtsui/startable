@@ -5,22 +5,26 @@ const state_like_1 = require("../../state-like");
 const public_manual_promise_1 = require("../../public-manual-promise");
 class Stopping {
     constructor(args, startable, factories) {
+        this.args = args;
         this.startable = startable;
         this.factories = factories;
         this.stoppingPromise = public_manual_promise_1.PublicManualPromise.create();
         this.startingPromise = args.startingPromise;
         this.onStoppings = args.onStoppings;
-        this.startable.setState(this);
+    }
+    postActivate() {
         for (const onStopping of this.onStoppings)
-            onStopping(args.err);
-        this.startable.rawStop(args.err).then(() => {
+            onStopping(this.args.err);
+        this.startable.rawStop(this.args.err).then(() => {
             this.stoppingPromise.resolve();
         }).catch((err) => {
             this.stoppingPromise.reject(err);
         }).then(() => {
-            this.factories.stopped.create({
+            const nextState = this.factories.stopped.create({
                 stoppingPromise: this.stoppingPromise,
             });
+            this.startable.setState(nextState);
+            nextState.postActivate();
         });
     }
     async start(onStopping) {

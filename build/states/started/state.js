@@ -8,8 +8,8 @@ class Started {
         this.factories = factories;
         this.startingPromise = args.startingPromise;
         this.onStoppings = args.onStoppings;
-        this.startable.setState(this);
     }
+    postActivate() { }
     async start(onStopping) {
         if (onStopping)
             this.onStoppings.push(onStopping);
@@ -19,11 +19,13 @@ class Started {
         await this.start(onStopping);
     }
     async stop(err) {
-        this.factories.stopping.create({
+        const nextState = this.factories.stopping.create({
             startingPromise: this.startingPromise,
             onStoppings: this.onStoppings,
             err,
         });
+        this.startable.setState(nextState);
+        nextState.postActivate();
         await this.startable.stop();
     }
     async starp(err) {

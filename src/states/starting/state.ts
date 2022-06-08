@@ -22,19 +22,21 @@ export class Starting implements StateLike {
 	) {
 		if (args.onStopping) this.onStoppings.push(args.onStopping);
 		this.stoppingPromise = args.stoppingPromise;
+	}
 
-		this.startable.setState(this);
-
+	public postActivate(): void {
 		this.startable.rawStart().then(() => {
 			if (this.manualFailure) throw this.manualFailure;
 			this.startingPromise.resolve();
 		}).catch((err: Error) => {
 			this.startingPromise.reject(err);
 		}).then(() => {
-			this.factories.started.create({
+			const nextState = this.factories.started.create({
 				onStoppings: this.onStoppings,
 				startingPromise: this.startingPromise,
 			})
+			this.startable.setState(nextState);
+			nextState.postActivate();
 		});
 	}
 
