@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.Stopping = void 0;
-const state_like_1 = require("../../state-like");
+const startable_1 = require("../../startable");
 const public_manual_promise_1 = require("../../public-manual-promise");
-class Stopping {
-    constructor(args, startable, factories) {
+class Stopping extends startable_1.State {
+    constructor(args, host, factories) {
+        super();
         this.args = args;
-        this.startable = startable;
+        this.host = host;
         this.factories = factories;
         this.stoppingPromise = public_manual_promise_1.PublicManualPromise.create();
         this.startingPromise = args.startingPromise;
@@ -15,15 +16,15 @@ class Stopping {
     postActivate() {
         for (const onStopping of this.onStoppings)
             onStopping(this.args.err);
-        this.startable.rawStop(this.args.err).then(() => {
+        this.host.rawStop(this.args.err).then(() => {
             this.stoppingPromise.resolve();
         }).catch((err) => {
             this.stoppingPromise.reject(err);
         }).then(() => {
-            const nextState = this.factories.stopped.create({
+            const nextState = this.factories.stopped.create(this.host, {
                 stoppingPromise: this.stoppingPromise,
             });
-            this.startable.setState(nextState);
+            this.host.state = nextState;
             nextState.postActivate();
         });
     }

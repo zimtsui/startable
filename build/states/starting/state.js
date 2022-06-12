@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.Starting = void 0;
-const state_like_1 = require("../../state-like");
+const startable_1 = require("../../startable");
 const public_manual_promise_1 = require("../../public-manual-promise");
-class Starting {
-    constructor(args, startable, factories) {
-        this.startable = startable;
+class Starting extends startable_1.State {
+    constructor(args, host, factories) {
+        super();
+        this.host = host;
         this.factories = factories;
         this.startingPromise = public_manual_promise_1.PublicManualPromise.create();
         this.onStoppings = [];
@@ -15,18 +16,18 @@ class Starting {
         this.stoppingPromise = args.stoppingPromise;
     }
     postActivate() {
-        this.startable.rawStart().then(() => {
+        this.host.rawStart().then(() => {
             if (this.manualFailure)
                 throw this.manualFailure;
             this.startingPromise.resolve();
         }).catch((err) => {
             this.startingPromise.reject(err);
         }).then(() => {
-            const nextState = this.factories.started.create({
+            const nextState = this.factories.started.create(this.host, {
                 onStoppings: this.onStoppings,
                 startingPromise: this.startingPromise,
             });
-            this.startable.setState(nextState);
+            this.host.state = nextState;
             nextState.postActivate();
         });
     }
@@ -44,7 +45,7 @@ class Starting {
     async starp(err) {
         this.manualFailure = new StarpCalledDuringStarting();
         await this.startingPromise.catch(() => { });
-        await this.startable.stop(err);
+        await this.host.stop(err);
     }
     getReadyState() {
         return "STARTING" /* STARTING */;

@@ -3,8 +3,9 @@ export declare namespace TYPES {
     const StartingFactory: unique symbol;
     const StartedFactory: unique symbol;
     const StoppingFactory: unique symbol;
-    const FriendlyStartable: unique symbol;
-    const Factories: unique symbol;
-    const RawStart: unique symbol;
-    const RawStop: unique symbol;
+    const Startable: unique symbol;
+    const factories: unique symbol;
+    const rawStart: unique symbol;
+    const rawStop: unique symbol;
+    const initialState: unique symbol;
 }

@@ -7,9 +7,10 @@ var TYPES;
     TYPES.StartingFactory = Symbol();
     TYPES.StartedFactory = Symbol();
     TYPES.StoppingFactory = Symbol();
-    TYPES.FriendlyStartable = Symbol();
-    TYPES.Factories = Symbol();
-    TYPES.RawStart = Symbol();
-    TYPES.RawStop = Symbol();
+    TYPES.Startable = Symbol();
+    TYPES.factories = Symbol();
+    TYPES.rawStart = Symbol();
+    TYPES.rawStop = Symbol();
+    TYPES.initialState = Symbol();
 })(TYPES = exports.TYPES || (exports.TYPES = {}));
 //# sourceMappingURL=types.js.map

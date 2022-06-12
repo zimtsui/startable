@@ -1,15 +1,17 @@
-import { OnStopping, ReadyState } from '../../startable-like';
-import { StateLike, STATE_LIKE_NOMINAL } from '../../state-like';
+import {
+	OnStopping,
+	ReadyState,
+	Startable,
+	State,
+	Friendly,
+} from '../../startable';
 import { PublicManualPromise } from '../../public-manual-promise';
-import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { FactoryDeps } from './factory-deps';
 import { Args } from './args';
 
 
 
-export class Starting implements StateLike {
-	[STATE_LIKE_NOMINAL]: void;
-
+export class Starting extends State {
 	private startingPromise = PublicManualPromise.create();
 	private stoppingPromise: Promise<void>;
 	private onStoppings: OnStopping[] = [];
@@ -17,25 +19,30 @@ export class Starting implements StateLike {
 
 	public constructor(
 		args: Args,
-		private startable: FriendlyStartableLike,
+		protected host: Startable,
 		private factories: FactoryDeps,
 	) {
+		super();
+
 		if (args.onStopping) this.onStoppings.push(args.onStopping);
 		this.stoppingPromise = args.stoppingPromise;
 	}
 
 	public postActivate(): void {
-		this.startable.rawStart().then(() => {
+		(<Friendly>this.host).rawStart().then(() => {
 			if (this.manualFailure) throw this.manualFailure;
 			this.startingPromise.resolve();
 		}).catch((err: Error) => {
 			this.startingPromise.reject(err);
 		}).then(() => {
-			const nextState = this.factories.started.create({
-				onStoppings: this.onStoppings,
-				startingPromise: this.startingPromise,
-			})
-			this.startable.setState(nextState);
+			const nextState = this.factories.started.create(
+				this.host,
+				{
+					onStoppings: this.onStoppings,
+					startingPromise: this.startingPromise,
+				},
+			);
+			(<Friendly>this.host).state = nextState;
 			nextState.postActivate();
 		});
 	}
@@ -56,7 +63,7 @@ export class Starting implements StateLike {
 	public async starp(err?: Error): Promise<void> {
 		this.manualFailure = new StarpCalledDuringStarting();
 		await this.startingPromise.catch(() => { });
-		await this.startable.stop(err);
+		await this.host.stop(err);
 	}
 
 	public getReadyState(): ReadyState {

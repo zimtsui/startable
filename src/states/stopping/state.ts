@@ -1,24 +1,28 @@
-import { OnStopping, ReadyState } from '../../startable-like';
-import { StateLike, STATE_LIKE_NOMINAL } from '../../state-like';
+import {
+	OnStopping,
+	ReadyState,
+	Startable,
+	Friendly,
+	State,
+} from '../../startable';
 import { PublicManualPromise } from '../../public-manual-promise';
-import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { Args } from './args';
 import { FactoryDeps } from './factory-deps';
 
 
 
-export class Stopping implements StateLike {
-	[STATE_LIKE_NOMINAL]: void;
-
+export class Stopping extends State {
 	private startingPromise: Promise<void>;
 	private stoppingPromise = PublicManualPromise.create();
 	private onStoppings: OnStopping[];
 
 	public constructor(
 		private args: Args,
-		private startable: FriendlyStartableLike,
+		protected host: Startable,
 		private factories: FactoryDeps,
 	) {
+		super();
+
 		this.startingPromise = args.startingPromise;
 		this.onStoppings = args.onStoppings;
 	}
@@ -27,15 +31,18 @@ export class Stopping implements StateLike {
 		for (const onStopping of this.onStoppings)
 			onStopping(this.args.err);
 
-		this.startable.rawStop(this.args.err).then(() => {
+		(<Friendly>this.host).rawStop(this.args.err).then(() => {
 			this.stoppingPromise.resolve();
 		}).catch((err: Error) => {
 			this.stoppingPromise.reject(err);
 		}).then(() => {
-			const nextState = this.factories.stopped.create({
-				stoppingPromise: this.stoppingPromise,
-			});
-			this.startable.setState(nextState);
+			const nextState = this.factories.stopped.create(
+				this.host,
+				{
+					stoppingPromise: this.stoppingPromise,
+				},
+			);
+			(<Friendly>this.host).state = nextState;
 			nextState.postActivate();
 		});
 	}

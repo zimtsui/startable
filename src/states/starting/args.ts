@@ -1,4 +1,4 @@
-import { OnStopping } from '../../startable-like';
+import { OnStopping } from '../../startable';
 
 
 export interface Args {

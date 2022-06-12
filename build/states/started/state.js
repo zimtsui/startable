@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CannotSkipStartDuringStarted = exports.Started = void 0;
-const state_like_1 = require("../../state-like");
-class Started {
-    constructor(args, startable, factories) {
-        this.startable = startable;
+const startable_1 = require("../../startable");
+class Started extends startable_1.State {
+    constructor(args, host, factories) {
+        super();
+        this.host = host;
         this.factories = factories;
         this.startingPromise = args.startingPromise;
         this.onStoppings = args.onStoppings;
@@ -19,14 +20,14 @@ class Started {
         await this.start(onStopping);
     }
     async stop(err) {
-        const nextState = this.factories.stopping.create({
+        const nextState = this.factories.stopping.create(this.host, {
             startingPromise: this.startingPromise,
             onStoppings: this.onStoppings,
             err,
         });
-        this.startable.setState(nextState);
+        this.host.state = nextState;
         nextState.postActivate();
-        await this.startable.stop();
+        await this.host.stop();
     }
     async starp(err) {
         await this.stop(err);

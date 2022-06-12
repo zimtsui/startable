@@ -1,21 +1,25 @@
-import { OnStopping, ReadyState } from '../../startable-like';
-import { StateLike, STATE_LIKE_NOMINAL } from '../../state-like';
-import { FriendlyStartableLike } from '../../friendly-startable-like';
+import {
+	OnStopping,
+	ReadyState,
+	Friendly,
+	Startable,
+	State,
+} from '../../startable';
 import { FactoryDeps } from './factory-deps';
 import { Args } from './args';
 
 
-export class Started implements StateLike {
-	[STATE_LIKE_NOMINAL]: void;
-
+export class Started extends State {
 	private startingPromise: Promise<void>;
 	private onStoppings: OnStopping[];
 
 	public constructor(
 		args: Args,
-		private startable: FriendlyStartableLike,
+		protected host: Startable,
 		private factories: FactoryDeps,
 	) {
+		super();
+
 		this.startingPromise = args.startingPromise;
 		this.onStoppings = args.onStoppings;
 	}
@@ -32,14 +36,17 @@ export class Started implements StateLike {
 	}
 
 	public async stop(err?: Error): Promise<void> {
-		const nextState = this.factories.stopping.create({
-			startingPromise: this.startingPromise,
-			onStoppings: this.onStoppings,
-			err,
-		});
-		this.startable.setState(nextState);
+		const nextState = this.factories.stopping.create(
+			this.host,
+			{
+				startingPromise: this.startingPromise,
+				onStoppings: this.onStoppings,
+				err,
+			},
+		);
+		(<Friendly>this.host).state = nextState;
 		nextState.postActivate();
-		await this.startable.stop();
+		await this.host.stop();
 	}
 
 	public async starp(err?: Error): Promise<void> {

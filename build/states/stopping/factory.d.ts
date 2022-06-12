@@ -1,8 +1,10 @@
 import { Args } from './args';
 import { FactoryLike } from './factory-like';
 import { Stopping } from './state';
+import { FactoryDeps } from './factory-deps';
+import { Startable } from '../../startable';
 export declare class Factory implements FactoryLike {
-    private startable;
     private factories;
-    create(args: Args): Stopping;
+    constructor(factories: FactoryDeps);
+    create(host: Startable, args: Args): Stopping;
 }

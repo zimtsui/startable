@@ -1,5 +1,5 @@
-import { StateLike } from '../../state-like';
+import { State, Startable } from '../../startable';
 import { Args } from './args';
 export interface FactoryLike {
-    create(args: Args): StateLike;
+    create(host: Startable, args: Args): State;
 }

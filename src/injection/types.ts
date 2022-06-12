@@ -3,8 +3,9 @@ export namespace TYPES {
 	export const StartingFactory = Symbol();
 	export const StartedFactory = Symbol();
 	export const StoppingFactory = Symbol();
-	export const FriendlyStartable = Symbol();
-	export const Factories = Symbol();
-	export const RawStart = Symbol();
-	export const RawStop = Symbol();
+	export const Startable = Symbol();
+	export const factories = Symbol();
+	export const rawStart = Symbol();
+	export const rawStop = Symbol();
+	export const initialState = Symbol();
 }

@@ -1,17 +1,14 @@
-import { OnStopping, ReadyState } from '../../startable-like';
-import { StateLike, STATE_LIKE_NOMINAL } from '../../state-like';
-import { FriendlyStartableLike } from '../../friendly-startable-like';
+import { OnStopping, ReadyState, Startable, State } from '../../startable';
 import { Args } from './args';
 import { FactoryDeps } from './factory-deps';
-export declare class Stopping implements StateLike {
+export declare class Stopping extends State {
     private args;
-    private startable;
+    protected host: Startable;
     private factories;
-    [STATE_LIKE_NOMINAL]: void;
     private startingPromise;
     private stoppingPromise;
     private onStoppings;
-    constructor(args: Args, startable: FriendlyStartableLike, factories: FactoryDeps);
+    constructor(args: Args, host: Startable, factories: FactoryDeps);
     postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;
     assart(onStopping?: OnStopping): Promise<never>;

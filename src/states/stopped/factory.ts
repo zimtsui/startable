@@ -1,23 +1,23 @@
 import { FactoryLike } from './factory-like';
 import { FactoryDeps } from './factory-deps';
 import { Stopped } from './state';
-import { instantInject } from '@zimtsui/injektor';
-import { TYPES } from '../../injection/types';
-import { FriendlyStartableLike } from '../../friendly-startable-like';
 import { Args } from './args';
+import { Startable } from '../../startable';
 
 
 
 export class Factory implements FactoryLike {
-	@instantInject(TYPES.FriendlyStartable)
-	private startable!: FriendlyStartableLike;
-	@instantInject(TYPES.Factories)
-	private factories!: FactoryDeps;
+	public constructor(
+		private factories: FactoryDeps,
+	) { }
 
-	public create(args: Args): Stopped {
+	public create(
+		host: Startable,
+		args: Args,
+	): Stopped {
 		return new Stopped(
 			args,
-			this.startable,
+			host,
 			this.factories,
 		);
 	}
