@@ -28,7 +28,7 @@ class constructor extends Startable {
 	}
 }
 
-
+// 不能单独导出一个类的多态构造函数，所以只能工厂函数
 export function create(
 	rawStart: RawStart,
 	rawStop: RawStop,

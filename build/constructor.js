@@ -16,6 +16,7 @@ class constructor extends startable_1.Startable {
         initialState.postActivate();
     }
 }
+// 不能单独导出一个类的多态构造函数，所以只能工厂函数
 function create(rawStart, rawStop) {
     return new constructor(rawStart, rawStop);
 }
