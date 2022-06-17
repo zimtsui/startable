@@ -7,22 +7,27 @@ export abstract class Startable {
 	protected abstract rawStart: RawStart;
 	protected abstract rawStop: RawStop;
 
+	@boundMethod
 	public getReadyState(): ReadyState {
 		return this.state.getReadyState();
 	}
 
+	@boundMethod
 	public skipStart(onStopping?: OnStopping): void {
 		this.state.skipStart(onStopping);
 	}
 
+	@boundMethod
 	public async start(onStopping?: OnStopping): Promise<void> {
 		await this.state.start(onStopping);
 	}
 
+	@boundMethod
 	public async assart(onStopping?: OnStopping): Promise<void> {
 		await this.state.assart(onStopping);
 	}
 
+	@boundMethod
 	public async stop(err?: Error): Promise<void> {
 		await this.state.stop(err);
 	}

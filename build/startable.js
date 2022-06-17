@@ -32,6 +32,21 @@ class Startable {
 }
 __decorate([
     autobind_decorator_1.boundMethod
+], Startable.prototype, "getReadyState", null);
+__decorate([
+    autobind_decorator_1.boundMethod
+], Startable.prototype, "skipStart", null);
+__decorate([
+    autobind_decorator_1.boundMethod
+], Startable.prototype, "start", null);
+__decorate([
+    autobind_decorator_1.boundMethod
+], Startable.prototype, "assart", null);
+__decorate([
+    autobind_decorator_1.boundMethod
+], Startable.prototype, "stop", null);
+__decorate([
+    autobind_decorator_1.boundMethod
 ], Startable.prototype, "starp", null);
 exports.Startable = Startable;
 class Friendly extends Startable {
