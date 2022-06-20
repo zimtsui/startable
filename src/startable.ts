@@ -1,39 +1,31 @@
-import { boundMethod } from 'autobind-decorator';
+import { StartableLike } from './startable-like';
 
-
-
-export abstract class Startable {
+export abstract class Startable implements StartableLike {
 	protected abstract state: State;
 	protected abstract rawStart: RawStart;
 	protected abstract rawStop: RawStop;
 
-	@boundMethod
-	public getReadyState(): ReadyState {
+	public getReadyState = (): ReadyState => {
 		return this.state.getReadyState();
 	}
 
-	@boundMethod
-	public skipStart(onStopping?: OnStopping): void {
+	public skipStart = (onStopping?: OnStopping): void => {
 		this.state.skipStart(onStopping);
 	}
 
-	@boundMethod
-	public async start(onStopping?: OnStopping): Promise<void> {
+	public start = async (onStopping?: OnStopping): Promise<void> => {
 		await this.state.start(onStopping);
 	}
 
-	@boundMethod
-	public async assart(onStopping?: OnStopping): Promise<void> {
+	public assart = async (onStopping?: OnStopping): Promise<void> => {
 		await this.state.assart(onStopping);
 	}
 
-	@boundMethod
-	public async stop(err?: Error): Promise<void> {
+	public stop = async (err?: Error): Promise<void> => {
 		await this.state.stop(err);
 	}
 
-	@boundMethod
-	public starp(err?: Error): Promise<void> {
+	public starp = (err?: Error): Promise<void> => {
 		const promise = this.state.starp(err);
 		promise.catch(() => { });
 		return promise;

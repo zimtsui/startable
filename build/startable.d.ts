@@ -1,13 +1,14 @@
-export declare abstract class Startable {
+import { StartableLike } from './startable-like';
+export declare abstract class Startable implements StartableLike {
     protected abstract state: State;
     protected abstract rawStart: RawStart;
     protected abstract rawStop: RawStop;
-    getReadyState(): ReadyState;
-    skipStart(onStopping?: OnStopping): void;
-    start(onStopping?: OnStopping): Promise<void>;
-    assart(onStopping?: OnStopping): Promise<void>;
-    stop(err?: Error): Promise<void>;
-    starp(err?: Error): Promise<void>;
+    getReadyState: () => ReadyState;
+    skipStart: (onStopping?: OnStopping | undefined) => void;
+    start: (onStopping?: OnStopping | undefined) => Promise<void>;
+    assart: (onStopping?: OnStopping | undefined) => Promise<void>;
+    stop: (err?: Error | undefined) => Promise<void>;
+    starp: (err?: Error | undefined) => Promise<void>;
 }
 export declare abstract class Friendly extends Startable {
     abstract state: State;
