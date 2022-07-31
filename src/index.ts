@@ -6,6 +6,7 @@ export {
 export {
 	RawStart,
 	RawStop,
+	Startable,
 } from './startable';
 export { CannotStarpDuringStopped } from './states/stopped/state'
 export { StarpCalledDuringStarting, CannotSkipStartDuringStarting } from './states/starting/state';

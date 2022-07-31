@@ -1,5 +1,5 @@
 export { ReadyState, OnStopping, StartableLike, } from './startable-like';
-export { RawStart, RawStop, } from './startable';
+export { RawStart, RawStop, Startable, } from './startable';
 export { CannotStarpDuringStopped } from './states/stopped/state';
 export { StarpCalledDuringStarting, CannotSkipStartDuringStarting } from './states/starting/state';
 export { CannotSkipStartDuringStarted } from './states/started/state';

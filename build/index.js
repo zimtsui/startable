@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createStartable = exports.CannotSkipStartDuringStopping = exports.CannotSkipStartDuringStarted = exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.CannotStarpDuringStopped = void 0;
+exports.createStartable = exports.CannotSkipStartDuringStopping = exports.CannotSkipStartDuringStarted = exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.CannotStarpDuringStopped = exports.Startable = void 0;
+var startable_1 = require("./startable");
+Object.defineProperty(exports, "Startable", { enumerable: true, get: function () { return startable_1.Startable; } });
 var state_1 = require("./states/stopped/state");
 Object.defineProperty(exports, "CannotStarpDuringStopped", { enumerable: true, get: function () { return state_1.CannotStarpDuringStopped; } });
 var state_2 = require("./states/starting/state");
