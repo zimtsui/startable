@@ -1,4 +1,5 @@
-import { OnStopping, ReadyState, Startable, State } from '../../startable';
+import { Startable, State } from '../../startable';
+import { OnStopping, ReadyState } from '../../startable-like';
 import { Args } from './args';
 import { FactoryDeps } from './factory-deps';
 export declare class Stopping extends State {

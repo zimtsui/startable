@@ -1,4 +1,8 @@
-import { StartableLike } from './startable-like';
+import {
+	StartableLike,
+	ReadyState,
+	OnStopping,
+} from './startable-like';
 
 export abstract class Startable implements StartableLike {
 	protected abstract state: State;
@@ -37,18 +41,6 @@ export abstract class Friendly extends Startable {
 	public abstract state: State;
 	public abstract rawStart: RawStart;
 	public abstract rawStop: RawStop;
-}
-
-
-export const enum ReadyState {
-	STARTING = 'STARTING',
-	STARTED = 'STARTED',
-	STOPPING = 'STOPPING',
-	STOPPED = 'STOPPED',
-}
-
-export interface OnStopping {
-	(err?: Error): void;
 }
 
 export interface RawStart {

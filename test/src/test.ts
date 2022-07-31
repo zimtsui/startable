@@ -1,5 +1,5 @@
 import {
-    Startable,
+    createStartable,
     StarpCalledDuringStarting,
     ReadyState,
 } from '../..';
@@ -22,7 +22,7 @@ class StopError extends Error {
 
 test('start succ stop succ', async t => {
     const f = fake();
-    const s = Startable.create(async () => {
+    const s = createStartable(async () => {
         f();
         assert(s.getReadyState() === ReadyState.STARTING);
         return Promise.resolve();
@@ -40,7 +40,7 @@ test('start succ stop succ', async t => {
 
 test('start succ stop fail', async t => {
     const f = fake();
-    const s = Startable.create(async () => {
+    const s = createStartable(async () => {
         f();
         return Promise.resolve();
     }, async () => {
@@ -55,7 +55,7 @@ test('start succ stop fail', async t => {
 
 test('start fail stop succ', async t => {
     const f = fake();
-    const s = Startable.create(async () => {
+    const s = createStartable(async () => {
         f();
         return Promise.reject(new StartError());
     }, async () => {
@@ -71,7 +71,7 @@ test('start fail stop succ', async t => {
 
 test('start fail stop fail', async t => {
     const f = fake();
-    const s = Startable.create(async () => {
+    const s = createStartable(async () => {
         f();
         return Promise.reject(new StartError());
 
@@ -89,7 +89,7 @@ test('start fail stop fail', async t => {
 test('starp during starting', async t => {
     const f = fake();
     let resolveStart: () => void;
-    const s = Startable.create(async () => {
+    const s = createStartable(async () => {
         f();
         return new Promise<void>(resolve => {
             resolveStart = resolve;

@@ -10,7 +10,7 @@ import * as Stopping from './states/stopping/factory';
 
 
 
-export class Factories implements
+export class StateFactories implements
 	StoppedDeps,
 	StartingDeps,
 	StartedDeps,

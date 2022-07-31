@@ -1,4 +1,4 @@
-import { StartableLike } from './startable-like';
+import { StartableLike, ReadyState, OnStopping } from './startable-like';
 export declare abstract class Startable implements StartableLike {
     protected abstract state: State;
     protected abstract rawStart: RawStart;
@@ -14,15 +14,6 @@ export declare abstract class Friendly extends Startable {
     abstract state: State;
     abstract rawStart: RawStart;
     abstract rawStop: RawStop;
-}
-export declare const enum ReadyState {
-    STARTING = "STARTING",
-    STARTED = "STARTED",
-    STOPPING = "STOPPING",
-    STOPPED = "STOPPED"
-}
-export interface OnStopping {
-    (err?: Error): void;
 }
 export interface RawStart {
     (): Promise<void>;

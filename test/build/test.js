@@ -17,7 +17,7 @@ class StopError extends Error {
 }
 (0, ava_1.default)('start succ stop succ', async (t) => {
     const f = fake();
-    const s = __1.Startable.create(async () => {
+    const s = (0, __1.createStartable)(async () => {
         f();
         assert(s.getReadyState() === "STARTING" /* STARTING */);
         return Promise.resolve();
@@ -34,7 +34,7 @@ class StopError extends Error {
 });
 (0, ava_1.default)('start succ stop fail', async (t) => {
     const f = fake();
-    const s = __1.Startable.create(async () => {
+    const s = (0, __1.createStartable)(async () => {
         f();
         return Promise.resolve();
     }, async () => {
@@ -48,7 +48,7 @@ class StopError extends Error {
 });
 (0, ava_1.default)('start fail stop succ', async (t) => {
     const f = fake();
-    const s = __1.Startable.create(async () => {
+    const s = (0, __1.createStartable)(async () => {
         f();
         return Promise.reject(new StartError());
     }, async () => {
@@ -63,7 +63,7 @@ class StopError extends Error {
 });
 (0, ava_1.default)('start fail stop fail', async (t) => {
     const f = fake();
-    const s = __1.Startable.create(async () => {
+    const s = (0, __1.createStartable)(async () => {
         f();
         return Promise.reject(new StartError());
     }, async () => {
@@ -79,7 +79,7 @@ class StopError extends Error {
 (0, ava_1.default)('starp during starting', async (t) => {
     const f = fake();
     let resolveStart;
-    const s = __1.Startable.create(async () => {
+    const s = (0, __1.createStartable)(async () => {
         f();
         return new Promise(resolve => {
             resolveStart = resolve;

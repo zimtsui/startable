@@ -1,4 +1,3 @@
-import { ReadyState, OnStopping } from './startable';
 export interface StartableLike {
     getReadyState: () => ReadyState;
     skipStart: (onStopping?: OnStopping) => void;
@@ -6,4 +5,13 @@ export interface StartableLike {
     assart: (onStopping?: OnStopping) => Promise<void>;
     stop: (err?: Error) => Promise<void>;
     starp: (err?: Error) => Promise<void>;
+}
+export declare const enum ReadyState {
+    STARTING = "STARTING",
+    STARTED = "STARTED",
+    STOPPING = "STOPPING",
+    STOPPED = "STOPPED"
+}
+export interface OnStopping {
+    (err?: Error): void;
 }

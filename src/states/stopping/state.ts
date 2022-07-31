@@ -1,10 +1,12 @@
 import {
-	OnStopping,
-	ReadyState,
 	Startable,
 	Friendly,
 	State,
 } from '../../startable';
+import {
+	OnStopping,
+	ReadyState,
+} from '../../startable-like';
 import { PublicManualPromise } from '../../public-manual-promise';
 import { Args } from './args';
 import { FactoryDeps } from './factory-deps';

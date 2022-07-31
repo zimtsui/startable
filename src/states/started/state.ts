@@ -1,10 +1,12 @@
 import {
-	OnStopping,
-	ReadyState,
 	Friendly,
 	Startable,
 	State,
 } from '../../startable';
+import {
+	OnStopping,
+	ReadyState,
+} from '../../startable-like';
 import { FactoryDeps } from './factory-deps';
 import { Args } from './args';
 
