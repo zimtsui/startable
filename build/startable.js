@@ -15,8 +15,10 @@ class Startable {
         this.assart = async (onStopping) => {
             await this.state.assart(onStopping);
         };
-        this.stop = async (err) => {
-            await this.state.stop(err);
+        this.stop = (err) => {
+            const promise = this.state.stop(err);
+            promise.catch(() => { });
+            return promise;
         };
         this.starp = (err) => {
             const promise = this.state.starp(err);

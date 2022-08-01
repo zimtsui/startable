@@ -25,8 +25,10 @@ export abstract class Startable implements StartableLike {
 		await this.state.assart(onStopping);
 	}
 
-	public stop = async (err?: Error): Promise<void> => {
-		await this.state.stop(err);
+	public stop = (err?: Error): Promise<void> => {
+		const promise = this.state.stop(err);
+		promise.catch(() => { });
+		return promise;
 	}
 
 	public starp = (err?: Error): Promise<void> => {

@@ -65,6 +65,8 @@ console.log(daemon.getReadyState() === ReadyState.STOPPED);
 
 ## 启停方法
 
+所有方法都已经绑定到 Startable 上了，比如你可以把 `this.starp` 作为回调而不必 `err => this.starp(err)`。
+
 ### 启动方法
 
 | 状态 | `.start()` 的行为 | `.start()` 的值 |
@@ -98,6 +100,7 @@ console.log(daemon.getReadyState() === ReadyState.STOPPED);
 | STOPPING | 什么也不干 | 正在进行的这次停止过程的 Promise |
 
 - 你可以在停止过程中尽情地重复运行 `.stop()` ，而不用担心重复运行你的 `.rawStop` 实现。
+- `.stop()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.stop()` 而不必 `this.stop().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
 
 ### 确保停止
 
@@ -109,7 +112,6 @@ console.log(daemon.getReadyState() === ReadyState.STOPPED);
 | STOPPING | 什么也不干 | 正在进行的这次停止过程的 Promise |
 
 - `.starp()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.starp()` 而不必 `this.starp().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
-- `.starp()` 默认已经绑定到 Startable 上了，因此你可以把 `this.starp` 作为回调而不必 `err => this.starp(err)`。
 
 ## 自发启停
 
