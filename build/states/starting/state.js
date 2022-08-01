@@ -65,15 +65,9 @@ class Starting extends startable_1.State {
 }
 exports.Starting = Starting;
 class StarpCalledDuringStarting extends Error {
-    constructor() {
-        super('.starp() is called during STARTING.');
-    }
 }
 exports.StarpCalledDuringStarting = StarpCalledDuringStarting;
 class CannotSkipStartDuringStarting extends Error {
-    constructor() {
-        super('Cannot call .skipStart() during STARTING.');
-    }
 }
 exports.CannotSkipStartDuringStarting = CannotSkipStartDuringStarting;
 class CannotStopDuringStarting extends Error {

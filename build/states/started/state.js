@@ -49,9 +49,6 @@ class Started extends startable_1.State {
 }
 exports.Started = Started;
 class CannotSkipStartDuringStarted extends Error {
-    constructor() {
-        super('Cannot call .skipStart() during STARTED.');
-    }
 }
 exports.CannotSkipStartDuringStarted = CannotSkipStartDuringStarted;
 class CannotGetStoppingDuringStarted extends Error {

@@ -18,10 +18,8 @@ export declare class Stopped<StartArgs extends unknown[]> extends State<StartArg
     getStopping(): Promise<void>;
 }
 export declare class CannotStarpDuringStopped extends Error {
-    constructor();
 }
 export declare class CannotAssartDuringStopped extends Error {
-    constructor();
 }
 export declare class CannotGetStartingDuringStopped extends Error {
 }

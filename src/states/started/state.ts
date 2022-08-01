@@ -76,10 +76,6 @@ export class Started<StartArgs extends unknown[]> extends State<StartArgs> {
 	}
 }
 
-export class CannotSkipStartDuringStarted extends Error {
-	public constructor() {
-		super('Cannot call .skipStart() during STARTED.');
-	}
-}
+export class CannotSkipStartDuringStarted extends Error { }
 
 export class CannotGetStoppingDuringStarted extends Error { }

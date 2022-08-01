@@ -49,15 +49,9 @@ class Stopped extends startable_1.State {
 }
 exports.Stopped = Stopped;
 class CannotStarpDuringStopped extends Error {
-    constructor() {
-        super('Cannot call .starp() during STOPPED.');
-    }
 }
 exports.CannotStarpDuringStopped = CannotStarpDuringStopped;
 class CannotAssartDuringStopped extends Error {
-    constructor() {
-        super('Cannot call .assart() during STOPPED.');
-    }
 }
 exports.CannotAssartDuringStopped = CannotAssartDuringStopped;
 class CannotGetStartingDuringStopped extends Error {

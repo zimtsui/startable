@@ -80,16 +80,8 @@ export class Stopped<StartArgs extends unknown[]> extends State<StartArgs> {
 	}
 }
 
-export class CannotStarpDuringStopped extends Error {
-	public constructor() {
-		super('Cannot call .starp() during STOPPED.');
-	}
-}
+export class CannotStarpDuringStopped extends Error { }
 
-export class CannotAssartDuringStopped extends Error {
-	public constructor() {
-		super('Cannot call .assart() during STOPPED.');
-	}
-}
+export class CannotAssartDuringStopped extends Error { }
 
 export class CannotGetStartingDuringStopped extends Error { }

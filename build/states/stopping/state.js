@@ -55,15 +55,9 @@ class Stopping extends startable_1.State {
 }
 exports.Stopping = Stopping;
 class CannotSkipStartDuringStopping extends Error {
-    constructor() {
-        super('Cannot call .skipStart() during STOPPING.');
-    }
 }
 exports.CannotSkipStartDuringStopping = CannotSkipStartDuringStopping;
 class CannotAssartDuringStopping extends Error {
-    constructor() {
-        super('Cannot call .assart() during STOPPING.');
-    }
 }
 exports.CannotAssartDuringStopping = CannotAssartDuringStopping;
 class CannotStartDuringStopping extends Error {

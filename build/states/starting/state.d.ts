@@ -22,10 +22,8 @@ export declare class Starting<StartArgs extends unknown[]> extends State<StartAr
     getStopping(): Promise<void>;
 }
 export declare class StarpCalledDuringStarting extends Error {
-    constructor();
 }
 export declare class CannotSkipStartDuringStarting extends Error {
-    constructor();
 }
 export declare class CannotStopDuringStarting extends Error {
 }
