@@ -31,8 +31,8 @@ test('start succ stop succ', async t => {
         assert(s.getReadyState() === ReadyState.STOPPING);
         return Promise.resolve();
     });
-    s.start();
-    await s.start();
+    s.start([]);
+    await s.start([]);
     s.stop();
     await s.stop();
     assert(f.callCount === 2);
@@ -47,7 +47,7 @@ test('start succ stop fail', async t => {
         f();
         return Promise.reject(new StopError());
     });
-    await s.start();
+    await s.start([]);
     s.stop().catch(() => { });
     await assert.rejects(s.stop(), StopError);
     assert(f.callCount === 2);
@@ -62,8 +62,8 @@ test('start fail stop succ', async t => {
         f();
         return Promise.resolve();
     });
-    s.start().catch(() => { });
-    await assert.rejects(s.start(), StartError);
+    s.start([]).catch(() => { });
+    await assert.rejects(s.start([]), StartError);
     s.stop();
     await s.stop();
     assert(f.callCount === 2);
@@ -79,8 +79,8 @@ test('start fail stop fail', async t => {
         f();
         return Promise.reject(new StopError());
     });
-    s.start().catch(() => { });
-    await assert.rejects(s.start(), StartError);
+    s.start([]).catch(() => { });
+    await assert.rejects(s.start([]), StartError);
     s.stop().catch(() => { });
     await assert.rejects(s.stop(), StopError);
     assert(f.callCount === 2);
@@ -98,7 +98,7 @@ test('starp during starting', async t => {
         f();
         return Promise.resolve();
     });
-    const pStart = s.start();
+    const pStart = s.start([]);
     pStart.catch(() => { });
     const pStarp = s.starp();
     resolveStart!();
