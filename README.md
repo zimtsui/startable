@@ -74,7 +74,6 @@ console.log(daemon.getReadyState() === ReadyState.STOPPED);
 | STOPPED | 开始启动过程 | 本次启动过程的 Promise |
 | STARTING | 什么也不干 | 正在进行的这次启动过程的 Promise |
 | STARTED | 什么也不干 | 刚刚结束的那次启动过程的 Promise |
-| STOPPING | 什么也不干 | 上一次启动过程的 Promise |
 
 - 你可以在启动过程中尽情地重复运行 `.start()` ，而不用担心重复运行你的 `.rawStart` 实现。
 - 在停止过程中可以查看上一次启动是否成功
@@ -95,7 +94,6 @@ console.log(daemon.getReadyState() === ReadyState.STOPPED);
 | 状态 | `.stop()` 的行为 | `.stop()` 的值 |
 |---|---|---|
 | STOPPED | 什么也不干 | 刚刚结束的这次停止过程的 Promise |
-| STARTING | 什么也不干 | 上一次停止过程的 Promise |
 | STARTED | 开始停止过程 | 本次停止过程的 Promise |
 | STOPPING | 什么也不干 | 正在进行的这次停止过程的 Promise |
 

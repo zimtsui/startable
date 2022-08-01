@@ -27,3 +27,5 @@ export declare class StarpCalledDuringStarting extends Error {
 export declare class CannotSkipStartDuringStarting extends Error {
     constructor();
 }
+export declare class CannotStopDuringStarting extends Error {
+}

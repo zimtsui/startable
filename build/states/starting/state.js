@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.Starting = void 0;
+exports.CannotStopDuringStarting = exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.Starting = void 0;
 const startable_1 = require("../../startable");
 const public_manual_promise_1 = require("../../public-manual-promise");
 class Starting extends startable_1.State {
@@ -43,7 +43,7 @@ class Starting extends startable_1.State {
         await this.startingPromise;
     }
     async stop(err) {
-        await this.stoppingPromise;
+        throw new CannotStopDuringStarting();
     }
     async starp(err) {
         this.manualFailure = new StarpCalledDuringStarting();
@@ -76,4 +76,7 @@ class CannotSkipStartDuringStarting extends Error {
     }
 }
 exports.CannotSkipStartDuringStarting = CannotSkipStartDuringStarting;
+class CannotStopDuringStarting extends Error {
+}
+exports.CannotStopDuringStarting = CannotStopDuringStarting;
 //# sourceMappingURL=state.js.map

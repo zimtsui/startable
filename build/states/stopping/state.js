@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.Stopping = void 0;
+exports.CannotStartDuringStopping = exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.Stopping = void 0;
 const startable_1 = require("../../startable");
 const public_manual_promise_1 = require("../../public-manual-promise");
 class Stopping extends startable_1.State {
@@ -29,7 +29,7 @@ class Stopping extends startable_1.State {
         });
     }
     async start(startArgs, onStopping) {
-        await this.startingPromise;
+        throw new CannotStartDuringStopping();
     }
     async assart(onStopping) {
         throw new CannotAssartDuringStopping();
@@ -66,4 +66,7 @@ class CannotAssartDuringStopping extends Error {
     }
 }
 exports.CannotAssartDuringStopping = CannotAssartDuringStopping;
+class CannotStartDuringStopping extends Error {
+}
+exports.CannotStartDuringStopping = CannotStartDuringStopping;
 //# sourceMappingURL=state.js.map

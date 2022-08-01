@@ -53,7 +53,7 @@ export class Stopping<StartArgs extends unknown[]> extends State<StartArgs> {
 		startArgs: StartArgs,
 		onStopping?: OnStopping,
 	): Promise<void> {
-		await this.startingPromise;
+		throw new CannotStartDuringStopping();
 	}
 
 	public async assart(onStopping?: OnStopping): Promise<never> {
@@ -96,3 +96,5 @@ export class CannotAssartDuringStopping extends Error {
 		super('Cannot call .assart() during STOPPING.');
 	}
 }
+
+export class CannotStartDuringStopping extends Error { }

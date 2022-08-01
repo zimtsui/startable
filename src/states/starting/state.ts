@@ -65,7 +65,7 @@ export class Starting<StartArgs extends unknown[]> extends State<StartArgs> {
 	}
 
 	public async stop(err?: Error): Promise<void> {
-		await this.stoppingPromise;
+		throw new CannotStopDuringStarting();
 	}
 
 	public async starp(err?: Error): Promise<void> {
@@ -102,3 +102,5 @@ export class CannotSkipStartDuringStarting extends Error {
 		super('Cannot call .skipStart() during STARTING.');
 	}
 }
+
+export class CannotStopDuringStarting extends Error { }

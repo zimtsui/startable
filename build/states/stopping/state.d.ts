@@ -26,3 +26,5 @@ export declare class CannotSkipStartDuringStopping extends Error {
 export declare class CannotAssartDuringStopping extends Error {
     constructor();
 }
+export declare class CannotStartDuringStopping extends Error {
+}
