@@ -13,25 +13,27 @@ import { Args } from './args';
 
 
 
-export class Starting extends State {
+export class Starting<StartArgs extends unknown[]> extends State<StartArgs> {
 	private startingPromise = PublicManualPromise.create();
 	private stoppingPromise: Promise<void>;
 	private onStoppings: OnStopping[] = [];
 	private manualFailure: null | Error = null;
+	private startArgs: StartArgs;
 
 	public constructor(
-		args: Args,
-		protected host: Startable,
-		private factories: FactoryDeps,
+		args: Args<StartArgs>,
+		protected host: Startable<StartArgs>,
+		private factories: FactoryDeps<StartArgs>,
 	) {
 		super();
 
 		if (args.onStopping) this.onStoppings.push(args.onStopping);
 		this.stoppingPromise = args.stoppingPromise;
+		this.startArgs = args.startArgs;
 	}
 
 	public postActivate(): void {
-		(<Friendly>this.host).rawStart().then(() => {
+		(<Friendly<StartArgs>>this.host).rawStart(...this.startArgs).then(() => {
 			if (this.manualFailure) throw this.manualFailure;
 			this.startingPromise.resolve();
 		}).catch((err: Error) => {
@@ -44,18 +46,22 @@ export class Starting extends State {
 					startingPromise: this.startingPromise,
 				},
 			);
-			(<Friendly>this.host).state = nextState;
+			(<Friendly<StartArgs>>this.host).state = nextState;
 			nextState.postActivate();
 		});
 	}
 
-	public async start(onStopping?: OnStopping): Promise<void> {
+	public async start(
+		startArgs: StartArgs,
+		onStopping?: OnStopping,
+	): Promise<void> {
 		if (onStopping) this.onStoppings.push(onStopping);
 		await this.startingPromise;
 	}
 
 	public async assart(onStopping?: OnStopping): Promise<void> {
-		await this.start(onStopping);
+		if (onStopping) this.onStoppings.push(onStopping);
+		await this.startingPromise;
 	}
 
 	public async stop(err?: Error): Promise<void> {

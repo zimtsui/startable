@@ -10,14 +10,15 @@ class Stopped extends startable_1.State {
         this.stoppingPromise = args.stoppingPromise;
     }
     postActivate() { }
-    async start(onStopping) {
+    async start(startArgs, onStopping) {
         const nextState = this.factories.starting.create(this.host, {
             onStopping,
             stoppingPromise: this.stoppingPromise,
+            startArgs,
         });
         this.host.state = nextState;
         nextState.postActivate();
-        await this.host.start();
+        await this.host.start(startArgs);
     }
     async assart(onStopping) {
         throw new CannotAssartDuringStopped();

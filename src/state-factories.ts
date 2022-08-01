@@ -10,14 +10,14 @@ import * as Stopping from './states/stopping/factory';
 
 
 
-export class StateFactories implements
-	StoppedDeps,
-	StartingDeps,
-	StartedDeps,
-	StoppingDeps {
+export class StateFactories<StartArgs extends unknown[]> implements
+	StoppedDeps<StartArgs>,
+	StartingDeps<StartArgs>,
+	StartedDeps<StartArgs>,
+	StoppingDeps<StartArgs> {
 
-	public stopped: Stopped.Factory = new Stopped.Factory(this);
-	public starting: Starting.Factory = new Starting.Factory(this);
-	public started: Started.Factory = new Started.Factory(this);
-	public stopping: Stopping.Factory = new Stopping.Factory(this);
+	public stopped: Stopped.Factory<StartArgs> = new Stopped.Factory(this);
+	public starting: Starting.Factory<StartArgs> = new Starting.Factory(this);
+	public started: Started.Factory<StartArgs> = new Started.Factory(this);
+	public stopping: Stopping.Factory<StartArgs> = new Stopping.Factory(this);
 }

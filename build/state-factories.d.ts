@@ -6,9 +6,9 @@ import * as Stopped from './states/stopped/factory';
 import * as Starting from './states/starting/factory';
 import * as Started from './states/started/factory';
 import * as Stopping from './states/stopping/factory';
-export declare class StateFactories implements StoppedDeps, StartingDeps, StartedDeps, StoppingDeps {
-    stopped: Stopped.Factory;
-    starting: Starting.Factory;
-    started: Started.Factory;
-    stopping: Stopping.Factory;
+export declare class StateFactories<StartArgs extends unknown[]> implements StoppedDeps<StartArgs>, StartingDeps<StartArgs>, StartedDeps<StartArgs>, StoppingDeps<StartArgs> {
+    stopped: Stopped.Factory<StartArgs>;
+    starting: Starting.Factory<StartArgs>;
+    started: Started.Factory<StartArgs>;
+    stopping: Stopping.Factory<StartArgs>;
 }

@@ -7,8 +7,8 @@ class StartableFactory {
         return new concrete_startable_1.ConcreteStartable(rawStart, rawStop);
     }
 }
-const startableFactory = new StartableFactory();
 function createStartable(rawStart, rawStop) {
+    const startableFactory = new StartableFactory();
     return startableFactory.create(rawStart, rawStop);
 }
 exports.createStartable = createStartable;

@@ -6,15 +6,15 @@ import { Startable } from '../../startable';
 
 
 
-export class Factory implements FactoryLike {
+export class Factory<StartArgs extends unknown[]> implements FactoryLike<StartArgs> {
 	public constructor(
-		private factories: FactoryDeps,
+		private factories: FactoryDeps<StartArgs>,
 	) { }
 
 	public create(
-		host: Startable,
-		args: Args,
-	): Starting {
+		host: Startable<StartArgs>,
+		args: Args<StartArgs>,
+	): Starting<StartArgs> {
 		return new Starting(
 			args,
 			host,

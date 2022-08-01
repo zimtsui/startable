@@ -1,7 +1,7 @@
 import { Startable, RawStart, RawStop, State } from './startable';
-export declare class ConcreteStartable extends Startable {
-    protected rawStart: RawStart;
+export declare class ConcreteStartable<StartArgs extends unknown[]> extends Startable<StartArgs> {
+    protected rawStart: RawStart<StartArgs>;
     protected rawStop: RawStop;
-    protected state: State;
-    constructor(rawStart: RawStart, rawStop: RawStop);
+    protected state: State<StartArgs>;
+    constructor(rawStart: RawStart<StartArgs>, rawStop: RawStop);
 }

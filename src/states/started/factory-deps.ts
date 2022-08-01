@@ -1,6 +1,6 @@
 import * as Stopping from '../stopping/factory-like';
 
 
-export interface FactoryDeps {
-	stopping: Stopping.FactoryLike;
+export interface FactoryDeps<StartArgs extends unknown[]> {
+	stopping: Stopping.FactoryLike<StartArgs>;
 }

@@ -28,7 +28,7 @@ class Stopping extends startable_1.State {
             nextState.postActivate();
         });
     }
-    async start(onStopping) {
+    async start(startArgs, onStopping) {
         await this.startingPromise;
     }
     async assart(onStopping) {

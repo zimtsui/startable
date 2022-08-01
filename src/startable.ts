@@ -4,9 +4,10 @@ import {
 	OnStopping,
 } from './startable-like';
 
-export abstract class Startable implements StartableLike {
-	protected abstract state: State;
-	protected abstract rawStart: RawStart;
+export abstract class Startable<StartArgs extends unknown[]>
+	implements StartableLike<StartArgs> {
+	protected abstract state: State<StartArgs>;
+	protected abstract rawStart: RawStart<StartArgs>;
 	protected abstract rawStop: RawStop;
 
 	public getReadyState = (): ReadyState => {
@@ -17,8 +18,11 @@ export abstract class Startable implements StartableLike {
 		this.state.skipStart(onStopping);
 	}
 
-	public start = async (onStopping?: OnStopping): Promise<void> => {
-		await this.state.start(onStopping);
+	public start = async (
+		startArgs: StartArgs,
+		onStopping?: OnStopping,
+	): Promise<void> => {
+		await this.state.start(startArgs, onStopping);
 	}
 
 	public assart = async (onStopping?: OnStopping): Promise<void> => {
@@ -39,14 +43,14 @@ export abstract class Startable implements StartableLike {
 }
 
 
-export abstract class Friendly extends Startable {
-	public abstract state: State;
-	public abstract rawStart: RawStart;
+export abstract class Friendly<StartArgs extends unknown[]> extends Startable<StartArgs> {
+	public abstract state: State<StartArgs>;
+	public abstract rawStart: RawStart<StartArgs>;
 	public abstract rawStop: RawStop;
 }
 
-export interface RawStart {
-	(): Promise<void>;
+export interface RawStart<StartArgs extends unknown[]> {
+	(...args: StartArgs): Promise<void>;
 }
 
 export interface RawStop {
@@ -54,13 +58,15 @@ export interface RawStop {
 }
 
 
-export abstract class State {
-	protected abstract host: Startable;
+export abstract class State<StartArgs extends unknown[]> {
+	protected abstract host: Startable<StartArgs>;
 	public abstract postActivate(): void;
 
 	public abstract getReadyState(): ReadyState;
 	public abstract skipStart(onStopping?: OnStopping): void;
-	public abstract start(onStopping?: OnStopping): Promise<void>;
+	public abstract start(
+		startArgs: StartArgs,
+		onStopping?: OnStopping): Promise<void>;
 	public abstract assart(onStopping?: OnStopping): Promise<void>;
 	public abstract stop(err?: Error): Promise<void>;
 	public abstract starp(err?: Error): Promise<void>;

@@ -12,13 +12,13 @@ import { Args } from './args';
 
 
 
-export class Stopped extends State {
+export class Stopped<StartArgs extends unknown[]> extends State<StartArgs> {
 	private stoppingPromise: Promise<void>;
 
 	public constructor(
 		args: Args,
-		protected host: Startable,
-		private factories: FactoryDeps,
+		protected host: Startable<StartArgs>,
+		private factories: FactoryDeps<StartArgs>,
 	) {
 		super();
 
@@ -27,16 +27,20 @@ export class Stopped extends State {
 
 	public postActivate(): void { }
 
-	public async start(onStopping?: OnStopping): Promise<void> {
+	public async start(
+		startArgs: StartArgs,
+		onStopping?: OnStopping,
+	): Promise<void> {
 		const nextState = this.factories.starting.create(
 			this.host,
 			{
 				onStopping,
 				stoppingPromise: this.stoppingPromise,
+				startArgs,
 			});
-		(<Friendly>this.host).state = nextState;
+		(<Friendly<StartArgs>>this.host).state = nextState;
 		nextState.postActivate();
-		await this.host.start();
+		await this.host.start(startArgs);
 	}
 
 	public async assart(onStopping?: OnStopping): Promise<never> {
@@ -63,7 +67,7 @@ export class Stopped extends State {
 				onStoppings: onStopping ? [onStopping] : [],
 			},
 		);
-		(<Friendly>this.host).state = nextState;
+		(<Friendly<StartArgs>>this.host).state = nextState;
 		nextState.postActivate();
 	}
 }

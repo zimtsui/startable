@@ -11,14 +11,14 @@ import { FactoryDeps } from './factory-deps';
 import { Args } from './args';
 
 
-export class Started extends State {
+export class Started<StartArgs extends unknown[]> extends State<StartArgs> {
 	private startingPromise: Promise<void>;
 	private onStoppings: OnStopping[];
 
 	public constructor(
 		args: Args,
-		protected host: Startable,
-		private factories: FactoryDeps,
+		protected host: Startable<StartArgs>,
+		private factories: FactoryDeps<StartArgs>,
 	) {
 		super();
 
@@ -28,13 +28,17 @@ export class Started extends State {
 
 	public postActivate(): void { }
 
-	public async start(onStopping?: OnStopping): Promise<void> {
+	public async start(
+		startArgs: StartArgs,
+		onStopping?: OnStopping,
+	): Promise<void> {
 		if (onStopping) this.onStoppings.push(onStopping);
 		await this.startingPromise;
 	}
 
 	public async assart(onStopping?: OnStopping): Promise<void> {
-		await this.start(onStopping);
+		if (onStopping) this.onStoppings.push(onStopping);
+		await this.startingPromise;
 	}
 
 	public async stop(err?: Error): Promise<void> {
@@ -46,7 +50,7 @@ export class Started extends State {
 				err,
 			},
 		);
-		(<Friendly>this.host).state = nextState;
+		(<Friendly<StartArgs>>this.host).state = nextState;
 		nextState.postActivate();
 		await this.host.stop();
 	}

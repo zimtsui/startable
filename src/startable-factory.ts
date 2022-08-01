@@ -6,11 +6,11 @@ import {
 import { ConcreteStartable } from './concrete-startable';
 
 
-class StartableFactory {
+class StartableFactory<StartArgs extends unknown[]> {
 	public create(
-		rawStart: RawStart,
+		rawStart: RawStart<StartArgs>,
 		rawStop: RawStop,
-	): Startable {
+	): Startable<StartArgs> {
 		return new ConcreteStartable(
 			rawStart,
 			rawStop,
@@ -18,11 +18,11 @@ class StartableFactory {
 	}
 }
 
-const startableFactory = new StartableFactory();
-export function createStartable(
-	rawStart: RawStart,
+export function createStartable<StartArgs extends unknown[]>(
+	rawStart: RawStart<StartArgs>,
 	rawStop: RawStop,
-): Startable {
+): Startable<StartArgs> {
+	const startableFactory = new StartableFactory<StartArgs>();
 	return startableFactory.create(
 		rawStart,
 		rawStop,

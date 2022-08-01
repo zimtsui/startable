@@ -2,16 +2,17 @@ import { Startable, State } from '../../startable';
 import { OnStopping, ReadyState } from '../../startable-like';
 import { FactoryDeps } from './factory-deps';
 import { Args } from './args';
-export declare class Starting extends State {
-    protected host: Startable;
+export declare class Starting<StartArgs extends unknown[]> extends State<StartArgs> {
+    protected host: Startable<StartArgs>;
     private factories;
     private startingPromise;
     private stoppingPromise;
     private onStoppings;
     private manualFailure;
-    constructor(args: Args, host: Startable, factories: FactoryDeps);
+    private startArgs;
+    constructor(args: Args<StartArgs>, host: Startable<StartArgs>, factories: FactoryDeps<StartArgs>);
     postActivate(): void;
-    start(onStopping?: OnStopping): Promise<void>;
+    start(startArgs: StartArgs, onStopping?: OnStopping): Promise<void>;
     assart(onStopping?: OnStopping): Promise<void>;
     stop(err?: Error): Promise<void>;
     starp(err?: Error): Promise<void>;

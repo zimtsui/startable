@@ -13,15 +13,15 @@ import { FactoryDeps } from './factory-deps';
 
 
 
-export class Stopping extends State {
+export class Stopping<StartArgs extends unknown[]> extends State<StartArgs> {
 	private startingPromise: Promise<void>;
 	private stoppingPromise = PublicManualPromise.create();
 	private onStoppings: OnStopping[];
 
 	public constructor(
 		private args: Args,
-		protected host: Startable,
-		private factories: FactoryDeps,
+		protected host: Startable<StartArgs>,
+		private factories: FactoryDeps<StartArgs>,
 	) {
 		super();
 
@@ -33,7 +33,7 @@ export class Stopping extends State {
 		for (const onStopping of this.onStoppings)
 			onStopping(this.args.err);
 
-		(<Friendly>this.host).rawStop(this.args.err).then(() => {
+		(<Friendly<StartArgs>>this.host).rawStop(this.args.err).then(() => {
 			this.stoppingPromise.resolve();
 		}).catch((err: Error) => {
 			this.stoppingPromise.reject(err);
@@ -44,12 +44,15 @@ export class Stopping extends State {
 					stoppingPromise: this.stoppingPromise,
 				},
 			);
-			(<Friendly>this.host).state = nextState;
+			(<Friendly<StartArgs>>this.host).state = nextState;
 			nextState.postActivate();
 		});
 	}
 
-	public async start(onStopping?: OnStopping): Promise<void> {
+	public async start(
+		startArgs: StartArgs,
+		onStopping?: OnStopping,
+	): Promise<void> {
 		await this.startingPromise;
 	}
 

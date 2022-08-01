@@ -5,9 +5,9 @@ import {
 import { Args } from './args';
 
 
-export interface FactoryLike {
+export interface FactoryLike<StartArgs extends unknown[]> {
 	create(
-		host: Startable,
+		host: Startable<StartArgs>,
 		args: Args,
-	): State;
+	): State<StartArgs>;
 }

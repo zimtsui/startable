@@ -1,4 +1,4 @@
 import * as Started from '../started/factory-like';
-export interface FactoryDeps {
-    started: Started.FactoryLike;
+export interface FactoryDeps<StartArgs extends unknown[]> {
+    started: Started.FactoryLike<StartArgs>;
 }

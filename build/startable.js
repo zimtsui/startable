@@ -9,8 +9,8 @@ class Startable {
         this.skipStart = (onStopping) => {
             this.state.skipStart(onStopping);
         };
-        this.start = async (onStopping) => {
-            await this.state.start(onStopping);
+        this.start = async (startArgs, onStopping) => {
+            await this.state.start(startArgs, onStopping);
         };
         this.assart = async (onStopping) => {
             await this.state.assart(onStopping);

@@ -11,13 +11,15 @@ class Started extends startable_1.State {
         this.onStoppings = args.onStoppings;
     }
     postActivate() { }
-    async start(onStopping) {
+    async start(startArgs, onStopping) {
         if (onStopping)
             this.onStoppings.push(onStopping);
         await this.startingPromise;
     }
     async assart(onStopping) {
-        await this.start(onStopping);
+        if (onStopping)
+            this.onStoppings.push(onStopping);
+        await this.startingPromise;
     }
     async stop(err) {
         const nextState = this.factories.stopping.create(this.host, {

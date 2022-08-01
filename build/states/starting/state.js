@@ -14,9 +14,10 @@ class Starting extends startable_1.State {
         if (args.onStopping)
             this.onStoppings.push(args.onStopping);
         this.stoppingPromise = args.stoppingPromise;
+        this.startArgs = args.startArgs;
     }
     postActivate() {
-        this.host.rawStart().then(() => {
+        this.host.rawStart(...this.startArgs).then(() => {
             if (this.manualFailure)
                 throw this.manualFailure;
             this.startingPromise.resolve();
@@ -31,13 +32,15 @@ class Starting extends startable_1.State {
             nextState.postActivate();
         });
     }
-    async start(onStopping) {
+    async start(startArgs, onStopping) {
         if (onStopping)
             this.onStoppings.push(onStopping);
         await this.startingPromise;
     }
     async assart(onStopping) {
-        await this.start(onStopping);
+        if (onStopping)
+            this.onStoppings.push(onStopping);
+        await this.startingPromise;
     }
     async stop(err) {
         await this.stoppingPromise;
