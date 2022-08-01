@@ -2,6 +2,7 @@ import {
 	StartableLike,
 	ReadyState,
 	OnStopping,
+	UnboundStartableLike,
 } from './startable-like';
 
 export abstract class Startable<StartArgs extends unknown[]>
@@ -40,6 +41,14 @@ export abstract class Startable<StartArgs extends unknown[]>
 		promise.catch(() => { });
 		return promise;
 	}
+
+	public getStarting = async () => {
+		return this.state.getStarting();
+	}
+
+	public getStopping = async () => {
+		return this.state.getStopping();
+	}
 }
 
 
@@ -58,7 +67,8 @@ export interface RawStop {
 }
 
 
-export abstract class State<StartArgs extends unknown[]> {
+export abstract class State<StartArgs extends unknown[]>
+	implements UnboundStartableLike<StartArgs> {
 	protected abstract host: Startable<StartArgs>;
 	public abstract postActivate(): void;
 
@@ -70,4 +80,6 @@ export abstract class State<StartArgs extends unknown[]> {
 	public abstract assart(onStopping?: OnStopping): Promise<void>;
 	public abstract stop(err?: Error): Promise<void>;
 	public abstract starp(err?: Error): Promise<void>;
+	public abstract getStarting(): Promise<void>;
+	public abstract getStopping(): Promise<void>;
 }

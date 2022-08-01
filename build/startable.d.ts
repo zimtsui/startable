@@ -1,4 +1,4 @@
-import { StartableLike, ReadyState, OnStopping } from './startable-like';
+import { StartableLike, ReadyState, OnStopping, UnboundStartableLike } from './startable-like';
 export declare abstract class Startable<StartArgs extends unknown[]> implements StartableLike<StartArgs> {
     protected abstract state: State<StartArgs>;
     protected abstract rawStart: RawStart<StartArgs>;
@@ -9,6 +9,8 @@ export declare abstract class Startable<StartArgs extends unknown[]> implements 
     assart: (onStopping?: OnStopping | undefined) => Promise<void>;
     stop: (err?: Error | undefined) => Promise<void>;
     starp: (err?: Error | undefined) => Promise<void>;
+    getStarting: () => Promise<void>;
+    getStopping: () => Promise<void>;
 }
 export declare abstract class Friendly<StartArgs extends unknown[]> extends Startable<StartArgs> {
     abstract state: State<StartArgs>;
@@ -21,7 +23,7 @@ export interface RawStart<StartArgs extends unknown[]> {
 export interface RawStop {
     (err?: Error): Promise<void>;
 }
-export declare abstract class State<StartArgs extends unknown[]> {
+export declare abstract class State<StartArgs extends unknown[]> implements UnboundStartableLike<StartArgs> {
     protected abstract host: Startable<StartArgs>;
     abstract postActivate(): void;
     abstract getReadyState(): ReadyState;
@@ -30,4 +32,6 @@ export declare abstract class State<StartArgs extends unknown[]> {
     abstract assart(onStopping?: OnStopping): Promise<void>;
     abstract stop(err?: Error): Promise<void>;
     abstract starp(err?: Error): Promise<void>;
+    abstract getStarting(): Promise<void>;
+    abstract getStopping(): Promise<void>;
 }

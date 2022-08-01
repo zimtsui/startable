@@ -14,10 +14,14 @@ export declare class Stopped<StartArgs extends unknown[]> extends State<StartArg
     starp(err?: Error): Promise<never>;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): void;
+    getStarting(): Promise<void>;
+    getStopping(): Promise<void>;
 }
 export declare class CannotStarpDuringStopped extends Error {
     constructor();
 }
 export declare class CannotAssartDuringStopped extends Error {
     constructor();
+}
+export declare class CannotGetStartingDuringStopped extends Error {
 }

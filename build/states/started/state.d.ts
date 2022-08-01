@@ -15,7 +15,11 @@ export declare class Started<StartArgs extends unknown[]> extends State<StartArg
     starp(err?: Error): Promise<void>;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): never;
+    getStarting(): Promise<void>;
+    getStopping(): Promise<void>;
 }
 export declare class CannotSkipStartDuringStarted extends Error {
     constructor();
+}
+export declare class CannotGetStoppingDuringStarted extends Error {
 }

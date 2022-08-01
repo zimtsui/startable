@@ -17,6 +17,8 @@ export declare class Stopping<StartArgs extends unknown[]> extends State<StartAr
     starp(err?: Error): Promise<void>;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): never;
+    getStarting(): Promise<void>;
+    getStopping(): Promise<void>;
 }
 export declare class CannotSkipStartDuringStopping extends Error {
     constructor();

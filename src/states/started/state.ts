@@ -66,6 +66,14 @@ export class Started<StartArgs extends unknown[]> extends State<StartArgs> {
 	public skipStart(onStopping?: OnStopping): never {
 		throw new CannotSkipStartDuringStarted();
 	}
+
+	public getStarting(): Promise<void> {
+		return this.startingPromise;
+	}
+
+	public getStopping(): Promise<void> {
+		throw new CannotGetStoppingDuringStarted();
+	}
 }
 
 export class CannotSkipStartDuringStarted extends Error {
@@ -73,3 +81,5 @@ export class CannotSkipStartDuringStarted extends Error {
 		super('Cannot call .skipStart() during STARTED.');
 	}
 }
+
+export class CannotGetStoppingDuringStarted extends Error { }

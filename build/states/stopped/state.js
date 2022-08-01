@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotAssartDuringStopped = exports.CannotStarpDuringStopped = exports.Stopped = void 0;
+exports.CannotGetStartingDuringStopped = exports.CannotAssartDuringStopped = exports.CannotStarpDuringStopped = exports.Stopped = void 0;
 const startable_1 = require("../../startable");
 class Stopped extends startable_1.State {
     constructor(args, host, factories) {
@@ -40,6 +40,12 @@ class Stopped extends startable_1.State {
         this.host.state = nextState;
         nextState.postActivate();
     }
+    getStarting() {
+        throw new CannotGetStartingDuringStopped();
+    }
+    getStopping() {
+        return this.stoppingPromise;
+    }
 }
 exports.Stopped = Stopped;
 class CannotStarpDuringStopped extends Error {
@@ -54,4 +60,7 @@ class CannotAssartDuringStopped extends Error {
     }
 }
 exports.CannotAssartDuringStopped = CannotAssartDuringStopped;
+class CannotGetStartingDuringStopped extends Error {
+}
+exports.CannotGetStartingDuringStopped = CannotGetStartingDuringStopped;
 //# sourceMappingURL=state.js.map

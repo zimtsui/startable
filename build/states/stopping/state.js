@@ -46,6 +46,12 @@ class Stopping extends startable_1.State {
     skipStart(onStopping) {
         throw new CannotSkipStartDuringStopping();
     }
+    getStarting() {
+        return this.startingPromise;
+    }
+    getStopping() {
+        return this.stoppingPromise;
+    }
 }
 exports.Stopping = Stopping;
 class CannotSkipStartDuringStopping extends Error {

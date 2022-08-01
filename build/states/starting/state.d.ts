@@ -18,6 +18,8 @@ export declare class Starting<StartArgs extends unknown[]> extends State<StartAr
     starp(err?: Error): Promise<void>;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): never;
+    getStarting(): Promise<void>;
+    getStopping(): Promise<void>;
 }
 export declare class StarpCalledDuringStarting extends Error {
     constructor();

@@ -25,6 +25,12 @@ class Startable {
             promise.catch(() => { });
             return promise;
         };
+        this.getStarting = async () => {
+            return this.state.getStarting();
+        };
+        this.getStopping = async () => {
+            return this.state.getStopping();
+        };
     }
 }
 exports.Startable = Startable;

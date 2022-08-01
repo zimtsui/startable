@@ -70,6 +70,14 @@ export class Stopped<StartArgs extends unknown[]> extends State<StartArgs> {
 		(<Friendly<StartArgs>>this.host).state = nextState;
 		nextState.postActivate();
 	}
+
+	public getStarting(): Promise<void> {
+		throw new CannotGetStartingDuringStopped();
+	}
+
+	public getStopping(): Promise<void> {
+		return this.stoppingPromise;
+	}
 }
 
 export class CannotStarpDuringStopped extends Error {
@@ -83,3 +91,5 @@ export class CannotAssartDuringStopped extends Error {
 		super('Cannot call .assart() during STOPPED.');
 	}
 }
+
+export class CannotGetStartingDuringStopped extends Error { }

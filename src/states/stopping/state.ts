@@ -75,6 +75,14 @@ export class Stopping<StartArgs extends unknown[]> extends State<StartArgs> {
 	public skipStart(onStopping?: OnStopping): never {
 		throw new CannotSkipStartDuringStopping();
 	}
+
+	public getStarting(): Promise<void> {
+		return this.startingPromise;
+	}
+
+	public getStopping(): Promise<void> {
+		return this.stoppingPromise;
+	}
 }
 
 export class CannotSkipStartDuringStopping extends Error {
