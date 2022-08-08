@@ -1,5 +1,6 @@
-import { Startable, State, Friendly } from './startable';
+import { State, Friendly } from './startable';
 import { OnStopping, ReadyState } from './startable-like';
+import { PublicManualPromise } from '@zimtsui/manual-promise';
 export declare class Ready extends State {
     protected host: Friendly;
     constructor(host: Friendly);
@@ -25,8 +26,8 @@ export declare class Starting extends State {
     protected host: Friendly;
     private starting;
     private onStoppings;
-    private err;
-    constructor(host: Friendly, onStopping?: OnStopping);
+    private startingError;
+    constructor(host: Friendly, onStopping: OnStopping | null);
     postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;
     assart(onStopping?: OnStopping): Promise<void>;
@@ -49,11 +50,12 @@ export declare class Started extends State {
     protected host: Friendly;
     private starting;
     private onStoppings;
-    constructor(host: Friendly, starting: Promise<void>, onStoppings: OnStopping[]);
+    private startingError;
+    constructor(host: Friendly, starting: PublicManualPromise<void>, onStoppings: OnStopping[], startingError: Error | null);
     postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;
     assart(onStopping?: OnStopping): Promise<void>;
-    stop(err?: Error): Promise<void>;
+    stop(runningError?: Error): Promise<void>;
     starp(err?: Error): Promise<void>;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): never;
@@ -68,9 +70,10 @@ export declare class Stopping extends State {
     protected host: Friendly;
     private starting;
     private onStoppings;
-    private err?;
+    private startingError;
+    private runningError;
     private stopping;
-    constructor(host: Friendly, starting: Promise<void>, onStoppings: OnStopping[], err?: Error | undefined);
+    constructor(host: Friendly, starting: Promise<void>, onStoppings: OnStopping[], startingError: Error | null, runningError: Error | null);
     postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;
     assart(onStopping?: OnStopping): Promise<never>;
@@ -88,9 +91,12 @@ export declare class CannotAssartDuringStopping extends Error {
 export declare class CannotStartDuringStopping extends Error {
 }
 export declare class Stopped extends State {
-    protected host: Startable;
+    protected host: Friendly;
     private stopping;
-    constructor(host: Startable, stopping: Promise<void>);
+    private startingError;
+    private runningError;
+    private stoppingError;
+    constructor(host: Friendly, stopping: PublicManualPromise<void>, startingError: Error | null, runningError: Error | null, stoppingError: Error | null);
     postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;
     assart(onStopping?: OnStopping): Promise<never>;

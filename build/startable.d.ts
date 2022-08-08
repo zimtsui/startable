@@ -1,8 +1,10 @@
 import { StartableLike, ReadyState, OnStopping } from './startable-like';
-export declare abstract class Startable implements StartableLike {
+import { ManualPromise } from '@zimtsui/manual-promise';
+export declare abstract class Startable extends ManualPromise<void> implements StartableLike {
     protected abstract state: State;
     protected abstract rawStart: RawStart;
     protected abstract rawStop: RawStop;
+    constructor();
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): void;
     start(onStopping?: OnStopping): Promise<void>;
@@ -16,10 +18,18 @@ export declare abstract class Friendly extends Startable {
     abstract state: State;
     abstract rawStart: RawStart;
     abstract rawStop: RawStop;
+    abstract resolve: (value: void) => void;
+    abstract reject: (err: Error) => void;
 }
+/**
+ * @throws Error
+ */
 export interface RawStart {
     (): Promise<void>;
 }
+/**
+ * @throws Error
+ */
 export interface RawStop {
     (err?: Error): Promise<void>;
 }

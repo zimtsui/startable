@@ -1,7 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.State = exports.Friendly = exports.Startable = void 0;
-class Startable {
+const manual_promise_1 = require("@zimtsui/manual-promise");
+class Startable extends manual_promise_1.ManualPromise {
+    constructor() {
+        super();
+        this.catch(() => { });
+    }
     getReadyState() {
         return this.state.getReadyState();
     }
@@ -29,10 +34,14 @@ class Startable {
         return p;
     }
     getStarting() {
-        return this.state.getStarting();
+        const p = this.state.getStarting();
+        p.catch(() => { });
+        return p;
     }
     getStopping() {
-        return this.state.getStopping();
+        const p = this.state.getStopping();
+        p.catch(() => { });
+        return p;
     }
 }
 exports.Startable = Startable;

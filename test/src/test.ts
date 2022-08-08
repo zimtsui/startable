@@ -22,11 +22,11 @@ class StopError extends Error {
 
 test('start succ stop succ', async t => {
     const f = fake();
-    const s = createStartable(async () => {
+    const s = createStartable(() => {
         f();
         assert(s.getReadyState() === ReadyState.STARTING);
         return Promise.resolve();
-    }, async () => {
+    }, () => {
         f();
         assert(s.getReadyState() === ReadyState.STOPPING);
         return Promise.resolve();
@@ -35,30 +35,32 @@ test('start succ stop succ', async t => {
     await s.start();
     s.stop();
     await s.stop();
+    await s;
     assert(f.callCount === 2);
 });
 
 test('start succ stop fail', async t => {
     const f = fake();
-    const s = createStartable(async () => {
+    const s = createStartable(() => {
         f();
         return Promise.resolve();
-    }, async () => {
+    }, () => {
         f();
         return Promise.reject(new StopError());
     });
     await s.start();
     s.stop().catch(() => { });
     await assert.rejects(s.stop(), StopError);
+    await assert.rejects(s, StopError);
     assert(f.callCount === 2);
 });
 
 test('start fail stop succ', async t => {
     const f = fake();
-    const s = createStartable(async () => {
+    const s = createStartable(() => {
         f();
         return Promise.reject(new StartError());
-    }, async () => {
+    }, () => {
         f();
         return Promise.resolve();
     });
@@ -66,16 +68,16 @@ test('start fail stop succ', async t => {
     await assert.rejects(s.start(), StartError);
     s.stop();
     await s.stop();
+    await assert.rejects(s, StartError);
     assert(f.callCount === 2);
 });
 
 test('start fail stop fail', async t => {
     const f = fake();
-    const s = createStartable(async () => {
+    const s = createStartable(() => {
         f();
         return Promise.reject(new StartError());
-
-    }, async () => {
+    }, () => {
         f();
         return Promise.reject(new StopError());
     });
@@ -83,18 +85,19 @@ test('start fail stop fail', async t => {
     await assert.rejects(s.start(), StartError);
     s.stop().catch(() => { });
     await assert.rejects(s.stop(), StopError);
+    await assert.rejects(s, StartError);
     assert(f.callCount === 2);
 });
 
 test('starp during starting', async t => {
     const f = fake();
     let resolveStart: () => void;
-    const s = createStartable(async () => {
+    const s = createStartable(() => {
         f();
         return new Promise<void>(resolve => {
             resolveStart = resolve;
         });
-    }, async () => {
+    }, () => {
         f();
         return Promise.resolve();
     });
@@ -104,5 +107,6 @@ test('starp during starting', async t => {
     resolveStart!();
     await assert.rejects(pStart, StarpCalledDuringStarting);
     await pStarp;
+    await assert.rejects(s, StarpCalledDuringStarting);
     assert(f.callCount === 2);
 });

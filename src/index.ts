@@ -1,7 +1,6 @@
 export {
 	ReadyState,
 	OnStopping,
-	StartableLike,
 } from './startable-like';
 export {
 	RawStart,

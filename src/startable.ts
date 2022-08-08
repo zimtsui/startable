@@ -3,12 +3,19 @@ import {
 	ReadyState,
 	OnStopping,
 } from './startable-like';
+import { ManualPromise } from '@zimtsui/manual-promise';
 
 export abstract class Startable
+	extends ManualPromise<void>
 	implements StartableLike {
 	protected abstract state: State;
 	protected abstract rawStart: RawStart;
 	protected abstract rawStop: RawStop;
+
+	public constructor() {
+		super();
+		this.catch(() => { });
+	}
 
 	public getReadyState(): ReadyState {
 		return this.state.getReadyState();
@@ -43,11 +50,15 @@ export abstract class Startable
 	}
 
 	public getStarting() {
-		return this.state.getStarting();
+		const p = this.state.getStarting();
+		p.catch(() => { });
+		return p;
 	}
 
 	public getStopping() {
-		return this.state.getStopping();
+		const p = this.state.getStopping();
+		p.catch(() => { });
+		return p;
 	}
 }
 
@@ -56,12 +67,20 @@ export abstract class Friendly extends Startable {
 	public abstract state: State;
 	public abstract rawStart: RawStart;
 	public abstract rawStop: RawStop;
+	public abstract resolve: (value: void) => void;
+	public abstract reject: (err: Error) => void;
 }
 
+/**
+ * @throws Error
+ */
 export interface RawStart {
 	(): Promise<void>;
 }
 
+/**
+ * @throws Error
+ */
 export interface RawStop {
 	(err?: Error): Promise<void>;
 }
