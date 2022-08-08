@@ -1,4 +1,5 @@
 import { PublicManualPromise } from '@zimtsui/manual-promise';
+import { boundMethod } from 'autobind-decorator';
 
 
 export const enum ReadyState {
@@ -18,38 +19,37 @@ export abstract class Startable {
 	protected abstract rawStart: RawStart;
 	protected abstract rawStop: RawStop;
 
-	public getPromise(): Promise<void> {
-		const p = this.state.getPromise();
-		p.catch(() => { });
-		return p;
-	}
-
 	public getReadyState(): ReadyState {
 		return this.state.getReadyState();
 	}
 
+	@boundMethod
 	public skipStart(onStopping?: OnStopping): void {
 		this.state.skipStart(onStopping);
 	}
 
+	@boundMethod
 	public start(onStopping?: OnStopping): Promise<void> {
 		const p = this.state.start(onStopping);
 		p.catch(() => { });
 		return p;
 	}
 
+	@boundMethod
 	public assart(onStopping?: OnStopping): Promise<void> {
 		const p = this.state.assart(onStopping);
 		p.catch(() => { });
 		return p;
 	}
 
+	@boundMethod
 	public stop(err?: Error): Promise<void> {
 		const p = this.state.stop(err);
 		p.catch(() => { });
 		return p;
 	}
 
+	@boundMethod
 	public starp(err?: Error): Promise<void> {
 		const p = this.state.starp(err);
 		p.catch(() => { });
@@ -64,6 +64,12 @@ export abstract class Startable {
 
 	public getStopping() {
 		const p = this.state.getStopping();
+		p.catch(() => { });
+		return p;
+	}
+
+	public getPromise(): Promise<void> {
+		const p = this.state.getPromise();
 		p.catch(() => { });
 		return p;
 	}

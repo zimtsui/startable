@@ -13,7 +13,6 @@ export declare abstract class Startable {
     protected abstract state: State;
     protected abstract rawStart: RawStart;
     protected abstract rawStop: RawStop;
-    getPromise(): Promise<void>;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): void;
     start(onStopping?: OnStopping): Promise<void>;
@@ -22,6 +21,7 @@ export declare abstract class Startable {
     starp(err?: Error): Promise<void>;
     getStarting(): Promise<void>;
     getStopping(): Promise<void>;
+    getPromise(): Promise<void>;
 }
 export declare abstract class Friendly extends Startable {
     abstract state: State;
