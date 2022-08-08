@@ -178,6 +178,7 @@ class Stopping extends startable_1.State {
         this.startingError = startingError;
         this.runningError = runningError;
         this.stopping = new manual_promise_1.PublicManualPromise();
+        this.stoppingError = null;
     }
     postActivate() {
         if (this.runningError)
@@ -188,12 +189,10 @@ class Stopping extends startable_1.State {
                 onStopping();
         (this.runningError
             ? this.host.rawStop(this.runningError)
-            : this.host.rawStop()).then(() => {
-            this.host.state = new Stopped(this.host, this.starting, this.stopping, this.promise, this.startingError, this.runningError, null);
-            this.host.state.postActivate();
-        }).catch((stoppingError) => {
-            this.host.state = new Stopped(this.host, this.starting, this.stopping, this.promise, this.startingError, this.runningError, stoppingError);
-            ;
+            : this.host.rawStop()).catch(err => {
+            this.stoppingError = err;
+        }).then(() => {
+            this.host.state = new Stopped(this.host, this.starting, this.stopping, this.promise, this.startingError, this.runningError, this.stoppingError);
             this.host.state.postActivate();
         });
     }

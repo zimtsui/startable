@@ -76,6 +76,7 @@ export declare class Stopping extends State {
     private startingError;
     private runningError;
     private stopping;
+    private stoppingError;
     constructor(host: Friendly, starting: Promise<void>, promise: PublicManualPromise<void>, onStoppings: OnStopping[], startingError: Error | null, runningError: Error | null);
     postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;

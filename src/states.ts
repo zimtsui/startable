@@ -225,6 +225,7 @@ export class CannotGetStoppingDuringStarted extends Error { }
 
 export class Stopping extends State {
 	private stopping = new PublicManualPromise<void>();
+	private stoppingError: Error | null = null;
 
 	public constructor(
 		protected host: Friendly,
@@ -249,7 +250,9 @@ export class Stopping extends State {
 			this.runningError
 				? this.host.rawStop(this.runningError)
 				: this.host.rawStop()
-		).then(() => {
+		).catch(err => {
+			this.stoppingError = err;
+		}).then(() => {
 			this.host.state = new Stopped(
 				this.host,
 				this.starting,
@@ -257,19 +260,8 @@ export class Stopping extends State {
 				this.promise,
 				this.startingError,
 				this.runningError,
-				null,
+				this.stoppingError,
 			);
-			this.host.state.postActivate();
-		}).catch((stoppingError: Error) => {
-			this.host.state = new Stopped(
-				this.host,
-				this.starting,
-				this.stopping,
-				this.promise,
-				this.startingError,
-				this.runningError,
-				stoppingError,
-			);;
 			this.host.state.postActivate();
 		});
 	}
