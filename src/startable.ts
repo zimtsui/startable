@@ -1,20 +1,27 @@
-import {
-	StartableLike,
-	ReadyState,
-	OnStopping,
-} from './startable-like';
-import { ManualPromise } from '@zimtsui/manual-promise';
+import { PublicManualPromise } from '@zimtsui/manual-promise';
 
-export abstract class Startable
-	extends ManualPromise<void>
-	implements StartableLike {
+
+export const enum ReadyState {
+	READY = 'READY',
+	STARTING = 'STARTING',
+	STARTED = 'STARTED',
+	STOPPING = 'STOPPING',
+	STOPPED = 'STOPPED',
+}
+
+export interface OnStopping {
+	(err?: Error): void;
+}
+
+export abstract class Startable {
 	protected abstract state: State;
 	protected abstract rawStart: RawStart;
 	protected abstract rawStop: RawStop;
 
-	public constructor() {
-		super();
-		this.catch(() => { });
+	public getPromise(): Promise<void> {
+		const p = this.state.getPromise();
+		p.catch(() => { });
+		return p;
 	}
 
 	public getReadyState(): ReadyState {
@@ -67,8 +74,7 @@ export abstract class Friendly extends Startable {
 	public abstract state: State;
 	public abstract rawStart: RawStart;
 	public abstract rawStop: RawStop;
-	public abstract resolve: (value: void) => void;
-	public abstract reject: (err: Error) => void;
+	public abstract promise: PublicManualPromise<void>;
 }
 
 /**
@@ -86,10 +92,11 @@ export interface RawStop {
 }
 
 
-export abstract class State implements StartableLike {
+export abstract class State {
 	protected abstract host: Startable;
-	public abstract postActivate(): void;
+	protected abstract promise: PublicManualPromise<void>;
 
+	public abstract postActivate(): void;
 	public abstract getReadyState(): ReadyState;
 	public abstract skipStart(onStopping?: OnStopping): void;
 	public abstract start(onStopping?: OnStopping): Promise<void>;
@@ -98,4 +105,7 @@ export abstract class State implements StartableLike {
 	public abstract starp(err?: Error): Promise<void>;
 	public abstract getStarting(): Promise<void>;
 	public abstract getStopping(): Promise<void>;
+	public getPromise(): Promise<void> {
+		return this.promise;
+	}
 }

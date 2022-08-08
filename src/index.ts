@@ -1,8 +1,6 @@
 export {
 	ReadyState,
 	OnStopping,
-} from './startable-like';
-export {
 	RawStart,
 	RawStop,
 	Startable,
@@ -26,9 +24,9 @@ export {
 	CannotStartDuringStopping,
 
 	CannotAssartDuringStopped,
-	CannotGetStartingDuringStopped,
 	CannotSkipStartDuringStopped,
 	CannotStartDuringStopped,
 	CannotStarpDuringStopped,
 } from './states';
+
 export { createStartable } from './factory';

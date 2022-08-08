@@ -1,10 +1,19 @@
-import { StartableLike, ReadyState, OnStopping } from './startable-like';
-import { ManualPromise } from '@zimtsui/manual-promise';
-export declare abstract class Startable extends ManualPromise<void> implements StartableLike {
+import { PublicManualPromise } from '@zimtsui/manual-promise';
+export declare const enum ReadyState {
+    READY = "READY",
+    STARTING = "STARTING",
+    STARTED = "STARTED",
+    STOPPING = "STOPPING",
+    STOPPED = "STOPPED"
+}
+export interface OnStopping {
+    (err?: Error): void;
+}
+export declare abstract class Startable {
     protected abstract state: State;
     protected abstract rawStart: RawStart;
     protected abstract rawStop: RawStop;
-    constructor();
+    getPromise(): Promise<void>;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): void;
     start(onStopping?: OnStopping): Promise<void>;
@@ -18,8 +27,7 @@ export declare abstract class Friendly extends Startable {
     abstract state: State;
     abstract rawStart: RawStart;
     abstract rawStop: RawStop;
-    abstract resolve: (value: void) => void;
-    abstract reject: (err: Error) => void;
+    abstract promise: PublicManualPromise<void>;
 }
 /**
  * @throws Error
@@ -33,8 +41,9 @@ export interface RawStart {
 export interface RawStop {
     (err?: Error): Promise<void>;
 }
-export declare abstract class State implements StartableLike {
+export declare abstract class State {
     protected abstract host: Startable;
+    protected abstract promise: PublicManualPromise<void>;
     abstract postActivate(): void;
     abstract getReadyState(): ReadyState;
     abstract skipStart(onStopping?: OnStopping): void;
@@ -44,4 +53,5 @@ export declare abstract class State implements StartableLike {
     abstract starp(err?: Error): Promise<void>;
     abstract getStarting(): Promise<void>;
     abstract getStopping(): Promise<void>;
+    getPromise(): Promise<void>;
 }

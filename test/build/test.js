@@ -30,7 +30,7 @@ class StopError extends Error {
     await s.start();
     s.stop();
     await s.stop();
-    await s;
+    await s.getPromise();
     assert(f.callCount === 2);
 });
 (0, ava_1.default)('start succ stop fail', async (t) => {
@@ -45,7 +45,7 @@ class StopError extends Error {
     await s.start();
     s.stop().catch(() => { });
     await assert.rejects(s.stop(), StopError);
-    await assert.rejects(s, StopError);
+    await assert.rejects(s.getPromise(), StopError);
     assert(f.callCount === 2);
 });
 (0, ava_1.default)('start fail stop succ', async (t) => {
@@ -61,7 +61,7 @@ class StopError extends Error {
     await assert.rejects(s.start(), StartError);
     s.stop();
     await s.stop();
-    await assert.rejects(s, StartError);
+    await assert.rejects(s.getPromise(), StartError);
     assert(f.callCount === 2);
 });
 (0, ava_1.default)('start fail stop fail', async (t) => {
@@ -77,7 +77,7 @@ class StopError extends Error {
     await assert.rejects(s.start(), StartError);
     s.stop().catch(() => { });
     await assert.rejects(s.stop(), StopError);
-    await assert.rejects(s, StartError);
+    await assert.rejects(s.getPromise(), StartError);
     assert(f.callCount === 2);
 });
 (0, ava_1.default)('starp during starting', async (t) => {
@@ -98,7 +98,7 @@ class StopError extends Error {
     resolveStart();
     await assert.rejects(pStart, __1.StarpCalledDuringStarting);
     await pStarp;
-    await assert.rejects(s, __1.StarpCalledDuringStarting);
+    await assert.rejects(s.getPromise(), __1.StarpCalledDuringStarting);
     assert(f.callCount === 2);
 });
 //# sourceMappingURL=test.js.map

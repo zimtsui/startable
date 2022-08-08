@@ -1,15 +1,15 @@
 import {
 	State,
 	Friendly,
-} from './startable';
-import {
 	OnStopping,
 	ReadyState,
-} from './startable-like';
+} from './startable';
 import { PublicManualPromise } from '@zimtsui/manual-promise';
 
 
 export class Ready extends State {
+	protected promise = new PublicManualPromise<void>();
+
 	public constructor(
 		protected host: Friendly,
 	) {
@@ -24,6 +24,7 @@ export class Ready extends State {
 		this.host.state = new Starting(
 			this.host,
 			onStopping || null,
+			this.promise,
 		);
 		this.host.state.postActivate();
 		await this.host.start();
@@ -36,7 +37,9 @@ export class Ready extends State {
 	public async stop(): Promise<void> {
 		this.host.state = new Stopped(
 			this.host,
+			Promise.resolve(),
 			new PublicManualPromise<void>(),
+			this.promise,
 			null,
 			null,
 			null,
@@ -56,6 +59,7 @@ export class Ready extends State {
 		this.host.state = new Started(
 			this.host,
 			new PublicManualPromise<void>(),
+			this.promise,
 			onStopping ? [onStopping] : [],
 			null,
 		);
@@ -85,6 +89,7 @@ export class Starting extends State {
 	public constructor(
 		protected host: Friendly,
 		onStopping: OnStopping | null,
+		protected promise: PublicManualPromise<void>,
 	) {
 		super();
 
@@ -98,6 +103,7 @@ export class Starting extends State {
 			this.host.state = new Started(
 				this.host,
 				this.starting,
+				this.promise,
 				this.onStoppings,
 				this.startingError,
 			);
@@ -154,6 +160,7 @@ export class Started extends State {
 	public constructor(
 		protected host: Friendly,
 		private starting: PublicManualPromise<void>,
+		protected promise: PublicManualPromise<void>,
 		private onStoppings: OnStopping[],
 		private startingError: Error | null,
 	) {
@@ -181,6 +188,7 @@ export class Started extends State {
 		this.host.state = new Stopping(
 			this.host,
 			this.starting,
+			this.promise,
 			this.onStoppings,
 			this.startingError,
 			runningError || null,
@@ -221,6 +229,7 @@ export class Stopping extends State {
 	public constructor(
 		protected host: Friendly,
 		private starting: Promise<void>,
+		protected promise: PublicManualPromise<void>,
 		private onStoppings: OnStopping[],
 		private startingError: Error | null,
 		private runningError: Error | null,
@@ -243,7 +252,9 @@ export class Stopping extends State {
 		).then(() => {
 			this.host.state = new Stopped(
 				this.host,
+				this.starting,
 				this.stopping,
+				this.promise,
 				this.startingError,
 				this.runningError,
 				null,
@@ -252,7 +263,9 @@ export class Stopping extends State {
 		}).catch((stoppingError: Error) => {
 			this.host.state = new Stopped(
 				this.host,
+				this.starting,
 				this.stopping,
+				this.promise,
 				this.startingError,
 				this.runningError,
 				stoppingError,
@@ -305,7 +318,9 @@ export class CannotStartDuringStopping extends Error { }
 export class Stopped extends State {
 	public constructor(
 		protected host: Friendly,
+		private starting: Promise<void>,
 		private stopping: PublicManualPromise<void>,
+		protected promise: PublicManualPromise<void>,
 		private startingError: Error | null,
 		private runningError: Error | null,
 		private stoppingError: Error | null,
@@ -315,13 +330,13 @@ export class Stopped extends State {
 
 	public postActivate(): void {
 		if (this.startingError)
-			this.host.reject(this.startingError);
+			this.promise.reject(this.startingError);
 		else if (this.runningError)
-			this.host.reject(this.runningError);
+			this.promise.reject(this.runningError);
 		else if (this.stoppingError)
-			this.host.reject(this.stoppingError);
+			this.promise.reject(this.stoppingError);
 		else
-			this.host.resolve();
+			this.promise.resolve();
 
 		if (this.stoppingError)
 			this.stopping.reject(this.stoppingError);
@@ -356,7 +371,7 @@ export class Stopped extends State {
 	}
 
 	public getStarting(): Promise<void> {
-		throw new CannotGetStartingDuringStopped();
+		return this.starting;
 	}
 
 	public getStopping(): Promise<void> {
@@ -368,4 +383,3 @@ export class CannotStartDuringStopped extends Error { }
 export class CannotSkipStartDuringStopped extends Error { }
 export class CannotStarpDuringStopped extends Error { }
 export class CannotAssartDuringStopped extends Error { }
-export class CannotGetStartingDuringStopped extends Error { }

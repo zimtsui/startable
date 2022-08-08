@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.State = exports.Friendly = exports.Startable = void 0;
-const manual_promise_1 = require("@zimtsui/manual-promise");
-class Startable extends manual_promise_1.ManualPromise {
-    constructor() {
-        super();
-        this.catch(() => { });
+class Startable {
+    getPromise() {
+        const p = this.state.getPromise();
+        p.catch(() => { });
+        return p;
     }
     getReadyState() {
         return this.state.getReadyState();
@@ -49,6 +49,9 @@ class Friendly extends Startable {
 }
 exports.Friendly = Friendly;
 class State {
+    getPromise() {
+        return this.promise;
+    }
 }
 exports.State = State;
 //# sourceMappingURL=startable.js.map

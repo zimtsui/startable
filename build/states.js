@@ -1,16 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotGetStartingDuringStopped = exports.CannotAssartDuringStopped = exports.CannotStarpDuringStopped = exports.CannotSkipStartDuringStopped = exports.CannotStartDuringStopped = exports.Stopped = exports.CannotStartDuringStopping = exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.Stopping = exports.CannotGetStoppingDuringStarted = exports.CannotSkipStartDuringStarted = exports.Started = exports.CannotGetStoppingDuringStarting = exports.CannotStopDuringStarting = exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.Starting = exports.CannotGetStoppingDuringReady = exports.CannotGetStartingDuringReady = exports.CannotAssartDuringReady = exports.CannotStarpDuringReady = exports.Ready = void 0;
+exports.CannotAssartDuringStopped = exports.CannotStarpDuringStopped = exports.CannotSkipStartDuringStopped = exports.CannotStartDuringStopped = exports.Stopped = exports.CannotStartDuringStopping = exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.Stopping = exports.CannotGetStoppingDuringStarted = exports.CannotSkipStartDuringStarted = exports.Started = exports.CannotGetStoppingDuringStarting = exports.CannotStopDuringStarting = exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.Starting = exports.CannotGetStoppingDuringReady = exports.CannotGetStartingDuringReady = exports.CannotAssartDuringReady = exports.CannotStarpDuringReady = exports.Ready = void 0;
 const startable_1 = require("./startable");
 const manual_promise_1 = require("@zimtsui/manual-promise");
 class Ready extends startable_1.State {
     constructor(host) {
         super();
         this.host = host;
+        this.promise = new manual_promise_1.PublicManualPromise();
     }
     postActivate() { }
     async start(onStopping) {
-        this.host.state = new Starting(this.host, onStopping || null);
+        this.host.state = new Starting(this.host, onStopping || null, this.promise);
         this.host.state.postActivate();
         await this.host.start();
     }
@@ -18,7 +19,7 @@ class Ready extends startable_1.State {
         throw new CannotAssartDuringReady();
     }
     async stop() {
-        this.host.state = new Stopped(this.host, new manual_promise_1.PublicManualPromise(), null, null, null);
+        this.host.state = new Stopped(this.host, Promise.resolve(), new manual_promise_1.PublicManualPromise(), this.promise, null, null, null);
         this.host.state.postActivate();
     }
     async starp(err) {
@@ -28,7 +29,7 @@ class Ready extends startable_1.State {
         return "READY" /* READY */;
     }
     skipStart(onStopping) {
-        this.host.state = new Started(this.host, new manual_promise_1.PublicManualPromise(), onStopping ? [onStopping] : [], null);
+        this.host.state = new Started(this.host, new manual_promise_1.PublicManualPromise(), this.promise, onStopping ? [onStopping] : [], null);
         this.host.state.postActivate();
     }
     getStarting() {
@@ -52,9 +53,10 @@ class CannotGetStoppingDuringReady extends Error {
 }
 exports.CannotGetStoppingDuringReady = CannotGetStoppingDuringReady;
 class Starting extends startable_1.State {
-    constructor(host, onStopping) {
+    constructor(host, onStopping, promise) {
         super();
         this.host = host;
+        this.promise = promise;
         this.starting = new manual_promise_1.PublicManualPromise();
         this.onStoppings = [];
         this.startingError = null;
@@ -65,7 +67,7 @@ class Starting extends startable_1.State {
         this.host.rawStart().catch(err => {
             this.startingError = err;
         }).then(() => {
-            this.host.state = new Started(this.host, this.starting, this.onStoppings, this.startingError);
+            this.host.state = new Started(this.host, this.starting, this.promise, this.onStoppings, this.startingError);
             this.host.state.postActivate();
         });
     }
@@ -114,10 +116,11 @@ class CannotGetStoppingDuringStarting extends Error {
 }
 exports.CannotGetStoppingDuringStarting = CannotGetStoppingDuringStarting;
 class Started extends startable_1.State {
-    constructor(host, starting, onStoppings, startingError) {
+    constructor(host, starting, promise, onStoppings, startingError) {
         super();
         this.host = host;
         this.starting = starting;
+        this.promise = promise;
         this.onStoppings = onStoppings;
         this.startingError = startingError;
     }
@@ -138,7 +141,7 @@ class Started extends startable_1.State {
         await this.starting;
     }
     async stop(runningError) {
-        this.host.state = new Stopping(this.host, this.starting, this.onStoppings, this.startingError, runningError || null);
+        this.host.state = new Stopping(this.host, this.starting, this.promise, this.onStoppings, this.startingError, runningError || null);
         this.host.state.postActivate();
         await this.host.stop();
     }
@@ -166,10 +169,11 @@ class CannotGetStoppingDuringStarted extends Error {
 }
 exports.CannotGetStoppingDuringStarted = CannotGetStoppingDuringStarted;
 class Stopping extends startable_1.State {
-    constructor(host, starting, onStoppings, startingError, runningError) {
+    constructor(host, starting, promise, onStoppings, startingError, runningError) {
         super();
         this.host = host;
         this.starting = starting;
+        this.promise = promise;
         this.onStoppings = onStoppings;
         this.startingError = startingError;
         this.runningError = runningError;
@@ -185,10 +189,10 @@ class Stopping extends startable_1.State {
         (this.runningError
             ? this.host.rawStop(this.runningError)
             : this.host.rawStop()).then(() => {
-            this.host.state = new Stopped(this.host, this.stopping, this.startingError, this.runningError, null);
+            this.host.state = new Stopped(this.host, this.starting, this.stopping, this.promise, this.startingError, this.runningError, null);
             this.host.state.postActivate();
         }).catch((stoppingError) => {
-            this.host.state = new Stopped(this.host, this.stopping, this.startingError, this.runningError, stoppingError);
+            this.host.state = new Stopped(this.host, this.starting, this.stopping, this.promise, this.startingError, this.runningError, stoppingError);
             ;
             this.host.state.postActivate();
         });
@@ -229,23 +233,25 @@ class CannotStartDuringStopping extends Error {
 }
 exports.CannotStartDuringStopping = CannotStartDuringStopping;
 class Stopped extends startable_1.State {
-    constructor(host, stopping, startingError, runningError, stoppingError) {
+    constructor(host, starting, stopping, promise, startingError, runningError, stoppingError) {
         super();
         this.host = host;
+        this.starting = starting;
         this.stopping = stopping;
+        this.promise = promise;
         this.startingError = startingError;
         this.runningError = runningError;
         this.stoppingError = stoppingError;
     }
     postActivate() {
         if (this.startingError)
-            this.host.reject(this.startingError);
+            this.promise.reject(this.startingError);
         else if (this.runningError)
-            this.host.reject(this.runningError);
+            this.promise.reject(this.runningError);
         else if (this.stoppingError)
-            this.host.reject(this.stoppingError);
+            this.promise.reject(this.stoppingError);
         else
-            this.host.resolve();
+            this.promise.resolve();
         if (this.stoppingError)
             this.stopping.reject(this.stoppingError);
         else
@@ -270,7 +276,7 @@ class Stopped extends startable_1.State {
         throw new CannotSkipStartDuringStopped();
     }
     getStarting() {
-        throw new CannotGetStartingDuringStopped();
+        return this.starting;
     }
     getStopping() {
         return this.stopping;
@@ -289,7 +295,4 @@ exports.CannotStarpDuringStopped = CannotStarpDuringStopped;
 class CannotAssartDuringStopped extends Error {
 }
 exports.CannotAssartDuringStopped = CannotAssartDuringStopped;
-class CannotGetStartingDuringStopped extends Error {
-}
-exports.CannotGetStartingDuringStopped = CannotGetStartingDuringStopped;
 //# sourceMappingURL=states.js.map

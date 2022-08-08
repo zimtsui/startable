@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createStartable = exports.CannotStarpDuringStopped = exports.CannotStartDuringStopped = exports.CannotSkipStartDuringStopped = exports.CannotGetStartingDuringStopped = exports.CannotAssartDuringStopped = exports.CannotStartDuringStopping = exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.CannotSkipStartDuringStarted = exports.CannotGetStoppingDuringStarted = exports.CannotGetStoppingDuringStarting = exports.CannotSkipStartDuringStarting = exports.CannotStopDuringStarting = exports.StarpCalledDuringStarting = exports.CannotGetStoppingDuringReady = exports.CannotGetStartingDuringReady = exports.CannotAssartDuringReady = exports.CannotStarpDuringReady = exports.Startable = void 0;
+exports.createStartable = exports.CannotStarpDuringStopped = exports.CannotStartDuringStopped = exports.CannotSkipStartDuringStopped = exports.CannotAssartDuringStopped = exports.CannotStartDuringStopping = exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.CannotSkipStartDuringStarted = exports.CannotGetStoppingDuringStarted = exports.CannotGetStoppingDuringStarting = exports.CannotSkipStartDuringStarting = exports.CannotStopDuringStarting = exports.StarpCalledDuringStarting = exports.CannotGetStoppingDuringReady = exports.CannotGetStartingDuringReady = exports.CannotAssartDuringReady = exports.CannotStarpDuringReady = exports.Startable = void 0;
 var startable_1 = require("./startable");
 Object.defineProperty(exports, "Startable", { enumerable: true, get: function () { return startable_1.Startable; } });
 var states_1 = require("./states");
@@ -18,7 +18,6 @@ Object.defineProperty(exports, "CannotSkipStartDuringStopping", { enumerable: tr
 Object.defineProperty(exports, "CannotAssartDuringStopping", { enumerable: true, get: function () { return states_1.CannotAssartDuringStopping; } });
 Object.defineProperty(exports, "CannotStartDuringStopping", { enumerable: true, get: function () { return states_1.CannotStartDuringStopping; } });
 Object.defineProperty(exports, "CannotAssartDuringStopped", { enumerable: true, get: function () { return states_1.CannotAssartDuringStopped; } });
-Object.defineProperty(exports, "CannotGetStartingDuringStopped", { enumerable: true, get: function () { return states_1.CannotGetStartingDuringStopped; } });
 Object.defineProperty(exports, "CannotSkipStartDuringStopped", { enumerable: true, get: function () { return states_1.CannotSkipStartDuringStopped; } });
 Object.defineProperty(exports, "CannotStartDuringStopped", { enumerable: true, get: function () { return states_1.CannotStartDuringStopped; } });
 Object.defineProperty(exports, "CannotStarpDuringStopped", { enumerable: true, get: function () { return states_1.CannotStarpDuringStopped; } });
