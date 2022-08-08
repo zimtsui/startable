@@ -6,8 +6,9 @@
     "types": "./build/index.d.ts",
     "scripts": {
         "build": "tsc -b ./src/tsconfig.json",
-        "test": "tsc -b ./test/src/tsconfig.json && ava",
-        "clean": "rm -rf ./build"
+        "clean": "rm -rf ./build && rm -rf ./test/build",
+        "rebuild": "npm run clean && npm run build",
+        "test": "tsc -b ./test/src/tsconfig.json && ava"
     },
     "repository": {
         "type": "git",

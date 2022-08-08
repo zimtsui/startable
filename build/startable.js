@@ -2,35 +2,37 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.State = exports.Friendly = exports.Startable = void 0;
 class Startable {
-    constructor() {
-        this.getReadyState = () => {
-            return this.state.getReadyState();
-        };
-        this.skipStart = (onStopping) => {
-            this.state.skipStart(onStopping);
-        };
-        this.start = async (startArgs, onStopping) => {
-            await this.state.start(startArgs, onStopping);
-        };
-        this.assart = async (onStopping) => {
-            await this.state.assart(onStopping);
-        };
-        this.stop = (err) => {
-            const promise = this.state.stop(err);
-            promise.catch(() => { });
-            return promise;
-        };
-        this.starp = (err) => {
-            const promise = this.state.starp(err);
-            promise.catch(() => { });
-            return promise;
-        };
-        this.getStarting = async () => {
-            return this.state.getStarting();
-        };
-        this.getStopping = async () => {
-            return this.state.getStopping();
-        };
+    getReadyState() {
+        return this.state.getReadyState();
+    }
+    skipStart(onStopping) {
+        this.state.skipStart(onStopping);
+    }
+    start(onStopping) {
+        const p = this.state.start(onStopping);
+        p.catch(() => { });
+        return p;
+    }
+    assart(onStopping) {
+        const p = this.state.assart(onStopping);
+        p.catch(() => { });
+        return p;
+    }
+    stop(err) {
+        const p = this.state.stop(err);
+        p.catch(() => { });
+        return p;
+    }
+    starp(err) {
+        const p = this.state.starp(err);
+        p.catch(() => { });
+        return p;
+    }
+    getStarting() {
+        return this.state.getStarting();
+    }
+    getStopping() {
+        return this.state.getStopping();
     }
 }
 exports.Startable = Startable;

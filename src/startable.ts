@@ -2,64 +2,64 @@ import {
 	StartableLike,
 	ReadyState,
 	OnStopping,
-	UnboundStartableLike,
 } from './startable-like';
 
-export abstract class Startable<StartArgs extends unknown[]>
-	implements StartableLike<StartArgs> {
-	protected abstract state: State<StartArgs>;
-	protected abstract rawStart: RawStart<StartArgs>;
+export abstract class Startable
+	implements StartableLike {
+	protected abstract state: State;
+	protected abstract rawStart: RawStart;
 	protected abstract rawStop: RawStop;
 
-	public getReadyState = (): ReadyState => {
+	public getReadyState(): ReadyState {
 		return this.state.getReadyState();
 	}
 
-	public skipStart = (onStopping?: OnStopping): void => {
+	public skipStart(onStopping?: OnStopping): void {
 		this.state.skipStart(onStopping);
 	}
 
-	public start = async (
-		startArgs: StartArgs,
-		onStopping?: OnStopping,
-	): Promise<void> => {
-		await this.state.start(startArgs, onStopping);
+	public start(onStopping?: OnStopping): Promise<void> {
+		const p = this.state.start(onStopping);
+		p.catch(() => { });
+		return p;
 	}
 
-	public assart = async (onStopping?: OnStopping): Promise<void> => {
-		await this.state.assart(onStopping);
+	public assart(onStopping?: OnStopping): Promise<void> {
+		const p = this.state.assart(onStopping);
+		p.catch(() => { });
+		return p;
 	}
 
-	public stop = (err?: Error): Promise<void> => {
-		const promise = this.state.stop(err);
-		promise.catch(() => { });
-		return promise;
+	public stop(err?: Error): Promise<void> {
+		const p = this.state.stop(err);
+		p.catch(() => { });
+		return p;
 	}
 
-	public starp = (err?: Error): Promise<void> => {
-		const promise = this.state.starp(err);
-		promise.catch(() => { });
-		return promise;
+	public starp(err?: Error): Promise<void> {
+		const p = this.state.starp(err);
+		p.catch(() => { });
+		return p;
 	}
 
-	public getStarting = async () => {
+	public getStarting() {
 		return this.state.getStarting();
 	}
 
-	public getStopping = async () => {
+	public getStopping() {
 		return this.state.getStopping();
 	}
 }
 
 
-export abstract class Friendly<StartArgs extends unknown[]> extends Startable<StartArgs> {
-	public abstract state: State<StartArgs>;
-	public abstract rawStart: RawStart<StartArgs>;
+export abstract class Friendly extends Startable {
+	public abstract state: State;
+	public abstract rawStart: RawStart;
 	public abstract rawStop: RawStop;
 }
 
-export interface RawStart<StartArgs extends unknown[]> {
-	(...args: StartArgs): Promise<void>;
+export interface RawStart {
+	(): Promise<void>;
 }
 
 export interface RawStop {
@@ -67,16 +67,13 @@ export interface RawStop {
 }
 
 
-export abstract class State<StartArgs extends unknown[]>
-	implements UnboundStartableLike<StartArgs> {
-	protected abstract host: Startable<StartArgs>;
+export abstract class State implements StartableLike {
+	protected abstract host: Startable;
 	public abstract postActivate(): void;
 
 	public abstract getReadyState(): ReadyState;
 	public abstract skipStart(onStopping?: OnStopping): void;
-	public abstract start(
-		startArgs: StartArgs,
-		onStopping?: OnStopping): Promise<void>;
+	public abstract start(onStopping?: OnStopping): Promise<void>;
 	public abstract assart(onStopping?: OnStopping): Promise<void>;
 	public abstract stop(err?: Error): Promise<void>;
 	public abstract starp(err?: Error): Promise<void>;

@@ -1,7 +1,7 @@
-export interface UnboundStartableLike<StartArgs extends unknown[]> {
+export interface StartableLike {
 	getReadyState(): ReadyState;
 	skipStart(onStopping?: OnStopping): void;
-	start(args: StartArgs, onStopping?: OnStopping): Promise<void>;
+	start(onStopping?: OnStopping): Promise<void>;
 	assart(onStopping?: OnStopping): Promise<void>;
 	stop(err?: Error): Promise<void>;
 	starp(err?: Error): Promise<void>;
@@ -9,20 +9,8 @@ export interface UnboundStartableLike<StartArgs extends unknown[]> {
 	getStopping(): Promise<void>;
 }
 
-export interface StartableLike<StartArgs extends unknown[]>
-	extends UnboundStartableLike<StartArgs> {
-	getReadyState: () => ReadyState;
-	skipStart: (onStopping?: OnStopping) => void;
-	start: (args: StartArgs, onStopping?: OnStopping) => Promise<void>;
-	assart: (onStopping?: OnStopping) => Promise<void>;
-	stop: (err?: Error) => Promise<void>;
-	starp: (err?: Error) => Promise<void>;
-	getStarting: () => Promise<void>;
-	getStopping: () => Promise<void>;
-}
-
-
 export const enum ReadyState {
+	READY = 'READY',
 	STARTING = 'STARTING',
 	STARTED = 'STARTED',
 	STOPPING = 'STOPPING',
