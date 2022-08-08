@@ -7,7 +7,7 @@ import {
 	OnStopping,
 	ReadyState,
 } from './startable-like';
-import { PublicManualPromise } from './public-manual-promise';
+import { PublicManualPromise } from '@zimtsui/manual-promise';
 
 
 export class Ready extends State {
@@ -78,7 +78,7 @@ export class CannotGetStoppingDuringReady extends Error { }
 
 
 export class Starting extends State {
-	private starting = new PublicManualPromise();
+	private starting = new PublicManualPromise<void>();
 	private onStoppings: OnStopping[] = [];
 	private err: null | StarpCalledDuringStarting = null;
 
@@ -215,7 +215,7 @@ export class CannotGetStoppingDuringStarted extends Error { }
 
 
 export class Stopping extends State {
-	private stopping = new PublicManualPromise();
+	private stopping = new PublicManualPromise<void>();
 
 	public constructor(
 		protected host: Friendly,

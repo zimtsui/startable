@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CannotGetStartingDuringStopped = exports.CannotAssartDuringStopped = exports.CannotStarpDuringStopped = exports.CannotSkipStartDuringStopped = exports.CannotStartDuringStopped = exports.Stopped = exports.CannotStartDuringStopping = exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.Stopping = exports.CannotGetStoppingDuringStarted = exports.CannotSkipStartDuringStarted = exports.Started = exports.CannotGetStoppingDuringStarting = exports.CannotStopDuringStarting = exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.Starting = exports.CannotGetStoppingDuringReady = exports.CannotGetStartingDuringReady = exports.CannotAssartDuringReady = exports.CannotStarpDuringReady = exports.Ready = void 0;
 const startable_1 = require("./startable");
-const public_manual_promise_1 = require("./public-manual-promise");
+const manual_promise_1 = require("@zimtsui/manual-promise");
 class Ready extends startable_1.State {
     constructor(host) {
         super();
@@ -58,7 +58,7 @@ class Starting extends startable_1.State {
     constructor(host, onStopping) {
         super();
         this.host = host;
-        this.starting = new public_manual_promise_1.PublicManualPromise();
+        this.starting = new manual_promise_1.PublicManualPromise();
         this.onStoppings = [];
         this.err = null;
         this.starting.catch(() => { });
@@ -176,7 +176,7 @@ class Stopping extends startable_1.State {
         this.starting = starting;
         this.onStoppings = onStoppings;
         this.err = err;
-        this.stopping = new public_manual_promise_1.PublicManualPromise();
+        this.stopping = new manual_promise_1.PublicManualPromise();
     }
     postActivate() {
         for (const onStopping of this.onStoppings)
