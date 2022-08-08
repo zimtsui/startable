@@ -8,64 +8,108 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.State = exports.Friendly = exports.Startable = void 0;
 const autobind_decorator_1 = require("autobind-decorator");
+const catch_throw_1 = require("./catch-throw");
 class Startable {
     getReadyState() {
         return this.state.getReadyState();
     }
+    /**
+     * Skip from READY to STARTED.
+     * @decorator `@boundMethod`
+     */
     skipStart(onStopping) {
         this.state.skipStart(onStopping);
     }
-    start(onStopping) {
-        const p = this.state.start(onStopping);
-        p.catch(() => { });
-        return p;
+    /**
+     * - If it's READY now, then
+     * 1. Start.
+     * 1. Wait until STARTED.
+     * - If it's STARTING or STARTED now, then
+     * 1. Wait until STARTED.
+     * @decorator `@boundMethod`
+     * @decorator `@catchThrow()`
+     */
+    async start(onStopping) {
+        return await this.state.start(onStopping);
     }
-    assart(onStopping) {
-        const p = this.state.assart(onStopping);
-        p.catch(() => { });
-        return p;
+    /**
+     * 1. Assert it's STARTING or STARTED now.
+     * 1. Wait until STARTED.
+     * @decorator `@boundMethod`
+     * @decorator `@catchThrow()`
+     */
+    async assart(onStopping) {
+        return await this.state.assart(onStopping);
     }
-    stop(err) {
-        const p = this.state.stop(err);
-        p.catch(() => { });
-        return p;
+    /**
+     * - If it's STARTED now, then
+     * 1. Stop.
+     * 1. Wait until STOPPED.
+     * - If it's STOPPING or STOPPED now, then
+     * 1. Wait until STOPPED.
+     * @decorator `@boundMethod`
+     * @decorator `@catchThrow()`
+     */
+    async stop(err) {
+        return await this.state.stop(err);
     }
-    starp(err) {
-        const p = this.state.starp(err);
-        p.catch(() => { });
-        return p;
+    /**
+     * If it's STARTING now, then
+     * 1. Wait until STARTED.
+     * 1. Stop.
+     * @decorator `@boundMethod`
+     * @decorator `@catchThrow()`
+     */
+    async starp(err) {
+        return await this.state.starp(err);
     }
+    /**
+     * @decorator `@catchThrow()`
+     */
     getStarting() {
-        const p = this.state.getStarting();
-        p.catch(() => { });
-        return p;
+        return this.state.getStarting();
     }
+    /**
+     * @decorator `@catchThrow()`
+     */
     getStopping() {
-        const p = this.state.getStopping();
-        p.catch(() => { });
-        return p;
+        return this.state.getStopping();
     }
+    /**
+     * @decorator `@catchThrow()`
+     */
     getPromise() {
-        const p = this.state.getPromise();
-        p.catch(() => { });
-        return p;
+        return this.state.getPromise();
     }
 }
 __decorate([
     autobind_decorator_1.boundMethod
 ], Startable.prototype, "skipStart", null);
 __decorate([
-    autobind_decorator_1.boundMethod
+    autobind_decorator_1.boundMethod,
+    (0, catch_throw_1.catchThrow)()
 ], Startable.prototype, "start", null);
 __decorate([
-    autobind_decorator_1.boundMethod
+    autobind_decorator_1.boundMethod,
+    (0, catch_throw_1.catchThrow)()
 ], Startable.prototype, "assart", null);
 __decorate([
-    autobind_decorator_1.boundMethod
+    autobind_decorator_1.boundMethod,
+    (0, catch_throw_1.catchThrow)()
 ], Startable.prototype, "stop", null);
 __decorate([
-    autobind_decorator_1.boundMethod
+    autobind_decorator_1.boundMethod,
+    (0, catch_throw_1.catchThrow)()
 ], Startable.prototype, "starp", null);
+__decorate([
+    (0, catch_throw_1.catchThrow)()
+], Startable.prototype, "getStarting", null);
+__decorate([
+    (0, catch_throw_1.catchThrow)()
+], Startable.prototype, "getStopping", null);
+__decorate([
+    (0, catch_throw_1.catchThrow)()
+], Startable.prototype, "getPromise", null);
 exports.Startable = Startable;
 class Friendly extends Startable {
 }

@@ -14,13 +14,57 @@ export declare abstract class Startable {
     protected abstract rawStart: RawStart;
     protected abstract rawStop: RawStop;
     getReadyState(): ReadyState;
+    /**
+     * Skip from READY to STARTED.
+     * @decorator `@boundMethod`
+     */
     skipStart(onStopping?: OnStopping): void;
+    /**
+     * - If it's READY now, then
+     * 1. Start.
+     * 1. Wait until STARTED.
+     * - If it's STARTING or STARTED now, then
+     * 1. Wait until STARTED.
+     * @decorator `@boundMethod`
+     * @decorator `@catchThrow()`
+     */
     start(onStopping?: OnStopping): Promise<void>;
+    /**
+     * 1. Assert it's STARTING or STARTED now.
+     * 1. Wait until STARTED.
+     * @decorator `@boundMethod`
+     * @decorator `@catchThrow()`
+     */
     assart(onStopping?: OnStopping): Promise<void>;
+    /**
+     * - If it's STARTED now, then
+     * 1. Stop.
+     * 1. Wait until STOPPED.
+     * - If it's STOPPING or STOPPED now, then
+     * 1. Wait until STOPPED.
+     * @decorator `@boundMethod`
+     * @decorator `@catchThrow()`
+     */
     stop(err?: Error): Promise<void>;
+    /**
+     * If it's STARTING now, then
+     * 1. Wait until STARTED.
+     * 1. Stop.
+     * @decorator `@boundMethod`
+     * @decorator `@catchThrow()`
+     */
     starp(err?: Error): Promise<void>;
+    /**
+     * @decorator `@catchThrow()`
+     */
     getStarting(): Promise<void>;
+    /**
+     * @decorator `@catchThrow()`
+     */
     getStopping(): Promise<void>;
+    /**
+     * @decorator `@catchThrow()`
+     */
     getPromise(): Promise<void>;
 }
 export declare abstract class Friendly extends Startable {

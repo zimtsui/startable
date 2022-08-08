@@ -43,7 +43,7 @@ class StopError extends Error {
         return Promise.reject(new StopError());
     });
     await s.start();
-    s.stop().catch(() => { });
+    s.stop();
     await assert.rejects(s.stop(), StopError);
     await assert.rejects(s.getPromise(), StopError);
     assert(f.callCount === 2);
@@ -57,7 +57,7 @@ class StopError extends Error {
         f();
         return Promise.resolve();
     });
-    s.start().catch(() => { });
+    s.start();
     await assert.rejects(s.start(), StartError);
     s.stop();
     await s.stop();
@@ -73,9 +73,9 @@ class StopError extends Error {
         f();
         return Promise.reject(new StopError());
     });
-    s.start().catch(() => { });
+    s.start();
     await assert.rejects(s.start(), StartError);
-    s.stop().catch(() => { });
+    s.stop();
     await assert.rejects(s.stop(), StopError);
     await assert.rejects(s.getPromise(), StartError);
     assert(f.callCount === 2);
@@ -93,7 +93,6 @@ class StopError extends Error {
         return Promise.resolve();
     });
     const pStart = s.start();
-    pStart.catch(() => { });
     const pStarp = s.starp();
     resolveStart();
     await assert.rejects(pStart, __1.StarpCalledDuringStarting);
