@@ -42,6 +42,8 @@ class Startable {
         return await this.state.assart(onStopping);
     }
     /**
+     * - If it's READY now, then
+     * 1. Skip to STOPPED.
      * - If it's STARTED now, then
      * 1. Stop.
      * 1. Wait until STOPPED.
@@ -54,9 +56,12 @@ class Startable {
         return await this.state.stop(err);
     }
     /**
-     * If it's STARTING now, then
+     * - If it's STARTING or STARTED now, then
      * 1. Wait until STARTED.
      * 1. Stop.
+     * 1. Wait until STOPPED.
+     * - If it's STOPPING now, then
+     * 1. Wait until STOPPED.
      * @decorator `@boundMethod`
      * @decorator `@catchThrow()`
      */
