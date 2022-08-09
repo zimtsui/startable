@@ -33,6 +33,10 @@ export class Ready extends State {
 	}
 
 	public async stop(): Promise<void> {
+		throw new CannotStopDuringReady();
+	}
+
+	public async starp(err?: Error): Promise<void> {
 		const stoppingError = new SkipFromReadyToStopped();
 		const startingPromise = Promise.reject(stoppingError);
 		startingPromise.catch(() => { });
@@ -46,10 +50,6 @@ export class Ready extends State {
 			stoppingError,
 		});
 		this.host.state.postActivate();
-	}
-
-	public async starp(err?: Error): Promise<never> {
-		throw new CannotStarpDuringReady();
 	}
 
 	public getReadyState(): ReadyState {
@@ -73,7 +73,7 @@ export class Ready extends State {
 }
 
 export class CannotGetRunningPromiseDuringReady extends Error { }
-export class CannotStarpDuringReady extends Error { }
+export class CannotStopDuringReady extends Error { }
 export class CannotAssartDuringReady extends Error { }
 export class SkipFromReadyToStopped extends Error { }
 export class SkipFromReadytoStarted extends Error { }

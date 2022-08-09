@@ -7,14 +7,14 @@ export declare class Ready extends State {
     start(onStopping?: OnStopping): Promise<void>;
     assart(onStopping?: OnStopping): Promise<never>;
     stop(): Promise<void>;
-    starp(err?: Error): Promise<never>;
+    starp(err?: Error): Promise<void>;
     getReadyState(): ReadyState;
     skipStart(onStopping?: OnStopping): void;
     getRunningPromise(): PromiseLike<void>;
 }
 export declare class CannotGetRunningPromiseDuringReady extends Error {
 }
-export declare class CannotStarpDuringReady extends Error {
+export declare class CannotStopDuringReady extends Error {
 }
 export declare class CannotAssartDuringReady extends Error {
 }

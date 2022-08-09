@@ -12,15 +12,15 @@ Startable 是一个 JavaScript 的后台对象框架。初衷是为了适配阿�
 
 - 后台对象有一个异步的启动和停止过程
 
-    比如一个 TCP Socket 有一个异步的握手和挥手的过程。
+	比如一个 TCP Socket 有一个异步的握手和挥手的过程。
 
 - 停止过程可能自发开始
 
-    比如一个 TCP Socket 可能因可能因网络中断而离开了「正常提供服务中」的状态，不得不自发开始停止过程。
+	比如一个 TCP Socket 可能因可能因网络中断而离开了「正常提供服务中」的状态，不得不自发开始停止过程。
 
 - 启停过程本身也可能发生异常而失败
 
-    比如一个 TCP Socket 连接时就没连上。
+	比如一个 TCP Socket 连接时就没连上。
 
 ## Startable 类
 
@@ -30,11 +30,11 @@ Startable 是一个 JavaScript 的后台对象框架。初衷是为了适配阿�
 
 ```ts
 class Daemon {
-    public $s: Startable;
-    constructor() {
-        super();
-        this.someComponent.on('some fatal error', this.$s.stop);
-    }
+	public $s: Startable;
+	constructor() {
+		super();
+		this.someComponent.on('some fatal error', this.$s.starp);
+	}
 }
 ```
 
@@ -47,14 +47,13 @@ class Daemon {
 
 const daemon = new Daemon();
 function startDaemon(){
-    daemon.$s.start(err => {
-        if (err) handleRunningException(err);
-        daemon.$s.stop().catch(handleStoppingException);
-    }).catch(handleStartingException);
+	daemon.$s.start(err => {
+		if (err) handleRunningException(err);
+		daemon.$s.stop().catch(handleStoppingException);
+	}).catch(handleStartingException);
 }
 function stopDaemon() {
-    // have a think about why .catch(handleStoppingException) is not necessary.
-    daemon.$s.stop();
+	daemon.$s.starp();
 }
 ```
 
@@ -62,24 +61,24 @@ function stopDaemon() {
 
 ```ts
 class Daemon {
-    public $s: Startable;
-    constructor() {
-        super();
-        this.someComponent.on('some fatal error', err => {
-            handleRunningException(err); // don't do this.
-            this.$s.stop();
-        });
-    }
+	public $s: Startable;
+	constructor() {
+		super();
+		this.someComponent.on('some fatal error', err => {
+			handleRunningException(err); // don't do this.
+			this.$s.starp();
+		});
+	}
 }
 
 const daemon = new Daemon();
 function startDaemon() {
-    daemon.$s.start(() => {
-        daemon.$s.stop().catch(handleStoppingException)
-    }).catch(handleStartingException);
+	daemon.$s.start(() => {
+		daemon.$s.stop().catch(handleStoppingException)
+	}).catch(handleStartingException);
 }
 function stopDaemon() {
-    daemon.$s.stop();
+	daemon.$s.starp();
 }
 ```
 
@@ -89,24 +88,24 @@ function stopDaemon() {
 
 ```ts
 class Daemon {
-    public $s: Startable;
-    constructor() {
-        super();
-        this.someComponent.on('some fatal error', err => {
-            this.$s.stop(err)
-                .catch(handleStoppingException); // don't do this.
-        });
-    }
+	public $s: Startable;
+	constructor() {
+		super();
+		this.someComponent.on('some fatal error', err => {
+			this.$s.starp(err)
+				.catch(handleStoppingException); // don't do this.
+		});
+	}
 }
 
 const daemon = new Daemon();
 function startDaemon() {
-    daemon.$s.start(err => {
-        if (err) handleRunningException(err);
-    }).catch(handleStartingException);
+	daemon.$s.start(err => {
+		if (err) handleRunningException(err);
+	}).catch(handleStartingException);
 }
 function stopDaemon() {
-    daemon.$s.stop().catch(handleStoppingException); // don't do this.
+	daemon.$s.starp().catch(handleStoppingException); // don't do this.
 }
 ```
 
@@ -123,18 +122,18 @@ function stopDaemon() {
 
 ```ts
 class Parent {
-    public $s: Startable;
-    private child1: Daemon;
-    private child2: Daemon;
+	public $s: Startable;
+	private child1: Daemon;
+	private child2: Daemon;
 
-    protected async rawStart(): Promise<void> {
-        await child1.$s.start(this.$s.starp);
-        await child2.$s.start(this.$s.starp);
-    }
-    protected async rawStop(): Promise<void> {
-        await child2.$s.stop();
-        await child1.$s.stop();
-    }
+	protected async rawStart(): Promise<void> {
+		await child1.$s.start(this.$s.starp);
+		await child2.$s.start(this.$s.starp);
+	}
+	protected async rawStop(): Promise<void> {
+		await child2.$s.stop();
+		await child1.$s.stop();
+	}
 }
 ```
 
@@ -147,14 +146,14 @@ class Parent {
 
 ```ts
 class Daemon {
-    public $s: Startable;
-    constructor(private ctx: {
-        dep: Startable;
-    }) { super(); }
+	public $s: Startable;
+	constructor(private ctx: {
+		dep: Startable;
+	}) { super(); }
 
-    protected async rawStart() {
-+           await this.ctx.dep.$s.assart(this.starp);
-    }
+	protected async rawStart() {
+		await this.ctx.dep.$s.assart(this.starp);
+	}
 }
 ```
 

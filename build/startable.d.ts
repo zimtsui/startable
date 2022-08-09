@@ -36,8 +36,6 @@ export declare abstract class Startable {
      */
     assart(onStopping?: OnStopping): Promise<void>;
     /**
-     * - If it's READY now, then
-     * 1. Skip to STOPPED.
      * - If it's STARTED now, then
      * 1. Stop.
      * 1. Wait until STOPPED.
@@ -48,11 +46,13 @@ export declare abstract class Startable {
      */
     stop(err?: Error): Promise<void>;
     /**
+     * - If it's READY now, then
+     * 1. Skip to STOPPED.
      * - If it's STARTING or STARTED now, then
      * 1. Wait until STARTED.
      * 1. Stop.
      * 1. Wait until STOPPED.
-     * - If it's STOPPING now, then
+     * - If it's STOPPING or STOPPED now, then
      * 1. Wait until STOPPED.
      * @decorator `@boundMethod`
      * @decorator `@catchThrow()`

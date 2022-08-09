@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotStarpDuringStopped = exports.CannotSkipStartDuringStopped = exports.CannotAssartDuringStopped = exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.CannotSkipStartDuringStarted = exports.CannotGetRunningPromiseDuringStarting = exports.CannotSkipStartDuringStarting = exports.CannotStopDuringStarting = exports.StarpCalledDuringStarting = exports.SkipFromReadytoStarted = exports.SkipFromReadyToStopped = exports.CannotGetRunningPromiseDuringReady = exports.CannotAssartDuringReady = exports.CannotStarpDuringReady = void 0;
+exports.CannotStarpDuringStopped = exports.CannotSkipStartDuringStopped = exports.CannotAssartDuringStopped = exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.CannotSkipStartDuringStarted = exports.CannotGetRunningPromiseDuringStarting = exports.CannotSkipStartDuringStarting = exports.CannotStopDuringStarting = exports.StarpCalledDuringStarting = exports.SkipFromReadytoStarted = exports.SkipFromReadyToStopped = exports.CannotGetRunningPromiseDuringReady = exports.CannotAssartDuringReady = exports.CannotStopDuringReady = void 0;
 var states_1 = require("../states");
-Object.defineProperty(exports, "CannotStarpDuringReady", { enumerable: true, get: function () { return states_1.CannotStarpDuringReady; } });
+Object.defineProperty(exports, "CannotStopDuringReady", { enumerable: true, get: function () { return states_1.CannotStopDuringReady; } });
 Object.defineProperty(exports, "CannotAssartDuringReady", { enumerable: true, get: function () { return states_1.CannotAssartDuringReady; } });
 Object.defineProperty(exports, "CannotGetRunningPromiseDuringReady", { enumerable: true, get: function () { return states_1.CannotGetRunningPromiseDuringReady; } });
 Object.defineProperty(exports, "SkipFromReadyToStopped", { enumerable: true, get: function () { return states_1.SkipFromReadyToStopped; } });

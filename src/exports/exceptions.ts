@@ -1,5 +1,5 @@
 export {
-	CannotStarpDuringReady,
+	CannotStopDuringReady,
 	CannotAssartDuringReady,
 	CannotGetRunningPromiseDuringReady,
 	SkipFromReadyToStopped,

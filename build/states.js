@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CannotAssartDuringStopped = exports.CannotStarpDuringStopped = exports.CannotSkipStartDuringStopped = exports.Stopped = exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.Stopping = exports.CannotSkipStartDuringStarted = exports.Started = exports.CannotStopDuringStarting = exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.CannotGetRunningPromiseDuringStarting = exports.Starting = exports.SkipFromReadytoStarted = exports.SkipFromReadyToStopped = exports.CannotAssartDuringReady = exports.CannotStarpDuringReady = exports.CannotGetRunningPromiseDuringReady = exports.Ready = void 0;
+exports.CannotAssartDuringStopped = exports.CannotStarpDuringStopped = exports.CannotSkipStartDuringStopped = exports.Stopped = exports.CannotAssartDuringStopping = exports.CannotSkipStartDuringStopping = exports.Stopping = exports.CannotSkipStartDuringStarted = exports.Started = exports.CannotStopDuringStarting = exports.CannotSkipStartDuringStarting = exports.StarpCalledDuringStarting = exports.CannotGetRunningPromiseDuringStarting = exports.Starting = exports.SkipFromReadytoStarted = exports.SkipFromReadyToStopped = exports.CannotAssartDuringReady = exports.CannotStopDuringReady = exports.CannotGetRunningPromiseDuringReady = exports.Ready = void 0;
 const startable_1 = require("./startable");
 const manual_promise_1 = require("@zimtsui/manual-promise");
 class Ready extends startable_1.State {
@@ -20,6 +20,9 @@ class Ready extends startable_1.State {
         throw new CannotAssartDuringReady();
     }
     async stop() {
+        throw new CannotStopDuringReady();
+    }
+    async starp(err) {
         const stoppingError = new SkipFromReadyToStopped();
         const startingPromise = Promise.reject(stoppingError);
         startingPromise.catch(() => { });
@@ -32,9 +35,6 @@ class Ready extends startable_1.State {
             stoppingError,
         });
         this.host.state.postActivate();
-    }
-    async starp(err) {
-        throw new CannotStarpDuringReady();
     }
     getReadyState() {
         return "READY" /* READY */;
@@ -56,9 +56,9 @@ exports.Ready = Ready;
 class CannotGetRunningPromiseDuringReady extends Error {
 }
 exports.CannotGetRunningPromiseDuringReady = CannotGetRunningPromiseDuringReady;
-class CannotStarpDuringReady extends Error {
+class CannotStopDuringReady extends Error {
 }
-exports.CannotStarpDuringReady = CannotStarpDuringReady;
+exports.CannotStopDuringReady = CannotStopDuringReady;
 class CannotAssartDuringReady extends Error {
 }
 exports.CannotAssartDuringReady = CannotAssartDuringReady;
