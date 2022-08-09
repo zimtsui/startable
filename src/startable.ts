@@ -88,16 +88,8 @@ export abstract class Startable {
 		return await this.state.starp(err);
 	}
 
-	public getStarting(): PromiseLike<void> {
-		return this.state.getStarting();
-	}
-
-	public getStopping(): PromiseLike<void> {
-		return this.state.getStopping();
-	}
-
-	public getRunning(): PromiseLike<void> {
-		return this.state.getRunning();
+	public getRunningPromise(): PromiseLike<void> {
+		return this.state.getRunningPromise();
 	}
 }
 
@@ -106,7 +98,6 @@ export abstract class Friendly extends Startable {
 	public abstract state: State;
 	public abstract rawStart: RawStart;
 	public abstract rawStop: RawStop;
-	public abstract promise: ManualPromise<void>;
 }
 
 /**
@@ -134,7 +125,5 @@ export abstract class State {
 	public abstract assart(onStopping?: OnStopping): Promise<void>;
 	public abstract stop(err?: Error): Promise<void>;
 	public abstract starp(err?: Error): Promise<void>;
-	public abstract getStarting(): PromiseLike<void>;
-	public abstract getStopping(): PromiseLike<void>;
-	public abstract getRunning(): PromiseLike<void>;
+	public abstract getRunningPromise(): PromiseLike<void>;
 }

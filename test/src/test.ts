@@ -35,7 +35,7 @@ test('start succ stop succ', async t => {
     await s.start();
     s.stop();
     await s.stop();
-    await s.getRunning();
+    await s.getRunningPromise();
     assert(f.callCount === 2);
 });
 
@@ -51,7 +51,7 @@ test('start succ stop fail', async t => {
     await s.start();
     s.stop();
     await assert.rejects(s.stop(), StopError);
-    await s.getRunning();
+    await s.getRunningPromise();
     assert(f.callCount === 2);
 });
 
@@ -68,7 +68,7 @@ test('start fail stop succ', async t => {
     await assert.rejects(s.start(), StartError);
     s.stop();
     await s.stop();
-    await s.getRunning();
+    await s.getRunningPromise();
     assert(f.callCount === 2);
 });
 
@@ -85,7 +85,7 @@ test('start fail stop fail', async t => {
     await assert.rejects(s.start(), StartError);
     s.stop();
     await assert.rejects(s.stop(), StopError);
-    await s.getRunning();
+    await s.getRunningPromise();
     assert(f.callCount === 2);
 });
 
@@ -106,6 +106,6 @@ test('starp during starting', async t => {
     resolveStart!();
     await assert.rejects(pStart, Exceptions.StarpCalledDuringStarting);
     await pStarp;
-    await s.getRunning();
+    await s.getRunningPromise();
     assert(f.callCount === 2);
 });

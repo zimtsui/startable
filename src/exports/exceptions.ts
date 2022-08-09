@@ -1,25 +1,21 @@
 export {
 	CannotStarpDuringReady,
 	CannotAssartDuringReady,
-	CannotGetStartingDuringReady,
-	CannotGetStoppingDuringReady,
-	CannotGetRunningDuringReady,
+	CannotGetRunningPromiseDuringReady,
+	SkipFromReadyToStopped,
+	SkipFromReadytoStarted,
 
 	StarpCalledDuringStarting,
 	CannotStopDuringStarting,
 	CannotSkipStartDuringStarting,
-	CannotGetStoppingDuringStarting,
-	CannotGetRunningDuringStarting,
+	CannotGetRunningPromiseDuringStarting,
 
-	CannotGetStoppingDuringStarted,
 	CannotSkipStartDuringStarted,
 
 	CannotSkipStartDuringStopping,
 	CannotAssartDuringStopping,
-	CannotStartDuringStopping,
 
 	CannotAssartDuringStopped,
 	CannotSkipStartDuringStopped,
-	CannotStartDuringStopped,
 	CannotStarpDuringStopped,
 } from '../states';

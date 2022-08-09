@@ -11,7 +11,7 @@ class ReadyStartable extends startable_1.Startable {
         super();
         this.rawStart = rawStart;
         this.rawStop = rawStop;
-        this.state = new states_1.Ready(this);
+        this.state = new states_1.Ready(this, {});
         this.state.postActivate();
     }
 }

@@ -63,14 +63,8 @@ class Startable {
     async starp(err) {
         return await this.state.starp(err);
     }
-    getStarting() {
-        return this.state.getStarting();
-    }
-    getStopping() {
-        return this.state.getStopping();
-    }
-    getRunning() {
-        return this.state.getRunning();
+    getRunningPromise() {
+        return this.state.getRunningPromise();
     }
 }
 __decorate([

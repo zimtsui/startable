@@ -1,4 +1,3 @@
-import { ManualPromise } from '@zimtsui/manual-promise';
 export declare const enum ReadyState {
     READY = "READY",
     STARTING = "STARTING",
@@ -54,15 +53,12 @@ export declare abstract class Startable {
      * @decorator `@catchThrow()`
      */
     starp(err?: Error): Promise<void>;
-    getStarting(): PromiseLike<void>;
-    getStopping(): PromiseLike<void>;
-    getRunning(): PromiseLike<void>;
+    getRunningPromise(): PromiseLike<void>;
 }
 export declare abstract class Friendly extends Startable {
     abstract state: State;
     abstract rawStart: RawStart;
     abstract rawStop: RawStop;
-    abstract promise: ManualPromise<void>;
 }
 /**
  * @throws Error
@@ -85,7 +81,5 @@ export declare abstract class State {
     abstract assart(onStopping?: OnStopping): Promise<void>;
     abstract stop(err?: Error): Promise<void>;
     abstract starp(err?: Error): Promise<void>;
-    abstract getStarting(): PromiseLike<void>;
-    abstract getStopping(): PromiseLike<void>;
-    abstract getRunning(): PromiseLike<void>;
+    abstract getRunningPromise(): PromiseLike<void>;
 }

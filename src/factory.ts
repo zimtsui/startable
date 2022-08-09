@@ -22,6 +22,7 @@ class ReadyStartable extends Startable {
 
 		this.state = new Ready(
 			<Friendly><Startable>this,
+			{},
 		);
 		this.state.postActivate();
 	}
