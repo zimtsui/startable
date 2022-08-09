@@ -8,6 +8,9 @@ import {
 import { Ready } from './states';
 
 
+/**
+ * @sealed
+ */
 class ReadyStartable extends Startable {
 	protected state: State;
 

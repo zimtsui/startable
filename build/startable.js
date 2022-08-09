@@ -63,21 +63,12 @@ class Startable {
     async starp(err) {
         return await this.state.starp(err);
     }
-    /**
-     * @decorator `@catchThrow()`
-     */
     getStarting() {
         return this.state.getStarting();
     }
-    /**
-     * @decorator `@catchThrow()`
-     */
     getStopping() {
         return this.state.getStopping();
     }
-    /**
-     * @decorator `@catchThrow()`
-     */
     getPromise() {
         return this.state.getPromise();
     }
@@ -101,15 +92,6 @@ __decorate([
     autobind_decorator_1.boundMethod,
     (0, catch_throw_1.catchThrow)()
 ], Startable.prototype, "starp", null);
-__decorate([
-    (0, catch_throw_1.catchThrow)()
-], Startable.prototype, "getStarting", null);
-__decorate([
-    (0, catch_throw_1.catchThrow)()
-], Startable.prototype, "getStopping", null);
-__decorate([
-    (0, catch_throw_1.catchThrow)()
-], Startable.prototype, "getPromise", null);
 exports.Startable = Startable;
 class Friendly extends Startable {
 }

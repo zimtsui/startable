@@ -4,11 +4,11 @@ import {
 	OnStopping,
 	ReadyState,
 } from './startable';
-import { PublicManualPromise } from '@zimtsui/manual-promise';
+import { ManualPromise } from '@zimtsui/manual-promise';
 
 
 export class Ready extends State {
-	protected promise = new PublicManualPromise<void>();
+	protected promise = new ManualPromise<void>();
 
 	public constructor(
 		protected host: Friendly,
@@ -38,7 +38,7 @@ export class Ready extends State {
 		this.host.state = new Stopped(
 			this.host,
 			Promise.resolve(),
-			new PublicManualPromise<void>(),
+			new ManualPromise<void>(),
 			this.promise,
 			null,
 			null,
@@ -58,7 +58,7 @@ export class Ready extends State {
 	public skipStart(onStopping?: OnStopping): void {
 		this.host.state = new Started(
 			this.host,
-			new PublicManualPromise<void>(),
+			new ManualPromise<void>(),
 			this.promise,
 			onStopping ? [onStopping] : [],
 			null,
@@ -66,11 +66,11 @@ export class Ready extends State {
 		this.host.state.postActivate();
 	}
 
-	public getStarting(): Promise<void> {
+	public getStarting(): PromiseLike<void> {
 		throw new CannotGetStartingDuringReady();
 	}
 
-	public getStopping(): Promise<void> {
+	public getStopping(): PromiseLike<void> {
 		throw new CannotGetStoppingDuringReady();
 	}
 }
@@ -82,14 +82,14 @@ export class CannotGetStoppingDuringReady extends Error { }
 
 
 export class Starting extends State {
-	private starting = new PublicManualPromise<void>()
+	private starting = new ManualPromise<void>();
 	private onStoppings: OnStopping[] = [];
 	private startingError: null | StarpCalledDuringStarting = null;
 
 	public constructor(
 		protected host: Friendly,
 		onStopping: OnStopping | null,
-		protected promise: PublicManualPromise<void>,
+		protected promise: ManualPromise<void>,
 	) {
 		super();
 
@@ -141,11 +141,11 @@ export class Starting extends State {
 		throw new CannotSkipStartDuringStarting();
 	}
 
-	public getStarting(): Promise<void> {
+	public getStarting(): PromiseLike<void> {
 		return this.starting;
 	}
 
-	public getStopping(): Promise<void> {
+	public getStopping(): PromiseLike<void> {
 		throw new CannotGetStoppingDuringStarting();
 	}
 }
@@ -159,8 +159,8 @@ export class CannotGetStoppingDuringStarting extends Error { }
 export class Started extends State {
 	public constructor(
 		protected host: Friendly,
-		private starting: PublicManualPromise<void>,
-		protected promise: PublicManualPromise<void>,
+		private starting: ManualPromise<void>,
+		protected promise: ManualPromise<void>,
 		private onStoppings: OnStopping[],
 		private startingError: Error | null,
 	) {
@@ -209,11 +209,11 @@ export class Started extends State {
 		throw new CannotSkipStartDuringStarted();
 	}
 
-	public getStarting(): Promise<void> {
+	public getStarting(): PromiseLike<void> {
 		return this.starting;
 	}
 
-	public getStopping(): Promise<void> {
+	public getStopping(): PromiseLike<void> {
 		throw new CannotGetStoppingDuringStarted();
 	}
 }
@@ -224,13 +224,13 @@ export class CannotGetStoppingDuringStarted extends Error { }
 
 
 export class Stopping extends State {
-	private stopping = new PublicManualPromise<void>();
+	private stopping = new ManualPromise<void>();
 	private stoppingError: Error | null = null;
 
 	public constructor(
 		protected host: Friendly,
-		private starting: Promise<void>,
-		protected promise: PublicManualPromise<void>,
+		private starting: PromiseLike<void>,
+		protected promise: ManualPromise<void>,
 		private onStoppings: OnStopping[],
 		private startingError: Error | null,
 		private runningError: Error | null,
@@ -292,11 +292,11 @@ export class Stopping extends State {
 		throw new CannotSkipStartDuringStopping();
 	}
 
-	public getStarting(): Promise<void> {
+	public getStarting(): PromiseLike<void> {
 		return this.starting;
 	}
 
-	public getStopping(): Promise<void> {
+	public getStopping(): PromiseLike<void> {
 		return this.stopping;
 	}
 }
@@ -310,9 +310,9 @@ export class CannotStartDuringStopping extends Error { }
 export class Stopped extends State {
 	public constructor(
 		protected host: Friendly,
-		private starting: Promise<void>,
-		private stopping: PublicManualPromise<void>,
-		protected promise: PublicManualPromise<void>,
+		private starting: PromiseLike<void>,
+		private stopping: ManualPromise<void>,
+		protected promise: ManualPromise<void>,
 		private startingError: Error | null,
 		private runningError: Error | null,
 		private stoppingError: Error | null,
@@ -362,11 +362,11 @@ export class Stopped extends State {
 		throw new CannotSkipStartDuringStopped();
 	}
 
-	public getStarting(): Promise<void> {
+	public getStarting(): PromiseLike<void> {
 		return this.starting;
 	}
 
-	public getStopping(): Promise<void> {
+	public getStopping(): PromiseLike<void> {
 		return this.stopping;
 	}
 }

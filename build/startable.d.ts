@@ -1,4 +1,4 @@
-import { PublicManualPromise } from '@zimtsui/manual-promise';
+import { ManualPromise } from '@zimtsui/manual-promise';
 export declare const enum ReadyState {
     READY = "READY",
     STARTING = "STARTING",
@@ -54,24 +54,15 @@ export declare abstract class Startable {
      * @decorator `@catchThrow()`
      */
     starp(err?: Error): Promise<void>;
-    /**
-     * @decorator `@catchThrow()`
-     */
-    getStarting(): Promise<void>;
-    /**
-     * @decorator `@catchThrow()`
-     */
-    getStopping(): Promise<void>;
-    /**
-     * @decorator `@catchThrow()`
-     */
-    getPromise(): Promise<void>;
+    getStarting(): PromiseLike<void>;
+    getStopping(): PromiseLike<void>;
+    getPromise(): PromiseLike<void>;
 }
 export declare abstract class Friendly extends Startable {
     abstract state: State;
     abstract rawStart: RawStart;
     abstract rawStop: RawStop;
-    abstract promise: PublicManualPromise<void>;
+    abstract promise: ManualPromise<void>;
 }
 /**
  * @throws Error
@@ -87,7 +78,7 @@ export interface RawStop {
 }
 export declare abstract class State {
     protected abstract host: Startable;
-    protected abstract promise: PublicManualPromise<void>;
+    protected abstract promise: ManualPromise<void>;
     abstract postActivate(): void;
     abstract getReadyState(): ReadyState;
     abstract skipStart(onStopping?: OnStopping): void;
@@ -95,7 +86,7 @@ export declare abstract class State {
     abstract assart(onStopping?: OnStopping): Promise<void>;
     abstract stop(err?: Error): Promise<void>;
     abstract starp(err?: Error): Promise<void>;
-    abstract getStarting(): Promise<void>;
-    abstract getStopping(): Promise<void>;
-    getPromise(): Promise<void>;
+    abstract getStarting(): PromiseLike<void>;
+    abstract getStopping(): PromiseLike<void>;
+    getPromise(): PromiseLike<void>;
 }

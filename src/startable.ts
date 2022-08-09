@@ -1,4 +1,4 @@
-import { PublicManualPromise } from '@zimtsui/manual-promise';
+import { ManualPromise } from '@zimtsui/manual-promise';
 import { boundMethod } from 'autobind-decorator';
 import { catchThrow } from './catch-throw';
 
@@ -88,27 +88,15 @@ export abstract class Startable {
 		return await this.state.starp(err);
 	}
 
-	/**
-	 * @decorator `@catchThrow()`
-	 */
-	@catchThrow()
-	public getStarting() {
+	public getStarting(): PromiseLike<void> {
 		return this.state.getStarting();
 	}
 
-	/**
-	 * @decorator `@catchThrow()`
-	 */
-	@catchThrow()
-	public getStopping() {
+	public getStopping(): PromiseLike<void> {
 		return this.state.getStopping();
 	}
 
-	/**
-	 * @decorator `@catchThrow()`
-	 */
-	@catchThrow()
-	public getPromise(): Promise<void> {
+	public getPromise(): PromiseLike<void> {
 		return this.state.getPromise();
 	}
 }
@@ -118,7 +106,7 @@ export abstract class Friendly extends Startable {
 	public abstract state: State;
 	public abstract rawStart: RawStart;
 	public abstract rawStop: RawStop;
-	public abstract promise: PublicManualPromise<void>;
+	public abstract promise: ManualPromise<void>;
 }
 
 /**
@@ -138,7 +126,7 @@ export interface RawStop {
 
 export abstract class State {
 	protected abstract host: Startable;
-	protected abstract promise: PublicManualPromise<void>;
+	protected abstract promise: ManualPromise<void>;
 
 	public abstract postActivate(): void;
 	public abstract getReadyState(): ReadyState;
@@ -147,9 +135,9 @@ export abstract class State {
 	public abstract assart(onStopping?: OnStopping): Promise<void>;
 	public abstract stop(err?: Error): Promise<void>;
 	public abstract starp(err?: Error): Promise<void>;
-	public abstract getStarting(): Promise<void>;
-	public abstract getStopping(): Promise<void>;
-	public getPromise(): Promise<void> {
+	public abstract getStarting(): PromiseLike<void>;
+	public abstract getStopping(): PromiseLike<void>;
+	public getPromise(): PromiseLike<void> {
 		return this.promise;
 	}
 }

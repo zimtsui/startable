@@ -2,14 +2,14 @@
     "name": "startable",
     "version": "0.0.1",
     "description": "",
-    "main": "./build/index.js",
-    "types": "./build/index.d.ts",
+    "main": "./build/exports/index.js",
+    "types": "./build/exports/index.d.ts",
     "scripts": {
         "build": "tsc -b ./src/tsconfig.json",
         "clean": "rm -rf ./build && rm -rf ./test/build",
         "rebuild": "npm run clean && npm run build",
         "test": "tsc -b ./test/src/tsconfig.json && ava",
-        "docs": "typedoc --tsconfig ./src/tsconfig.json --excludePrivate --excludeProtected --cleanOutputDir ./src/index.ts"
+        "docs": "typedoc --tsconfig ./src/tsconfig.json --excludePrivate --excludeProtected --cleanOutputDir ./src/exports/index.ts"
     },
     "repository": {
         "type": "git",
@@ -28,7 +28,7 @@
     },
     "dependencies": {
         "@types/assert": "^1.5.6",
-        "@zimtsui/manual-promise": "^0.0.4",
+        "@zimtsui/manual-promise": "^0.0.5",
         "assert": "^1.5.0",
         "autobind-decorator": "^2.4.0"
     }

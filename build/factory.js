@@ -3,6 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createStartable = void 0;
 const startable_1 = require("./startable");
 const states_1 = require("./states");
+/**
+ * @sealed
+ */
 class ReadyStartable extends startable_1.Startable {
     constructor(rawStart, rawStop) {
         super();

@@ -7,7 +7,7 @@ class Ready extends startable_1.State {
     constructor(host) {
         super();
         this.host = host;
-        this.promise = new manual_promise_1.PublicManualPromise();
+        this.promise = new manual_promise_1.ManualPromise();
     }
     postActivate() { }
     async start(onStopping) {
@@ -19,7 +19,7 @@ class Ready extends startable_1.State {
         throw new CannotAssartDuringReady();
     }
     async stop() {
-        this.host.state = new Stopped(this.host, Promise.resolve(), new manual_promise_1.PublicManualPromise(), this.promise, null, null, null);
+        this.host.state = new Stopped(this.host, Promise.resolve(), new manual_promise_1.ManualPromise(), this.promise, null, null, null);
         this.host.state.postActivate();
     }
     async starp(err) {
@@ -29,7 +29,7 @@ class Ready extends startable_1.State {
         return "READY" /* READY */;
     }
     skipStart(onStopping) {
-        this.host.state = new Started(this.host, new manual_promise_1.PublicManualPromise(), this.promise, onStopping ? [onStopping] : [], null);
+        this.host.state = new Started(this.host, new manual_promise_1.ManualPromise(), this.promise, onStopping ? [onStopping] : [], null);
         this.host.state.postActivate();
     }
     getStarting() {
@@ -57,7 +57,7 @@ class Starting extends startable_1.State {
         super();
         this.host = host;
         this.promise = promise;
-        this.starting = new manual_promise_1.PublicManualPromise();
+        this.starting = new manual_promise_1.ManualPromise();
         this.onStoppings = [];
         this.startingError = null;
         if (onStopping)
@@ -177,7 +177,7 @@ class Stopping extends startable_1.State {
         this.onStoppings = onStoppings;
         this.startingError = startingError;
         this.runningError = runningError;
-        this.stopping = new manual_promise_1.PublicManualPromise();
+        this.stopping = new manual_promise_1.ManualPromise();
         this.stoppingError = null;
     }
     postActivate() {

@@ -1,8 +1,7 @@
 import {
     createStartable,
-    StarpCalledDuringStarting,
+    Exceptions,
     ReadyState,
-    Startable,
 } from '../..';
 import sinon = require('sinon');
 import test from 'ava';
@@ -52,7 +51,7 @@ test('start succ stop fail', async t => {
     await s.start();
     s.stop();
     await assert.rejects(s.stop(), StopError);
-    await assert.rejects(s.getPromise(), StopError);
+    await assert.rejects(Promise.resolve(s.getPromise()), StopError);
     assert(f.callCount === 2);
 });
 
@@ -69,7 +68,7 @@ test('start fail stop succ', async t => {
     await assert.rejects(s.start(), StartError);
     s.stop();
     await s.stop();
-    await assert.rejects(s.getPromise(), StartError);
+    await assert.rejects(Promise.resolve(s.getPromise()), StartError);
     assert(f.callCount === 2);
 });
 
@@ -86,7 +85,7 @@ test('start fail stop fail', async t => {
     await assert.rejects(s.start(), StartError);
     s.stop();
     await assert.rejects(s.stop(), StopError);
-    await assert.rejects(s.getPromise(), StartError);
+    await assert.rejects(Promise.resolve(s.getPromise()), StartError);
     assert(f.callCount === 2);
 });
 
@@ -105,8 +104,8 @@ test('starp during starting', async t => {
     const pStart = s.start();
     const pStarp = s.starp();
     resolveStart!();
-    await assert.rejects(pStart, StarpCalledDuringStarting);
+    await assert.rejects(pStart, Exceptions.StarpCalledDuringStarting);
     await pStarp;
-    await assert.rejects(s.getPromise(), StarpCalledDuringStarting);
+    await assert.rejects(Promise.resolve(s.getPromise()), Exceptions.StarpCalledDuringStarting);
     assert(f.callCount === 2);
 });

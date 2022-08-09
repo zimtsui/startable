@@ -24,102 +24,16 @@ Startable 是一个 JavaScript 的后台对象框架。初衷是为了适配阿�
 
 ## Startable 类
 
-将你要定义的后台类组合 Startable，然后将异步的启停过程实现在 `.rawStart()` 和 `.rawStop()` 中。
-
-```ts
-class Daemon implements StartableLike {
-    protected async rawStart(): Promise<void> { }
-    protected async rawStop(): Promise<void> { }
-    private startable = new Startable(
-        () => this.rawStart(),
-        () => this.rawStop(),
-    );
-    public start = this.startable.start;
-    public stop = this.startable.stop;
-    public assart = this.startable.assart;
-    public starp = this.startable.starp;
-    public getReadyState = this.startable.getReadyState;
-    public skipStart = this.startable.skipStart;
-}
-
-const daemon = new Daemon();
-await daemon.start();
-await daemon.stop();
-```
-
-## 状态循环
-
-一个 Startable 对象的生命周期有 4 个状态，依次循环不可跳跃
-
-1. 一个 Startable 刚 new 出来时是 STOPPED 状态。
-1. 此时运行异步的 `.start()` 进入 STARTING 状态，Startable 会调用你实现的 `.rawStart`。
-1. `.rawStart` 结束时，进入 STARTED 状态，也就是「正常提供服务中」的状态。
-1. 此时运行异步的 `.stop()` 进入 STOPPING 状态，Startable 会调用你实现的 `.rawStop`。
-1. `.rawStop` 结束时，进入 STOPPED 状态。
-
-### 查看当前时刻的状态。
-
-```ts
-console.log(daemon.getReadyState() === ReadyState.STOPPED);
-```
-
-## 启停方法
-
-所有方法都已经绑定到 Startable 上了，比如你可以把 `this.starp` 作为回调而不必 `err => this.starp(err)`。
-
-### 启动方法
-
-| 状态 | `.start()` 的行为 | `.start()` 的值 |
-|---|---|---|
-| STOPPED | 开始启动过程 | 本次启动过程的 Promise |
-| STARTING | 什么也不干 | 正在进行的这次启动过程的 Promise |
-| STARTED | 什么也不干 | 刚刚结束的那次启动过程的 Promise |
-
-- 你可以在启动过程中尽情地重复运行 `.start()` ，而不用担心重复运行你的 `.rawStart` 实现。
-- 在停止过程中可以查看上一次启动是否成功
-
-    ```ts
-    class Daemon implements StartableLike {
-        protected async rawStop() {
-            console.log(
-                await this.start()
-                    .then(() => true, () => false),
-            );
-        }
-    }
-    ```
-
-### 停止方法
-
-| 状态 | `.stop()` 的行为 | `.stop()` 的值 |
-|---|---|---|
-| STOPPED | 什么也不干 | 刚刚结束的这次停止过程的 Promise |
-| STARTED | 开始停止过程 | 本次停止过程的 Promise |
-| STOPPING | 什么也不干 | 正在进行的这次停止过程的 Promise |
-
-- 你可以在停止过程中尽情地重复运行 `.stop()` ，而不用担心重复运行你的 `.rawStop` 实现。
-- `.stop()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.stop()` 而不必 `this.stop().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
-
-### 确保停止
-
-| 状态 | `.starp()` 的行为 | `.starp()` 的值 |
-|---|---|---|
-| STOPPED | 什么也不干 | 抛出异常 |
-| STARTING | 使正在进行的这次启动过程最终失败，并立即开始停止过程 | 本次停止过程的 Promise |
-| STARTED | 开始停止过程 | 本次停止过程的 Promise |
-| STOPPING | 什么也不干 | 正在进行的这次停止过程的 Promise |
-
-- `.starp()` 返回的 Promise 默认已经添加了一个空的 rejection handler，因此你可以 `this.starp()` 而不必 `this.starp().catch(() => {})`，不用担心停止过程本身的 rejection 抛到全局空间中去触发 `unhandledRejection`。
-
 ## 自发启停
 
 当自己发生内部错误时，就应当调用自己的 `.starp()`，因为在语义上，此时自己已经结束了「正常提供服务中」的状态。
 
 ```ts
-class Daemon implements StartableLike {
+class Daemon {
+    public $s: Startable;
     constructor() {
         super();
-        this.someComponent.on('some fatal error', this.stop);
+        this.someComponent.on('some fatal error', this.$s.stop);
     }
 }
 ```
@@ -133,38 +47,39 @@ class Daemon implements StartableLike {
 
 const daemon = new Daemon();
 function startDaemon(){
-    daemon.start(err => {
+    daemon.$s.start(err => {
         if (err) handleRunningException(err);
-        daemon.stop().catch(handleStoppingException);
+        daemon.$s.stop().catch(handleStoppingException);
     }).catch(handleStartingException);
 }
 function stopDaemon() {
     // have a think about why .catch(handleStoppingException) is not necessary.
-    daemon.stop();
+    daemon.$s.stop();
 }
 ```
 
 ## 丑陋的写法
 
 ```ts
-class Daemon implements StartableLike {
+class Daemon {
+    public $s: Startable;
     constructor() {
         super();
         this.someComponent.on('some fatal error', err => {
             handleRunningException(err); // don't do this.
-            this.stop();
+            this.$s.stop();
         });
     }
 }
 
 const daemon = new Daemon();
 function startDaemon() {
-    daemon.start(() => {
-        daemon.stop().catch(handleStoppingException)
+    daemon.$s.start(() => {
+        daemon.$s.stop().catch(handleStoppingException)
     }).catch(handleStartingException);
 }
 function stopDaemon() {
-    daemon.stop();
+    daemon.$s.stop();
 }
 ```
 
@@ -173,11 +88,12 @@ function stopDaemon() {
 ---
 
 ```ts
-class Daemon implements StartableLike {
+class Daemon {
+    public $s: Startable;
     constructor() {
         super();
         this.someComponent.on('some fatal error', err => {
-            this.stop(err)
+            this.$s.stop(err)
                 .catch(handleStoppingException); // don't do this.
         });
     }
@@ -185,12 +101,12 @@ class Daemon implements StartableLike {
 
 const daemon = new Daemon();
 function startDaemon() {
-    daemon.start(err => {
+    daemon.$s.start(err => {
         if (err) handleRunningException(err);
     }).catch(handleStartingException);
 }
 function stopDaemon() {
-    daemon.stop().catch(handleStoppingException); // don't do this.
+    daemon.$s.stop().catch(handleStoppingException); // don't do this.
 }
 ```
 
@@ -207,16 +123,17 @@ function stopDaemon() {
 
 ```ts
 class Parent {
+    public $s: Startable;
     private child1: Daemon;
     private child2: Daemon;
 
     protected async rawStart(): Promise<void> {
-        await child1.start(this.starp);
-        await child2.start(this.starp);
+        await child1.$s.start(this.$s.starp);
+        await child2.$s.start(this.$s.starp);
     }
     protected async rawStop(): Promise<void> {
-        await child2.stop();
-        await child1.stop();
+        await child2.$s.stop();
+        await child1.$s.stop();
     }
 }
 ```
@@ -228,30 +145,18 @@ class Parent {
 
 一个 Startable 的依赖也可能是外部注入的 Startable。
 
-```diff
-    class Daemon implements StartableLike {
-        constructor(private ctx: {
-            dep: Startable;
-        }) { super(); }
+```ts
+class Daemon {
+    public $s: Startable;
+    constructor(private ctx: {
+        dep: Startable;
+    }) { super(); }
 
-        protected async rawStart() {
--           assert(
--               this.ctx.dep.getReadyState() === ReadyState.STARTING ||
--               this.ctx.dep.getReadyState() === ReadyState.STARTED
--           );
--           await this.ctx.dep.start(this.starp);
-+           await this.ctx.dep.assart(this.starp);
-        }
+    protected async rawStart() {
++           await this.ctx.dep.$s.assart(this.starp);
     }
+}
 ```
-
-`assart()` 是一个等效的快捷方式，意思是 assert + start。
-
-## 可复用性
-
-如果想要让一个 Startable 对象可复用的话，`.rawStop` 的语义必须很严格：`.rawStop` 返回时对这个后台对象的停止工作已完全结束，可以立即开始新一轮启动。
-
-如果 Startable 不需要复用的话，`.rawStop` 的语义可以比较宽松：`.rawStop` 返回时停止工作已经结束，但还没有为新一轮启动做好准备，比如内部某协程还差几个无关紧要事件循环没有跑完。
 
 ## 协程安全
 
@@ -264,4 +169,4 @@ await daemon.start();
 console.log(daemon.getReadyState());
 ```
 
-的结果不一定是 STARTED，完全有可能是 STOPPING 或 STOPPED。而 Startable 的状态是成环的，搞不好甚至已经转了一圈到了下一次 STARTING 了。
+的结果不一定是 STARTED，完全有可能是 STOPPING 或 STOPPED。
