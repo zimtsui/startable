@@ -96,8 +96,8 @@ export abstract class Startable {
 		return this.state.getStopping();
 	}
 
-	public getPromise(): PromiseLike<void> {
-		return this.state.getPromise();
+	public getRunning(): PromiseLike<void> {
+		return this.state.getRunning();
 	}
 }
 
@@ -126,7 +126,6 @@ export interface RawStop {
 
 export abstract class State {
 	protected abstract host: Startable;
-	protected abstract promise: ManualPromise<void>;
 
 	public abstract postActivate(): void;
 	public abstract getReadyState(): ReadyState;
@@ -137,7 +136,5 @@ export abstract class State {
 	public abstract starp(err?: Error): Promise<void>;
 	public abstract getStarting(): PromiseLike<void>;
 	public abstract getStopping(): PromiseLike<void>;
-	public getPromise(): PromiseLike<void> {
-		return this.promise;
-	}
+	public abstract getRunning(): PromiseLike<void>;
 }

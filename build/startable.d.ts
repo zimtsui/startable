@@ -56,7 +56,7 @@ export declare abstract class Startable {
     starp(err?: Error): Promise<void>;
     getStarting(): PromiseLike<void>;
     getStopping(): PromiseLike<void>;
-    getPromise(): PromiseLike<void>;
+    getRunning(): PromiseLike<void>;
 }
 export declare abstract class Friendly extends Startable {
     abstract state: State;
@@ -78,7 +78,6 @@ export interface RawStop {
 }
 export declare abstract class State {
     protected abstract host: Startable;
-    protected abstract promise: ManualPromise<void>;
     abstract postActivate(): void;
     abstract getReadyState(): ReadyState;
     abstract skipStart(onStopping?: OnStopping): void;
@@ -88,5 +87,5 @@ export declare abstract class State {
     abstract starp(err?: Error): Promise<void>;
     abstract getStarting(): PromiseLike<void>;
     abstract getStopping(): PromiseLike<void>;
-    getPromise(): PromiseLike<void>;
+    abstract getRunning(): PromiseLike<void>;
 }

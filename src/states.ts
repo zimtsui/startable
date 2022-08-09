@@ -8,8 +8,6 @@ import { ManualPromise } from '@zimtsui/manual-promise';
 
 
 export class Ready extends State {
-	protected promise = new ManualPromise<void>();
-
 	public constructor(
 		protected host: Friendly,
 	) {
@@ -24,7 +22,6 @@ export class Ready extends State {
 		this.host.state = new Starting(
 			this.host,
 			onStopping || null,
-			this.promise,
 		);
 		this.host.state.postActivate();
 		await this.host.start();
@@ -38,10 +35,10 @@ export class Ready extends State {
 		this.host.state = new Stopped(
 			this.host,
 			Promise.resolve(),
+			Promise.resolve(),
 			new ManualPromise<void>(),
-			this.promise,
-			null,
-			null,
+			// null,
+			// null,
 			null,
 		);
 		this.host.state.postActivate();
@@ -59,7 +56,6 @@ export class Ready extends State {
 		this.host.state = new Started(
 			this.host,
 			new ManualPromise<void>(),
-			this.promise,
 			onStopping ? [onStopping] : [],
 			null,
 		);
@@ -73,8 +69,13 @@ export class Ready extends State {
 	public getStopping(): PromiseLike<void> {
 		throw new CannotGetStoppingDuringReady();
 	}
+
+	public getRunning(): PromiseLike<void> {
+		throw new CannotGetRunningDuringReady();
+	}
 }
 
+export class CannotGetRunningDuringReady extends Error { }
 export class CannotStarpDuringReady extends Error { }
 export class CannotAssartDuringReady extends Error { }
 export class CannotGetStartingDuringReady extends Error { }
@@ -89,7 +90,6 @@ export class Starting extends State {
 	public constructor(
 		protected host: Friendly,
 		onStopping: OnStopping | null,
-		protected promise: ManualPromise<void>,
 	) {
 		super();
 
@@ -103,7 +103,6 @@ export class Starting extends State {
 			this.host.state = new Started(
 				this.host,
 				this.starting,
-				this.promise,
 				this.onStoppings,
 				this.startingError,
 			);
@@ -148,8 +147,13 @@ export class Starting extends State {
 	public getStopping(): PromiseLike<void> {
 		throw new CannotGetStoppingDuringStarting();
 	}
+
+	public getRunning(): PromiseLike<void> {
+		throw new CannotGetRunningDuringStarting();
+	}
 }
 
+export class CannotGetRunningDuringStarting extends Error { }
 export class StarpCalledDuringStarting extends Error { }
 export class CannotSkipStartDuringStarting extends Error { }
 export class CannotStopDuringStarting extends Error { }
@@ -157,10 +161,10 @@ export class CannotGetStoppingDuringStarting extends Error { }
 
 
 export class Started extends State {
+	private running!: PromiseLike<void>;
 	public constructor(
 		protected host: Friendly,
 		private starting: ManualPromise<void>,
-		protected promise: ManualPromise<void>,
 		private onStoppings: OnStopping[],
 		private startingError: Error | null,
 	) {
@@ -170,6 +174,12 @@ export class Started extends State {
 	public postActivate(): void {
 		if (this.startingError) this.starting.reject(this.startingError);
 		else this.starting.resolve();
+		this.running = new Promise((resolve, reject) => {
+			this.start(err => {
+				if (err) reject(err);
+				else resolve();
+			}).catch(() => { });
+		});
 	}
 
 	public async start(
@@ -188,9 +198,9 @@ export class Started extends State {
 		this.host.state = new Stopping(
 			this.host,
 			this.starting,
-			this.promise,
+			this.running,
 			this.onStoppings,
-			this.startingError,
+			// this.startingError,
 			runningError || null,
 		);
 		this.host.state.postActivate();
@@ -216,6 +226,10 @@ export class Started extends State {
 	public getStopping(): PromiseLike<void> {
 		throw new CannotGetStoppingDuringStarted();
 	}
+
+	public getRunning(): PromiseLike<void> {
+		return this.running;
+	}
 }
 
 export class CannotSkipStartDuringStarted extends Error { }
@@ -230,9 +244,9 @@ export class Stopping extends State {
 	public constructor(
 		protected host: Friendly,
 		private starting: PromiseLike<void>,
-		protected promise: ManualPromise<void>,
+		private running: PromiseLike<void>,
 		private onStoppings: OnStopping[],
-		private startingError: Error | null,
+		// private startingError: Error | null,
 		private runningError: Error | null,
 	) {
 		super();
@@ -256,10 +270,10 @@ export class Stopping extends State {
 			this.host.state = new Stopped(
 				this.host,
 				this.starting,
+				this.running,
 				this.stopping,
-				this.promise,
-				this.startingError,
-				this.runningError,
+				// this.startingError,
+				// this.runningError,
 				this.stoppingError,
 			);
 			this.host.state.postActivate();
@@ -299,6 +313,10 @@ export class Stopping extends State {
 	public getStopping(): PromiseLike<void> {
 		return this.stopping;
 	}
+
+	public getRunning(): PromiseLike<void> {
+		return this.running;
+	}
 }
 
 export class CannotSkipStartDuringStopping extends Error { }
@@ -311,25 +329,16 @@ export class Stopped extends State {
 	public constructor(
 		protected host: Friendly,
 		private starting: PromiseLike<void>,
+		private running: PromiseLike<void>,
 		private stopping: ManualPromise<void>,
-		protected promise: ManualPromise<void>,
-		private startingError: Error | null,
-		private runningError: Error | null,
+		// private startingError: Error | null,
+		// private runningError: Error | null,
 		private stoppingError: Error | null,
 	) {
 		super();
 	}
 
 	public postActivate(): void {
-		if (this.startingError)
-			this.promise.reject(this.startingError);
-		else if (this.runningError)
-			this.promise.reject(this.runningError);
-		else if (this.stoppingError)
-			this.promise.reject(this.stoppingError);
-		else
-			this.promise.resolve();
-
 		if (this.stoppingError)
 			this.stopping.reject(this.stoppingError);
 		else
@@ -368,6 +377,10 @@ export class Stopped extends State {
 
 	public getStopping(): PromiseLike<void> {
 		return this.stopping;
+	}
+
+	public getRunning(): PromiseLike<void> {
+		return this.running;
 	}
 }
 

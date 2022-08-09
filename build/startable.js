@@ -69,8 +69,8 @@ class Startable {
     getStopping() {
         return this.state.getStopping();
     }
-    getPromise() {
-        return this.state.getPromise();
+    getRunning() {
+        return this.state.getRunning();
     }
 }
 __decorate([
@@ -97,9 +97,6 @@ class Friendly extends Startable {
 }
 exports.Friendly = Friendly;
 class State {
-    getPromise() {
-        return this.promise;
-    }
 }
 exports.State = State;
 //# sourceMappingURL=startable.js.map

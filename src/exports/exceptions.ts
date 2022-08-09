@@ -3,11 +3,13 @@ export {
 	CannotAssartDuringReady,
 	CannotGetStartingDuringReady,
 	CannotGetStoppingDuringReady,
+	CannotGetRunningDuringReady,
 
 	StarpCalledDuringStarting,
 	CannotStopDuringStarting,
 	CannotSkipStartDuringStarting,
 	CannotGetStoppingDuringStarting,
+	CannotGetRunningDuringStarting,
 
 	CannotGetStoppingDuringStarted,
 	CannotSkipStartDuringStarted,
