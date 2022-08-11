@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.State = exports.Friendly = exports.Startable = void 0;
+exports.IncorrectState = exports.State = exports.Friendly = exports.Startable = void 0;
 const autobind_decorator_1 = require("autobind-decorator");
 const catch_throw_1 = require("./catch-throw");
 class Startable {
@@ -17,8 +17,8 @@ class Startable {
      * Skip from READY to STARTED.
      * @decorator `@boundMethod`
      */
-    skipStart(onStopping) {
-        this.state.skipStart(onStopping);
+    skart(onStopping) {
+        this.state.skart(onStopping);
     }
     /**
      * - If it's READY now, then
@@ -74,7 +74,7 @@ class Startable {
 }
 __decorate([
     autobind_decorator_1.boundMethod
-], Startable.prototype, "skipStart", null);
+], Startable.prototype, "skart", null);
 __decorate([
     autobind_decorator_1.boundMethod,
     (0, catch_throw_1.catchThrow)()
@@ -98,4 +98,10 @@ exports.Friendly = Friendly;
 class State {
 }
 exports.State = State;
+class IncorrectState extends Error {
+    constructor(action, state) {
+        super(`Cannot ${action} during ${state}.`);
+    }
+}
+exports.IncorrectState = IncorrectState;
 //# sourceMappingURL=startable.js.map

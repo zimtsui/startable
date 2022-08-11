@@ -29,8 +29,8 @@ export abstract class Startable {
 	 * @decorator `@boundMethod`
 	 */
 	@boundMethod
-	public skipStart(onStopping?: OnStopping): void {
-		this.state.skipStart(onStopping);
+	public skart(onStopping?: OnStopping): void {
+		this.state.skart(onStopping);
 	}
 
 	/**
@@ -125,10 +125,19 @@ export abstract class State {
 
 	public abstract postActivate(): void;
 	public abstract getReadyState(): ReadyState;
-	public abstract skipStart(onStopping?: OnStopping): void;
+	public abstract skart(onStopping?: OnStopping): void;
 	public abstract start(onStopping?: OnStopping): Promise<void>;
 	public abstract assart(onStopping?: OnStopping): Promise<void>;
 	public abstract stop(err?: Error): Promise<void>;
 	public abstract starp(err?: Error): Promise<void>;
 	public abstract getRunningPromise(): PromiseLike<void>;
+}
+
+export class IncorrectState extends Error {
+	public constructor(
+		action: string,
+		state: ReadyState,
+	) {
+		super(`Cannot ${action} during ${state}.`);
+	}
 }

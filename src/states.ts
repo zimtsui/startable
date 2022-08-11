@@ -3,6 +3,7 @@ import {
 	Friendly,
 	OnStopping,
 	ReadyState,
+	IncorrectState,
 } from './startable';
 import { ManualPromise } from '@zimtsui/manual-promise';
 
@@ -29,11 +30,15 @@ export class Ready extends State {
 	}
 
 	public async assart(onStopping?: OnStopping): Promise<never> {
-		throw new CannotAssartDuringReady();
+		throw new IncorrectState(
+			'assart', ReadyState.READY,
+		);
 	}
 
 	public async stop(): Promise<void> {
-		throw new CannotStopDuringReady();
+		throw new IncorrectState(
+			'stop', ReadyState.READY,
+		);
 	}
 
 	public async starp(err?: Error): Promise<void> {
@@ -56,7 +61,7 @@ export class Ready extends State {
 		return ReadyState.READY;
 	}
 
-	public skipStart(onStopping?: OnStopping): void {
+	public skart(onStopping?: OnStopping): void {
 		const startingError = new SkipFromReadytoStarted();
 		this.host.state = new Started(
 			this.host, {
@@ -68,13 +73,12 @@ export class Ready extends State {
 	}
 
 	public getRunningPromise(): PromiseLike<void> {
-		throw new CannotGetRunningPromiseDuringReady();
+		throw new IncorrectState(
+			'getRunningPromise', ReadyState.READY,
+		);
 	}
 }
 
-export class CannotGetRunningPromiseDuringReady extends Error { }
-export class CannotStopDuringReady extends Error { }
-export class CannotAssartDuringReady extends Error { }
 export class SkipFromReadyToStopped extends Error { }
 export class SkipFromReadytoStarted extends Error { }
 
@@ -122,7 +126,9 @@ export class Starting extends State {
 	}
 
 	public async stop(err?: Error): Promise<void> {
-		throw new CannotStopDuringStarting();
+		throw new IncorrectState(
+			'stop', ReadyState.STARTING,
+		);
 	}
 
 	public async starp(err?: Error): Promise<void> {
@@ -135,19 +141,20 @@ export class Starting extends State {
 		return ReadyState.STARTING;
 	}
 
-	public skipStart(onStopping?: OnStopping): never {
-		throw new CannotSkipStartDuringStarting();
+	public skart(onStopping?: OnStopping): never {
+		throw new IncorrectState(
+			'skart', ReadyState.STARTING,
+		);
 	}
 
 	public getRunningPromise(): PromiseLike<void> {
-		throw new CannotGetRunningPromiseDuringStarting();
+		throw new IncorrectState(
+			'getRunningPromise', ReadyState.STARTING,
+		);
 	}
 }
 
-export class CannotGetRunningPromiseDuringStarting extends Error { }
 export class StarpCalledDuringStarting extends Error { }
-export class CannotSkipStartDuringStarting extends Error { }
-export class CannotStopDuringStarting extends Error { }
 
 
 export class Started extends State {
@@ -216,17 +223,16 @@ export class Started extends State {
 		return ReadyState.STARTED;
 	}
 
-	public skipStart(onStopping?: OnStopping): never {
-		throw new CannotSkipStartDuringStarted();
+	public skart(onStopping?: OnStopping): never {
+		throw new IncorrectState(
+			'skart', ReadyState.STARTED,
+		);
 	}
 
 	public getRunningPromise(): PromiseLike<void> {
 		return this.running;
 	}
 }
-
-export class CannotSkipStartDuringStarted extends Error { }
-
 
 
 export class Stopping extends State {
@@ -286,7 +292,9 @@ export class Stopping extends State {
 	}
 
 	public async assart(onStopping?: OnStopping): Promise<never> {
-		throw new CannotAssartDuringStopping();
+		throw new IncorrectState(
+			'assart', ReadyState.STOPPING,
+		);
 	}
 
 	public async stop(err?: Error): Promise<void> {
@@ -301,18 +309,16 @@ export class Stopping extends State {
 		return ReadyState.STOPPING;
 	}
 
-	public skipStart(onStopping?: OnStopping): never {
-		throw new CannotSkipStartDuringStopping();
+	public skart(onStopping?: OnStopping): never {
+		throw new IncorrectState(
+			'skart', ReadyState.STOPPING,
+		);
 	}
 
 	public getRunningPromise(): PromiseLike<void> {
 		return this.runningPromise;
 	}
 }
-
-export class CannotSkipStartDuringStopping extends Error { }
-export class CannotAssartDuringStopping extends Error { }
-
 
 
 export class Stopped extends State {
@@ -351,7 +357,9 @@ export class Stopped extends State {
 	}
 
 	public async assart(onStopping?: OnStopping): Promise<never> {
-		throw new CannotAssartDuringStopped();
+		throw new IncorrectState(
+			'assart', ReadyState.STOPPED,
+		);
 	}
 
 	public async stop(): Promise<void> {
@@ -359,22 +367,22 @@ export class Stopped extends State {
 	}
 
 	public async starp(err?: Error): Promise<never> {
-		throw new CannotStarpDuringStopped();
+		throw new IncorrectState(
+			'starp', ReadyState.STOPPED,
+		);
 	}
 
 	public getReadyState(): ReadyState {
 		return ReadyState.STOPPED;
 	}
 
-	public skipStart(onStopping?: OnStopping): void {
-		throw new CannotSkipStartDuringStopped();
+	public skart(onStopping?: OnStopping): void {
+		throw new IncorrectState(
+			'skart', ReadyState.STOPPED,
+		)
 	}
 
 	public getRunningPromise(): PromiseLike<void> {
 		return this.runningPromise;
 	}
 }
-
-export class CannotSkipStartDuringStopped extends Error { }
-export class CannotStarpDuringStopped extends Error { }
-export class CannotAssartDuringStopped extends Error { }

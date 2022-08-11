@@ -9,14 +9,8 @@ export declare class Ready extends State {
     stop(): Promise<void>;
     starp(err?: Error): Promise<void>;
     getReadyState(): ReadyState;
-    skipStart(onStopping?: OnStopping): void;
+    skart(onStopping?: OnStopping): void;
     getRunningPromise(): PromiseLike<void>;
-}
-export declare class CannotGetRunningPromiseDuringReady extends Error {
-}
-export declare class CannotStopDuringReady extends Error {
-}
-export declare class CannotAssartDuringReady extends Error {
 }
 export declare class SkipFromReadyToStopped extends Error {
 }
@@ -36,16 +30,10 @@ export declare class Starting extends State {
     stop(err?: Error): Promise<void>;
     starp(err?: Error): Promise<void>;
     getReadyState(): ReadyState;
-    skipStart(onStopping?: OnStopping): never;
+    skart(onStopping?: OnStopping): never;
     getRunningPromise(): PromiseLike<void>;
 }
-export declare class CannotGetRunningPromiseDuringStarting extends Error {
-}
 export declare class StarpCalledDuringStarting extends Error {
-}
-export declare class CannotSkipStartDuringStarting extends Error {
-}
-export declare class CannotStopDuringStarting extends Error {
 }
 export declare class Started extends State {
     protected host: Friendly;
@@ -64,10 +52,8 @@ export declare class Started extends State {
     stop(runningError?: Error): Promise<void>;
     starp(err?: Error): Promise<void>;
     getReadyState(): ReadyState;
-    skipStart(onStopping?: OnStopping): never;
+    skart(onStopping?: OnStopping): never;
     getRunningPromise(): PromiseLike<void>;
-}
-export declare class CannotSkipStartDuringStarted extends Error {
 }
 export declare class Stopping extends State {
     protected host: Friendly;
@@ -89,12 +75,8 @@ export declare class Stopping extends State {
     stop(err?: Error): Promise<void>;
     starp(err?: Error): Promise<void>;
     getReadyState(): ReadyState;
-    skipStart(onStopping?: OnStopping): never;
+    skart(onStopping?: OnStopping): never;
     getRunningPromise(): PromiseLike<void>;
-}
-export declare class CannotSkipStartDuringStopping extends Error {
-}
-export declare class CannotAssartDuringStopping extends Error {
 }
 export declare class Stopped extends State {
     protected host: Friendly;
@@ -114,12 +96,6 @@ export declare class Stopped extends State {
     stop(): Promise<void>;
     starp(err?: Error): Promise<never>;
     getReadyState(): ReadyState;
-    skipStart(onStopping?: OnStopping): void;
+    skart(onStopping?: OnStopping): void;
     getRunningPromise(): PromiseLike<void>;
-}
-export declare class CannotSkipStartDuringStopped extends Error {
-}
-export declare class CannotStarpDuringStopped extends Error {
-}
-export declare class CannotAssartDuringStopped extends Error {
 }

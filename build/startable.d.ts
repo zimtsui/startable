@@ -17,7 +17,7 @@ export declare abstract class Startable {
      * Skip from READY to STARTED.
      * @decorator `@boundMethod`
      */
-    skipStart(onStopping?: OnStopping): void;
+    skart(onStopping?: OnStopping): void;
     /**
      * - If it's READY now, then
      * 1. Start.
@@ -81,10 +81,13 @@ export declare abstract class State {
     protected abstract host: Startable;
     abstract postActivate(): void;
     abstract getReadyState(): ReadyState;
-    abstract skipStart(onStopping?: OnStopping): void;
+    abstract skart(onStopping?: OnStopping): void;
     abstract start(onStopping?: OnStopping): Promise<void>;
     abstract assart(onStopping?: OnStopping): Promise<void>;
     abstract stop(err?: Error): Promise<void>;
     abstract starp(err?: Error): Promise<void>;
     abstract getRunningPromise(): PromiseLike<void>;
+}
+export declare class IncorrectState extends Error {
+    constructor(action: string, state: ReadyState);
 }
