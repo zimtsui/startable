@@ -30,8 +30,12 @@ Startable 是一个 JavaScript 的后台对象框架。初衷是为了适配阿�
 
 ```ts
 class Daemon {
-	public $s: Startable;
-	constructor() {
+	public $s = createStartable(
+		this.rawStart.bind(this),
+		this.rawStop.bind(this),
+	);
+
+	public constructor() {
 		super();
 		this.someComponent.on('some fatal error', this.$s.starp);
 	}
@@ -61,8 +65,7 @@ function stopDaemon() {
 
 ```ts
 class Daemon {
-	public $s: Startable;
-	constructor() {
+	public constructor() {
 		super();
 		this.someComponent.on('some fatal error', err => {
 			handleRunningException(err); // don't do this.
@@ -88,8 +91,7 @@ function stopDaemon() {
 
 ```ts
 class Daemon {
-	public $s: Startable;
-	constructor() {
+	public constructor() {
 		super();
 		this.someComponent.on('some fatal error', err => {
 			this.$s.starp(err)
@@ -122,7 +124,6 @@ function stopDaemon() {
 
 ```ts
 class Parent {
-	public $s: Startable;
 	private child1: Daemon;
 	private child2: Daemon;
 
@@ -131,8 +132,8 @@ class Parent {
 		await child2.$s.start(this.$s.starp);
 	}
 	protected async rawStop(): Promise<void> {
-		await child2.$s.stop();
-		await child1.$s.stop();
+		await child2.$s.starp();
+		await child1.$s.starp();
 	}
 }
 ```
@@ -146,8 +147,7 @@ class Parent {
 
 ```ts
 class Daemon {
-	public $s: Startable;
-	constructor(private ctx: {
+	public constructor(private ctx: {
 		dep: Startable;
 	}) { super(); }
 
@@ -169,3 +169,21 @@ console.log(daemon.getReadyState());
 ```
 
 的结果不一定是 STARTED，完全有可能是 STOPPING 或 STOPPED。
+
+## 健壮性
+
+```ts
+class Daemon {
+	public constructor(
+		private dep: Dep,
+	) {}
+
+	private async rawStart() {
+		await dep.$s.assart(this.$s.starp);
+		await somePromise;
+		dep.someMethod(); // dep may be STOPPING.
+	}
+}
+```
+
+因此 Daemon 的所有公共方法务必确保健壮性。所有 async 公共方法，如果过程中进入 STOPPING，要么返回正确结果，要么抛出，不能导致不一致的不可预料结果。
