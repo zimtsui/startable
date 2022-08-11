@@ -1,9 +1,16 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stopped = exports.Stopping = exports.Started = exports.Starting = exports.Ready = void 0;
 const startable_1 = require("./startable");
 const manual_promise_1 = require("@zimtsui/manual-promise");
 const assert = require("assert");
+const catch_throw_1 = require("./catch-throw");
 class Ready extends startable_1.State {
     constructor(host, args) {
         super();
@@ -43,6 +50,9 @@ class Ready extends startable_1.State {
         throw new startable_1.StateError('getRunningPromise', "READY" /* READY */);
     }
 }
+__decorate([
+    (0, catch_throw_1.catchThrow)()
+], Ready.prototype, "start", null);
 exports.Ready = Ready;
 class Starting extends startable_1.State {
     constructor(host, args) {
@@ -61,7 +71,11 @@ class Starting extends startable_1.State {
             this.host.state = new Started(this.host, {
                 startingPromise: this.startingPromise,
                 onStoppings: this.onStoppings,
-                startingError: new AggregateError(this.startingErrors),
+                startingError: this.startingErrors.length === 0
+                    ? null
+                    : this.startingErrors.length === 1
+                        ? this.startingErrors[0]
+                        : new AggregateError(this.startingErrors),
             });
             this.host.state.postActivate();
         });
@@ -91,6 +105,9 @@ class Starting extends startable_1.State {
         throw new startable_1.StateError('getRunningPromise', "STARTING" /* STARTING */);
     }
 }
+__decorate([
+    (0, catch_throw_1.catchThrow)()
+], Starting.prototype, "start", null);
 exports.Starting = Starting;
 class Started extends startable_1.State {
     constructor(host, args) {
@@ -141,6 +158,9 @@ class Started extends startable_1.State {
         return this.running;
     }
 }
+__decorate([
+    (0, catch_throw_1.catchThrow)()
+], Started.prototype, "start", null);
 exports.Started = Started;
 class Stopping extends startable_1.State {
     constructor(host, args) {
@@ -192,6 +212,9 @@ class Stopping extends startable_1.State {
         return this.runningPromise;
     }
 }
+__decorate([
+    (0, catch_throw_1.catchThrow)()
+], Stopping.prototype, "start", null);
 exports.Stopping = Stopping;
 class Stopped extends startable_1.State {
     constructor(host, args) {

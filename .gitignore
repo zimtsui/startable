@@ -3,3 +3,6 @@
 
 # dia
 *.dia~
+
+# libreoffce
+.~lock.*#

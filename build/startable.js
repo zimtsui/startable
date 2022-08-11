@@ -15,7 +15,7 @@ class Startable {
         return this.state.getReadyState();
     }
     /**
-     * @throws IncorrectState
+     * @throws StateError
      */
     assertReadyState(action, expected = ["STARTED" /* STARTED */]) {
         for (const state of expected)
@@ -25,19 +25,17 @@ class Startable {
     }
     /**
      * Skip from READY to STARTED.
-     * @decorator `@boundMethod`
      */
-    skart(err) {
-        this.state.skart(err);
+    skart(startingError) {
+        this.state.skart(startingError);
     }
     /**
      * - If it's READY now, then
      * 1. Start.
-     * 1. Wait until STARTED.
-     * - If it's STARTING or STARTED now, then
-     * 1. Wait until STARTED.
+     * 1. Return the promise of STARTING.
+     * - Otherwise,
+     * 1. Return the promise of STARTING.
      * @decorator `@boundMethod`
-     * @decorator `@catchThrow()`
      * @throws ReferenceError
      */
     start(onStopping) {
@@ -46,8 +44,13 @@ class Startable {
     /**
      * - If it's READY now, then
      * 1. Skip to STOPPED.
-     * - If it's STARTING or STARTED now, then
+     * - If it's STARTING now and `err` is given, then
+     * 1. Make the STARTING process throw `err`.
+     * - If it's STARTING now and `err` is not given, then
      * 1. Wait until STARTED.
+     * 1. Stop.
+     * 1. Wait until STOPPED.
+     * - If it's STARTED now, then
      * 1. Stop.
      * 1. Wait until STOPPED.
      * - If it's STOPPING or STOPPED now, then
@@ -67,10 +70,6 @@ class Startable {
 }
 __decorate([
     autobind_decorator_1.boundMethod
-], Startable.prototype, "skart", null);
-__decorate([
-    autobind_decorator_1.boundMethod,
-    (0, catch_throw_1.catchThrow)()
 ], Startable.prototype, "start", null);
 __decorate([
     autobind_decorator_1.boundMethod,

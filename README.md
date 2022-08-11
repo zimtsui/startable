@@ -1,32 +1,60 @@
 # Startable
 
-Startable 是一个 JavaScript 的后台对象框架。初衷是为了适配阿里开源 Node.js 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
+Startable 是一个 JavaScript 的 Daemon 生命周期管理器。初衷是为了适配阿里开源 Node.js 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
 
-## 什么是后台对象
+[API](./docs/index.html)
 
-一个 [Buffer](https://nodejs.org/dist/latest-v14.x/docs/api/buffer.html#buffer_class_buffer)，你不去访问他，他就一致保持静态什么也不干。当你运行他的方法时，他才活动。这样的响应式的对象就是前台对象。
+## 功能分类
 
-一个 [TCP Socket](https://nodejs.org/dist/latest-v14.x/docs/api/net.html#net_class_net_socket)，你不去访问他，他也会在后台运行一个服务例程来接收对面发来的数据。这样的对象就是后台对象。
+- 任务
+- 服务
+	- 事件触发式
 
-后台对象通常有以下特点
+		服务占有线程，用户被调用。俗称 Daemon。
 
-- 后台对象有一个异步的启动和停止过程
+	- 轮询式
+
+		用户占有线程，服务被调用。
+
+		新开一个线程写个循环转换为事件触发式。
+
+		- 阻塞式读写单条消息（使用 libev 转换为回调式）
+		- 回调式读写单条消息
+
+C 语言中一个文件描述符就是一个轮询式服务，向用户提供文件访问服务。他本身不占用线程，如果某时刻底层资源挂了，只要不去读这个文件描述符，用户态就永远不知道底层资源挂了。
+
+绝大多数消息传递过程，消息汇的性能都远大于消息源。所以事件触发式消息汇很少见，否则消息源会不停地收到「需要消息」的事件。
+
+Nodejs 中一个 TCP 连接，就是一个事件触发式服务。他本身占用协程，如果底层连接断了，会触发事件。
+
+![转换关系](./conversion.png)
+
+## Daemon
+
+服务有以下特点
+
+- 有一个异步的启动和停止过程
 
 	比如一个 TCP Socket 有一个异步的握手和挥手的过程。
-
-- 停止过程可能自发开始
-
-	比如一个 TCP Socket 可能因可能因网络中断而离开了「正常提供服务中」的状态，不得不自发开始停止过程。
 
 - 启停过程本身也可能发生异常而失败
 
 	比如一个 TCP Socket 连接时就没连上。
 
-## Startable 类
+Daemon 在服务的基础上另有以下轮询式服务没有的特点
 
-## 自发启停
+- 停止过程可能自发开始
 
-当自己发生内部错误时，就应当调用自己的 `.starp()`，因为在语义上，此时自己已经结束了「正常提供服务中」的状态。
+	比如一个 TCP Socket 可能因可能因网络中断而离开了「正常提供服务中」的状态，不得不自发开始停止过程。
+
+写 Daemon 的麻烦之处在于，底层资源可能在 Daemon 生命周期的任何阶段挂掉，可能在启动停止过程中挂掉。
+
+Startable 是 JavaScript 的 Daemon 生命周期管理器，有了他你就可以把心思花在业务逻辑上。
+
+
+## Best practices
+
+当自己发生内部错误时，就应当调用自己的 `.stop()`，因为在语义上，此时自己已经结束了「正常提供服务中」的状态。
 
 ```ts
 class Daemon {
@@ -36,15 +64,14 @@ class Daemon {
 	);
 
 	public constructor() {
-		super();
-		this.someComponent.on('some fatal error', this.$s.starp);
+		this.someComponent.on('some fatal error', this.$s.stop);
 	}
 }
 ```
 
 `.start()` 可以接受一个 onStopping 钩子作为回调，用于在停止过程开始时通知外部。当停止过程开始时会先同步地调用这个回调，并将你填进 `.stop()` 的参数传递给这个回调。你可以自行定义这个 Error 参数的语义，然后在回调中根据参数判断停止的原因。
 
-一般来说，如果是自发停止则传参，如果是从外部被动停止则不传参，这样就可以在回调中根据参数是否存在来判断是不是自发停止。
+如果是自发停止则传参，如果是从外部被动停止则不传参，这样就可以在回调中根据参数是否存在来判断是不是自发停止。
 
 ```ts
 // main coroutine
@@ -57,63 +84,9 @@ function startDaemon(){
 	}).catch(handleStartingException);
 }
 function stopDaemon() {
-	daemon.$s.starp();
+	daemon.$s.stop();
 }
 ```
-
-## 丑陋的写法
-
-```ts
-class Daemon {
-	public constructor() {
-		super();
-		this.someComponent.on('some fatal error', err => {
-			handleRunningException(err); // don't do this.
-			this.$s.starp();
-		});
-	}
-}
-
-const daemon = new Daemon();
-function startDaemon() {
-	daemon.$s.start(() => {
-		daemon.$s.stop().catch(handleStoppingException)
-	}).catch(handleStartingException);
-}
-function stopDaemon() {
-	daemon.$s.starp();
-}
-```
-
-这个例子的问题在于，一个后台对象中出现的一个让你不得不自发停止的致命错误，那么对这个异常的 handle 代码不应写在类定义的里面，因为这个 handle 过程在语义上不属于这个对象的一部分。
-
----
-
-```ts
-class Daemon {
-	public constructor() {
-		super();
-		this.someComponent.on('some fatal error', err => {
-			this.$s.starp(err)
-				.catch(handleStoppingException); // don't do this.
-		});
-	}
-}
-
-const daemon = new Daemon();
-function startDaemon() {
-	daemon.$s.start(err => {
-		if (err) handleRunningException(err);
-	}).catch(handleStartingException);
-}
-function stopDaemon() {
-	daemon.$s.starp().catch(handleStoppingException); // don't do this.
-}
-```
-
-这个例子的问题在于，一个后台对象的自发停止过程发生异常而失败，这个异常的 handle 代码不应写在 `.stop()` 的 caller 中，因为 caller 有很多个，不得不写很多遍。
-
-## 嵌套
 
 ### Composition
 
@@ -128,17 +101,17 @@ class Parent {
 	private child2: Daemon;
 
 	protected async rawStart(): Promise<void> {
-		await child1.$s.start(this.$s.starp);
-		await child2.$s.start(this.$s.starp);
+		await child1.$s.start(this.$s.stop);
+		await child2.$s.start(this.$s.stop);
 	}
 	protected async rawStop(): Promise<void> {
-		await child2.$s.starp();
-		await child1.$s.starp();
+		await child2.$s.stop();
+		await child1.$s.stop();
 	}
 }
 ```
 
-- 如果在 child2 启动过程中，已经启动完成的 child1 开始自发停止，那么 child1 会通过 onStopping 回调调用 parent 的 `.stop()`，此时 parent 处于 STARTING 状态，导致 parent 的启动过程 rejected。在语义上，一个后台对象启动过程中，他依赖的儿子挂了，这个后台对象的启动过程也确实算不上成功，因此语义与实现是一致的。
+- 如果在 child2 启动过程中，已经启动完成的 child1 开始自发停止，那么 child1 会通过 onStopping 回调调用 parent 的 `.stop()`，此时 parent 处于 STARTING 状态，导致 parent 的启动过程 rejected。在语义上，一个 Daemon 启动过程中，他依赖的儿子挂了，这个 Daemon 的启动过程也确实算不上成功，因此语义与实现是一致的。
 - 如果调用 `parent.stop()`，`parent.stop()` 会调用 `child.stop()`，`child.stop()` 会通过 onStopping 回调再次调用 `parent.stop()`，不过此时 parent 处于 STOPPING 状态，parent 内部的 `.rawStop` 实现不会被调用两次。
 
 ### Aggregation
@@ -147,15 +120,65 @@ class Parent {
 
 ```ts
 class Daemon {
-	public constructor(private ctx: {
-		dep: Startable;
-	}) { super(); }
+	public constructor(
+		dep: Startable,
+	) { }
 
 	protected async rawStart() {
-		await this.ctx.dep.$s.assart(this.starp);
+		await this.dep.$s.start(this.stop);
 	}
 }
 ```
+
+## Bad practices
+
+```ts
+class Daemon {
+	public constructor() {
+		this.someComponent.on('some fatal error', err => {
+			handleRunningException(err); // don't do this.
+			this.$s.stop();
+		});
+	}
+}
+
+const daemon = new Daemon();
+function startDaemon() {
+	daemon.$s.start(() => {
+		daemon.$s.stop().catch(handleStoppingException)
+	}).catch(handleStartingException);
+}
+function stopDaemon() {
+	daemon.$s.stop();
+}
+```
+
+这个例子的问题在于，一个 Daemon 中出现的一个让你不得不自发停止的致命错误，那么对这个异常的 handle 代码不应写在类定义的里面，因为这个 handle 过程在语义上不属于这个对象的职责，不是你的职责却非要越俎代庖，违反了迪米特法则。
+
+---
+
+```ts
+class Daemon {
+	public constructor() {
+		this.someComponent.on('some fatal error', err => {
+			this.$s.stop(err)
+				.catch(handleStoppingException); // don't do this.
+		});
+	}
+}
+
+const daemon = new Daemon();
+function startDaemon() {
+	daemon.$s.start(err => {
+		if (err) handleRunningException(err);
+	}).catch(handleStartingException);
+}
+function stopDaemon() {
+	daemon.$s.stop().catch(handleStoppingException); // don't do this.
+}
+```
+
+这个例子的问题在于，一个 Daemon 的自发停止过程发生异常而失败，这个异常的 handle 代码不应写在 `.stop()` 的 caller 中，因为 caller 有很多个，不得不写很多遍。
 
 ## 协程安全
 
@@ -179,7 +202,7 @@ class Daemon {
 	) {}
 
 	private async rawStart() {
-		await dep.$s.assart(this.$s.starp);
+		await dep.$s.start(this.$s.stop);
 		await somePromise;
 		dep.someMethod(); // dep may be STOPPING.
 	}
