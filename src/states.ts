@@ -7,6 +7,7 @@ import {
 } from './startable';
 import { ManualPromise } from '@zimtsui/manual-promise';
 import assert = require('assert');
+import { catchThrow } from './catch-throw';
 
 
 export class Ready extends State {
@@ -19,6 +20,7 @@ export class Ready extends State {
 
 	public postActivate(): void { }
 
+	@catchThrow()
 	public async start(onStopping?: OnStopping): Promise<void> {
 		this.host.state = new Starting(
 			this.host, {
@@ -99,6 +101,7 @@ export class Starting extends State {
 		});
 	}
 
+	@catchThrow()
 	public async start(onStopping?: OnStopping): Promise<void> {
 		if (onStopping) this.onStoppings.push(onStopping);
 		await this.startingPromise;
@@ -168,6 +171,7 @@ export class Started extends State {
 		this.running = running;
 	}
 
+	@catchThrow()
 	public async start(onStopping?: OnStopping): Promise<void> {
 		if (onStopping) this.onStoppings.push(onStopping);
 		await this.startingPromise;
@@ -251,6 +255,7 @@ export class Stopping extends State {
 		});
 	}
 
+	@catchThrow()
 	public async start(onStopping?: OnStopping): Promise<void> {
 		if (onStopping) onStopping();
 		return this.startingPromise;

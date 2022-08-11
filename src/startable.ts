@@ -25,7 +25,7 @@ export abstract class Startable {
 	}
 
 	/**
-	 * @throws IncorrectState
+	 * @throws StateError
 	 */
 	public assertReadyState(
 		action: string,
@@ -43,25 +43,21 @@ export abstract class Startable {
 
 	/**
 	 * Skip from READY to STARTED.
-	 * @decorator `@boundMethod`
 	 */
-	@boundMethod
-	public skart(err?: Error): void {
-		this.state.skart(err);
+	public skart(startingError?: Error): void {
+		this.state.skart(startingError);
 	}
 
 	/**
 	 * - If it's READY now, then
 	 * 1. Start.
-	 * 1. Wait until STARTED.
-	 * - If it's STARTING or STARTED now, then
-	 * 1. Wait until STARTED.
+	 * 1. Return the promise of STARTING.
+	 * - Otherwise,
+	 * 1. Return the promise of STARTING.
 	 * @decorator `@boundMethod`
-	 * @decorator `@catchThrow()`
 	 * @throws ReferenceError
 	 */
 	@boundMethod
-	@catchThrow()
 	public start(onStopping?: OnStopping): PromiseLike<void> {
 		return this.state.start(onStopping);
 	}
@@ -69,8 +65,13 @@ export abstract class Startable {
 	/**
 	 * - If it's READY now, then
 	 * 1. Skip to STOPPED.
-	 * - If it's STARTING or STARTED now, then
+	 * - If it's STARTING now and `err` is given, then
+	 * 1. Make the STARTING process throw `err`.
+	 * - If it's STARTING now and `err` is not given, then
 	 * 1. Wait until STARTED.
+	 * 1. Stop.
+	 * 1. Wait until STOPPED.
+	 * - If it's STARTED now, then
 	 * 1. Stop.
 	 * 1. Wait until STOPPED.
 	 * - If it's STOPPING or STOPPED now, then
