@@ -95,7 +95,11 @@ export class Starting extends State {
 				this.host, {
 				startingPromise: this.startingPromise,
 				onStoppings: this.onStoppings,
-				startingError: new AggregateError(this.startingErrors),
+				startingError: this.startingErrors.length === 0
+					? null
+					: this.startingErrors.length === 1
+						? this.startingErrors[0]
+						: new AggregateError(this.startingErrors),
 			});
 			this.host.state.postActivate();
 		});
