@@ -14,6 +14,15 @@ class Startable {
         return this.state.getReadyState();
     }
     /**
+     * @throws IncorrectState
+     */
+    assertReadyState(action, states = ["STARTED" /* STARTED */]) {
+        for (const state of states)
+            if (this.getReadyState() === state)
+                return;
+        throw new IncorrectState(action, this.getReadyState());
+    }
+    /**
      * Skip from READY to STARTED.
      * @decorator `@boundMethod`
      */

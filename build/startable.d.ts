@@ -14,6 +14,10 @@ export declare abstract class Startable {
     protected abstract rawStop: RawStop;
     getReadyState(): ReadyState;
     /**
+     * @throws IncorrectState
+     */
+    assertReadyState(action: string, states?: ReadyState[]): void;
+    /**
      * Skip from READY to STARTED.
      * @decorator `@boundMethod`
      */

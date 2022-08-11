@@ -25,6 +25,19 @@ export abstract class Startable {
 	}
 
 	/**
+	 * @throws IncorrectState
+	 */
+	public assertReadyState(
+		action: string,
+		states: ReadyState[] = [ReadyState.STARTED],
+	): void {
+		for (const state of states)
+			if (this.getReadyState() === state)
+				return;
+		throw new IncorrectState(action, this.getReadyState());
+	}
+
+	/**
 	 * Skip from READY to STARTED.
 	 * @decorator `@boundMethod`
 	 */
