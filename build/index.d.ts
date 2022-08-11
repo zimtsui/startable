@@ -1,3 +1,2 @@
-export { ReadyState, OnStopping, RawStart, RawStop, Startable, IncorrectState, } from './startable';
-export { SkipFromReadyToStopped, SkipFromReadytoStarted, StarpCalledDuringStarting, } from './states';
+export { ReadyState, OnStopping, RawStart, RawStop, Startable, StateError, } from './startable';
 export { createStartable } from './factory';

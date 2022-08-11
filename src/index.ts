@@ -4,12 +4,7 @@ export {
 	RawStart,
 	RawStop,
 	Startable,
-	IncorrectState,
+	StateError,
 } from './startable';
-export {
-	SkipFromReadyToStopped,
-	SkipFromReadytoStarted,
-	StarpCalledDuringStarting,
-} from './states';
 
 export { createStartable } from './factory';

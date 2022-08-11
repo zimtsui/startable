@@ -1,3 +1,4 @@
+import { AssertionError } from 'assert';
 export declare const enum ReadyState {
     READY = "READY",
     STARTING = "STARTING",
@@ -16,12 +17,12 @@ export declare abstract class Startable {
     /**
      * @throws IncorrectState
      */
-    assertReadyState(action: string, states?: ReadyState[]): void;
+    assertReadyState(action: string, expected?: ReadyState[]): void;
     /**
      * Skip from READY to STARTED.
      * @decorator `@boundMethod`
      */
-    skart(onStopping?: OnStopping): void;
+    skart(err?: Error): void;
     /**
      * - If it's READY now, then
      * 1. Start.
@@ -30,25 +31,9 @@ export declare abstract class Startable {
      * 1. Wait until STARTED.
      * @decorator `@boundMethod`
      * @decorator `@catchThrow()`
+     * @throws ReferenceError
      */
-    start(onStopping?: OnStopping): Promise<void>;
-    /**
-     * 1. Assert it's STARTING or STARTED now.
-     * 1. Wait until STARTED.
-     * @decorator `@boundMethod`
-     * @decorator `@catchThrow()`
-     */
-    assart(onStopping?: OnStopping): Promise<void>;
-    /**
-     * - If it's STARTED now, then
-     * 1. Stop.
-     * 1. Wait until STOPPED.
-     * - If it's STOPPING or STOPPED now, then
-     * 1. Wait until STOPPED.
-     * @decorator `@boundMethod`
-     * @decorator `@catchThrow()`
-     */
-    stop(err?: Error): Promise<void>;
+    start(onStopping?: OnStopping): PromiseLike<void>;
     /**
      * - If it's READY now, then
      * 1. Skip to STOPPED.
@@ -61,7 +46,10 @@ export declare abstract class Startable {
      * @decorator `@boundMethod`
      * @decorator `@catchThrow()`
      */
-    starp(err?: Error): Promise<void>;
+    stop(err?: Error): Promise<void>;
+    /**
+     * @throws ReferenceError
+     */
     getRunningPromise(): PromiseLike<void>;
 }
 export declare abstract class Friendly extends Startable {
@@ -85,13 +73,12 @@ export declare abstract class State {
     protected abstract host: Startable;
     abstract postActivate(): void;
     abstract getReadyState(): ReadyState;
-    abstract skart(onStopping?: OnStopping): void;
-    abstract start(onStopping?: OnStopping): Promise<void>;
-    abstract assart(onStopping?: OnStopping): Promise<void>;
+    abstract start(onStopping?: OnStopping): PromiseLike<void>;
+    abstract skart(err?: Error): void;
     abstract stop(err?: Error): Promise<void>;
-    abstract starp(err?: Error): Promise<void>;
     abstract getRunningPromise(): PromiseLike<void>;
 }
-export declare class IncorrectState extends Error {
-    constructor(action: string, state: ReadyState);
+export declare class StateError extends AssertionError {
+    action: string;
+    constructor(action: string, actualState: ReadyState, expectedStates?: ReadyState[]);
 }

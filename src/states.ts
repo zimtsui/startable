@@ -3,9 +3,10 @@ import {
 	Friendly,
 	OnStopping,
 	ReadyState,
-	IncorrectState,
+	StateError,
 } from './startable';
 import { ManualPromise } from '@zimtsui/manual-promise';
+import assert = require('assert');
 
 
 export class Ready extends State {
@@ -18,9 +19,7 @@ export class Ready extends State {
 
 	public postActivate(): void { }
 
-	public async start(
-		onStopping?: OnStopping,
-	): Promise<void> {
+	public async start(onStopping?: OnStopping): Promise<void> {
 		this.host.state = new Starting(
 			this.host, {
 			onStopping: onStopping || null,
@@ -29,30 +28,20 @@ export class Ready extends State {
 		await this.host.start();
 	}
 
-	public async assart(onStopping?: OnStopping): Promise<never> {
-		throw new IncorrectState(
-			'assart', ReadyState.READY,
+	public async stop(err?: Error): Promise<void> {
+		assert(
+			typeof err === 'undefined',
+			new StateError(
+				'stop with an exception',
+				ReadyState.READY,
+			),
 		);
-	}
-
-	public async stop(): Promise<void> {
-		throw new IncorrectState(
-			'stop', ReadyState.READY,
-		);
-	}
-
-	public async starp(err?: Error): Promise<void> {
-		const stoppingError = new SkipFromReadyToStopped();
-		const startingPromise = Promise.reject(stoppingError);
-		startingPromise.catch(() => { });
-		const runningPromise = Promise.reject(stoppingError);
-		runningPromise.catch(() => { });
 		this.host.state = new Stopped(
 			this.host, {
-			startingPromise,
-			runningPromise,
+			startingPromise: null,
+			runningPromise: null,
 			stoppingPromise: new ManualPromise<void>(),
-			stoppingError,
+			stoppingError: null,
 		});
 		this.host.state.postActivate();
 	}
@@ -61,32 +50,29 @@ export class Ready extends State {
 		return ReadyState.READY;
 	}
 
-	public skart(onStopping?: OnStopping): void {
-		const startingError = new SkipFromReadytoStarted();
+	public skart(err?: Error): void {
+		const startingError: Error | null = err || null;
 		this.host.state = new Started(
 			this.host, {
 			startingPromise: new ManualPromise<void>(),
-			onStoppings: onStopping ? [onStopping] : [],
+			onStoppings: [],
 			startingError,
 		});
 		this.host.state.postActivate();
 	}
 
 	public getRunningPromise(): PromiseLike<void> {
-		throw new IncorrectState(
+		throw new StateError(
 			'getRunningPromise', ReadyState.READY,
 		);
 	}
 }
 
-export class SkipFromReadyToStopped extends Error { }
-export class SkipFromReadytoStarted extends Error { }
-
 
 export class Starting extends State {
 	private startingPromise = new ManualPromise<void>();
 	private onStoppings: OnStopping[] = [];
-	private startingError: null | StarpCalledDuringStarting = null;
+	private startingErrors: Error[] = [];
 
 	public constructor(
 		protected host: Friendly,
@@ -101,60 +87,49 @@ export class Starting extends State {
 
 	public postActivate(): void {
 		this.host.rawStart().catch(err => {
-			this.startingError = err;
+			this.startingErrors.push(err);
 		}).then(() => {
 			this.host.state = new Started(
 				this.host, {
 				startingPromise: this.startingPromise,
 				onStoppings: this.onStoppings,
-				startingError: this.startingError,
+				startingError: new AggregateError(this.startingErrors),
 			});
 			this.host.state.postActivate();
 		});
 	}
 
-	public async start(
-		onStopping?: OnStopping,
-	): Promise<void> {
-		if (onStopping) this.onStoppings.push(onStopping);
-		await this.startingPromise;
-	}
-
-	public async assart(onStopping?: OnStopping): Promise<void> {
+	public async start(onStopping?: OnStopping): Promise<void> {
 		if (onStopping) this.onStoppings.push(onStopping);
 		await this.startingPromise;
 	}
 
 	public async stop(err?: Error): Promise<void> {
-		throw new IncorrectState(
-			'stop', ReadyState.STARTING,
-		);
-	}
-
-	public async starp(err?: Error): Promise<void> {
-		this.startingError = new StarpCalledDuringStarting();
-		await this.startingPromise.catch(() => { });
-		await this.host.stop(err);
+		if (err) {
+			this.startingErrors.push(err);
+			throw new StateError('stop', ReadyState.STARTING);
+		} else {
+			await this.startingPromise.catch(() => { });
+			await this.host.stop();
+		}
 	}
 
 	public getReadyState(): ReadyState {
 		return ReadyState.STARTING;
 	}
 
-	public skart(onStopping?: OnStopping): never {
-		throw new IncorrectState(
+	public skart(err?: Error): never {
+		throw new StateError(
 			'skart', ReadyState.STARTING,
 		);
 	}
 
 	public getRunningPromise(): PromiseLike<void> {
-		throw new IncorrectState(
+		throw new StateError(
 			'getRunningPromise', ReadyState.STARTING,
 		);
 	}
 }
-
-export class StarpCalledDuringStarting extends Error { }
 
 
 export class Started extends State {
@@ -178,8 +153,10 @@ export class Started extends State {
 	}
 
 	public postActivate(): void {
-		if (this.startingError) this.startingPromise.reject(this.startingError);
-		else this.startingPromise.resolve();
+		if (this.startingError)
+			this.startingPromise.reject(this.startingError);
+		else
+			this.startingPromise.resolve();
 
 		const running = new Promise<void>((resolve, reject) => {
 			this.start(err => {
@@ -191,14 +168,7 @@ export class Started extends State {
 		this.running = running;
 	}
 
-	public async start(
-		onStopping?: OnStopping,
-	): Promise<void> {
-		if (onStopping) this.onStoppings.push(onStopping);
-		await this.startingPromise;
-	}
-
-	public async assart(onStopping?: OnStopping): Promise<void> {
+	public async start(onStopping?: OnStopping): Promise<void> {
 		if (onStopping) this.onStoppings.push(onStopping);
 		await this.startingPromise;
 	}
@@ -215,16 +185,12 @@ export class Started extends State {
 		await this.host.stop();
 	}
 
-	public async starp(err?: Error): Promise<void> {
-		await this.stop(err);
-	}
-
 	public getReadyState(): ReadyState {
 		return ReadyState.STARTED;
 	}
 
-	public skart(onStopping?: OnStopping): never {
-		throw new IncorrectState(
+	public skart(err?: Error): never {
+		throw new StateError(
 			'skart', ReadyState.STARTED,
 		);
 	}
@@ -285,32 +251,21 @@ export class Stopping extends State {
 		});
 	}
 
-	public async start(
-		onStopping?: OnStopping,
-	): Promise<void> {
+	public async start(onStopping?: OnStopping): Promise<void> {
+		if (onStopping) onStopping();
 		return this.startingPromise;
-	}
-
-	public async assart(onStopping?: OnStopping): Promise<never> {
-		throw new IncorrectState(
-			'assart', ReadyState.STOPPING,
-		);
 	}
 
 	public async stop(err?: Error): Promise<void> {
 		await this.stoppingPromise;
 	}
 
-	public async starp(err?: Error): Promise<void> {
-		await this.stop(err);
-	}
-
 	public getReadyState(): ReadyState {
 		return ReadyState.STOPPING;
 	}
 
-	public skart(onStopping?: OnStopping): never {
-		throw new IncorrectState(
+	public skart(err?: Error): never {
+		throw new StateError(
 			'skart', ReadyState.STOPPING,
 		);
 	}
@@ -322,16 +277,16 @@ export class Stopping extends State {
 
 
 export class Stopped extends State {
-	private startingPromise: PromiseLike<void>;
-	private runningPromise: PromiseLike<void>;
+	private startingPromise: PromiseLike<void> | null;
+	private runningPromise: PromiseLike<void> | null;
 	private stoppingPromise: ManualPromise<void>;
 	private stoppingError: Error | null;
 
 	public constructor(
 		protected host: Friendly,
 		args: {
-			startingPromise: PromiseLike<void>;
-			runningPromise: PromiseLike<void>;
+			startingPromise: PromiseLike<void> | null;
+			runningPromise: PromiseLike<void> | null;
 			stoppingPromise: ManualPromise<void>;
 			stoppingError: Error | null;
 		},
@@ -350,39 +305,34 @@ export class Stopped extends State {
 			this.stoppingPromise.resolve();
 	}
 
-	public async start(
-		onStopping?: OnStopping,
-	): Promise<void> {
-		return this.startingPromise;
-	}
-
-	public async assart(onStopping?: OnStopping): Promise<never> {
-		throw new IncorrectState(
-			'assart', ReadyState.STOPPED,
+	public start(onStopping?: OnStopping): PromiseLike<void> {
+		assert(
+			this.startingPromise !== null,
+			new ReferenceError(),
 		);
+		if (onStopping) onStopping();
+		return this.startingPromise;
 	}
 
 	public async stop(): Promise<void> {
 		await this.stoppingPromise;
 	}
 
-	public async starp(err?: Error): Promise<never> {
-		throw new IncorrectState(
-			'starp', ReadyState.STOPPED,
-		);
-	}
-
 	public getReadyState(): ReadyState {
 		return ReadyState.STOPPED;
 	}
 
-	public skart(onStopping?: OnStopping): void {
-		throw new IncorrectState(
+	public skart(err?: Error): void {
+		throw new StateError(
 			'skart', ReadyState.STOPPED,
 		)
 	}
 
 	public getRunningPromise(): PromiseLike<void> {
+		assert(
+			this.runningPromise !== null,
+			new ReferenceError(),
+		);
 		return this.runningPromise;
 	}
 }

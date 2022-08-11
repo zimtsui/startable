@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Stopped = exports.Stopping = exports.Started = exports.StarpCalledDuringStarting = exports.Starting = exports.SkipFromReadytoStarted = exports.SkipFromReadyToStopped = exports.Ready = void 0;
+exports.Stopped = exports.Stopping = exports.Started = exports.Starting = exports.Ready = void 0;
 const startable_1 = require("./startable");
 const manual_promise_1 = require("@zimtsui/manual-promise");
+const assert = require("assert");
 class Ready extends startable_1.State {
     constructor(host, args) {
         super();
@@ -16,67 +17,51 @@ class Ready extends startable_1.State {
         this.host.state.postActivate();
         await this.host.start();
     }
-    async assart(onStopping) {
-        throw new startable_1.IncorrectState('assart', "READY" /* READY */);
-    }
-    async stop() {
-        throw new startable_1.IncorrectState('stop', "READY" /* READY */);
-    }
-    async starp(err) {
-        const stoppingError = new SkipFromReadyToStopped();
-        const startingPromise = Promise.reject(stoppingError);
-        startingPromise.catch(() => { });
-        const runningPromise = Promise.reject(stoppingError);
-        runningPromise.catch(() => { });
+    async stop(err) {
+        assert(typeof err === 'undefined', new startable_1.StateError('stop with an exception', "READY" /* READY */));
         this.host.state = new Stopped(this.host, {
-            startingPromise,
-            runningPromise,
+            startingPromise: null,
+            runningPromise: null,
             stoppingPromise: new manual_promise_1.ManualPromise(),
-            stoppingError,
+            stoppingError: null,
         });
         this.host.state.postActivate();
     }
     getReadyState() {
         return "READY" /* READY */;
     }
-    skart(onStopping) {
-        const startingError = new SkipFromReadytoStarted();
+    skart(err) {
+        const startingError = err || null;
         this.host.state = new Started(this.host, {
             startingPromise: new manual_promise_1.ManualPromise(),
-            onStoppings: onStopping ? [onStopping] : [],
+            onStoppings: [],
             startingError,
         });
         this.host.state.postActivate();
     }
     getRunningPromise() {
-        throw new startable_1.IncorrectState('getRunningPromise', "READY" /* READY */);
+        throw new startable_1.StateError('getRunningPromise', "READY" /* READY */);
     }
 }
 exports.Ready = Ready;
-class SkipFromReadyToStopped extends Error {
-}
-exports.SkipFromReadyToStopped = SkipFromReadyToStopped;
-class SkipFromReadytoStarted extends Error {
-}
-exports.SkipFromReadytoStarted = SkipFromReadytoStarted;
 class Starting extends startable_1.State {
     constructor(host, args) {
         super();
         this.host = host;
         this.startingPromise = new manual_promise_1.ManualPromise();
         this.onStoppings = [];
-        this.startingError = null;
+        this.startingErrors = [];
         if (args.onStopping)
             this.onStoppings.push(args.onStopping);
     }
     postActivate() {
         this.host.rawStart().catch(err => {
-            this.startingError = err;
+            this.startingErrors.push(err);
         }).then(() => {
             this.host.state = new Started(this.host, {
                 startingPromise: this.startingPromise,
                 onStoppings: this.onStoppings,
-                startingError: this.startingError,
+                startingError: new AggregateError(this.startingErrors),
             });
             this.host.state.postActivate();
         });
@@ -86,33 +71,27 @@ class Starting extends startable_1.State {
             this.onStoppings.push(onStopping);
         await this.startingPromise;
     }
-    async assart(onStopping) {
-        if (onStopping)
-            this.onStoppings.push(onStopping);
-        await this.startingPromise;
-    }
     async stop(err) {
-        throw new startable_1.IncorrectState('stop', "STARTING" /* STARTING */);
-    }
-    async starp(err) {
-        this.startingError = new StarpCalledDuringStarting();
-        await this.startingPromise.catch(() => { });
-        await this.host.stop(err);
+        if (err) {
+            this.startingErrors.push(err);
+            throw new startable_1.StateError('stop', "STARTING" /* STARTING */);
+        }
+        else {
+            await this.startingPromise.catch(() => { });
+            await this.host.stop();
+        }
     }
     getReadyState() {
         return "STARTING" /* STARTING */;
     }
-    skart(onStopping) {
-        throw new startable_1.IncorrectState('skart', "STARTING" /* STARTING */);
+    skart(err) {
+        throw new startable_1.StateError('skart', "STARTING" /* STARTING */);
     }
     getRunningPromise() {
-        throw new startable_1.IncorrectState('getRunningPromise', "STARTING" /* STARTING */);
+        throw new startable_1.StateError('getRunningPromise', "STARTING" /* STARTING */);
     }
 }
 exports.Starting = Starting;
-class StarpCalledDuringStarting extends Error {
-}
-exports.StarpCalledDuringStarting = StarpCalledDuringStarting;
 class Started extends startable_1.State {
     constructor(host, args) {
         super();
@@ -142,11 +121,6 @@ class Started extends startable_1.State {
             this.onStoppings.push(onStopping);
         await this.startingPromise;
     }
-    async assart(onStopping) {
-        if (onStopping)
-            this.onStoppings.push(onStopping);
-        await this.startingPromise;
-    }
     async stop(runningError) {
         this.host.state = new Stopping(this.host, {
             startingPromise: this.startingPromise,
@@ -157,14 +131,11 @@ class Started extends startable_1.State {
         this.host.state.postActivate();
         await this.host.stop();
     }
-    async starp(err) {
-        await this.stop(err);
-    }
     getReadyState() {
         return "STARTED" /* STARTED */;
     }
-    skart(onStopping) {
-        throw new startable_1.IncorrectState('skart', "STARTED" /* STARTED */);
+    skart(err) {
+        throw new startable_1.StateError('skart', "STARTED" /* STARTED */);
     }
     getRunningPromise() {
         return this.running;
@@ -204,22 +175,18 @@ class Stopping extends startable_1.State {
         });
     }
     async start(onStopping) {
+        if (onStopping)
+            onStopping();
         return this.startingPromise;
-    }
-    async assart(onStopping) {
-        throw new startable_1.IncorrectState('assart', "STOPPING" /* STOPPING */);
     }
     async stop(err) {
         await this.stoppingPromise;
     }
-    async starp(err) {
-        await this.stop(err);
-    }
     getReadyState() {
         return "STOPPING" /* STOPPING */;
     }
-    skart(onStopping) {
-        throw new startable_1.IncorrectState('skart', "STOPPING" /* STOPPING */);
+    skart(err) {
+        throw new startable_1.StateError('skart', "STOPPING" /* STOPPING */);
     }
     getRunningPromise() {
         return this.runningPromise;
@@ -241,25 +208,23 @@ class Stopped extends startable_1.State {
         else
             this.stoppingPromise.resolve();
     }
-    async start(onStopping) {
+    start(onStopping) {
+        assert(this.startingPromise !== null, new ReferenceError());
+        if (onStopping)
+            onStopping();
         return this.startingPromise;
-    }
-    async assart(onStopping) {
-        throw new startable_1.IncorrectState('assart', "STOPPED" /* STOPPED */);
     }
     async stop() {
         await this.stoppingPromise;
     }
-    async starp(err) {
-        throw new startable_1.IncorrectState('starp', "STOPPED" /* STOPPED */);
-    }
     getReadyState() {
         return "STOPPED" /* STOPPED */;
     }
-    skart(onStopping) {
-        throw new startable_1.IncorrectState('skart', "STOPPED" /* STOPPED */);
+    skart(err) {
+        throw new startable_1.StateError('skart', "STOPPED" /* STOPPED */);
     }
     getRunningPromise() {
+        assert(this.runningPromise !== null, new ReferenceError());
         return this.runningPromise;
     }
 }

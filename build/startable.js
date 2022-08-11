@@ -6,9 +6,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.IncorrectState = exports.State = exports.Friendly = exports.Startable = void 0;
+exports.StateError = exports.State = exports.Friendly = exports.Startable = void 0;
 const autobind_decorator_1 = require("autobind-decorator");
 const catch_throw_1 = require("./catch-throw");
+const assert_1 = require("assert");
 class Startable {
     getReadyState() {
         return this.state.getReadyState();
@@ -16,18 +17,18 @@ class Startable {
     /**
      * @throws IncorrectState
      */
-    assertReadyState(action, states = ["STARTED" /* STARTED */]) {
-        for (const state of states)
+    assertReadyState(action, expected = ["STARTED" /* STARTED */]) {
+        for (const state of expected)
             if (this.getReadyState() === state)
                 return;
-        throw new IncorrectState(action, this.getReadyState());
+        throw new StateError(action, this.getReadyState(), expected);
     }
     /**
      * Skip from READY to STARTED.
      * @decorator `@boundMethod`
      */
-    skart(onStopping) {
-        this.state.skart(onStopping);
+    skart(err) {
+        this.state.skart(err);
     }
     /**
      * - If it's READY now, then
@@ -37,30 +38,10 @@ class Startable {
      * 1. Wait until STARTED.
      * @decorator `@boundMethod`
      * @decorator `@catchThrow()`
+     * @throws ReferenceError
      */
-    async start(onStopping) {
-        return await this.state.start(onStopping);
-    }
-    /**
-     * 1. Assert it's STARTING or STARTED now.
-     * 1. Wait until STARTED.
-     * @decorator `@boundMethod`
-     * @decorator `@catchThrow()`
-     */
-    async assart(onStopping) {
-        return await this.state.assart(onStopping);
-    }
-    /**
-     * - If it's STARTED now, then
-     * 1. Stop.
-     * 1. Wait until STOPPED.
-     * - If it's STOPPING or STOPPED now, then
-     * 1. Wait until STOPPED.
-     * @decorator `@boundMethod`
-     * @decorator `@catchThrow()`
-     */
-    async stop(err) {
-        return await this.state.stop(err);
+    start(onStopping) {
+        return this.state.start(onStopping);
     }
     /**
      * - If it's READY now, then
@@ -74,9 +55,12 @@ class Startable {
      * @decorator `@boundMethod`
      * @decorator `@catchThrow()`
      */
-    async starp(err) {
-        return await this.state.starp(err);
+    async stop(err) {
+        return await this.state.stop(err);
     }
+    /**
+     * @throws ReferenceError
+     */
     getRunningPromise() {
         return this.state.getRunningPromise();
     }
@@ -91,15 +75,7 @@ __decorate([
 __decorate([
     autobind_decorator_1.boundMethod,
     (0, catch_throw_1.catchThrow)()
-], Startable.prototype, "assart", null);
-__decorate([
-    autobind_decorator_1.boundMethod,
-    (0, catch_throw_1.catchThrow)()
 ], Startable.prototype, "stop", null);
-__decorate([
-    autobind_decorator_1.boundMethod,
-    (0, catch_throw_1.catchThrow)()
-], Startable.prototype, "starp", null);
 exports.Startable = Startable;
 class Friendly extends Startable {
 }
@@ -107,10 +83,15 @@ exports.Friendly = Friendly;
 class State {
 }
 exports.State = State;
-class IncorrectState extends Error {
-    constructor(action, state) {
-        super(`Cannot ${action} during ${state}.`);
+class StateError extends assert_1.AssertionError {
+    constructor(action, actualState, expectedStates) {
+        super({
+            expected: expectedStates,
+            actual: actualState,
+            operator: 'in',
+        });
+        this.action = action;
     }
 }
-exports.IncorrectState = IncorrectState;
+exports.StateError = StateError;
 //# sourceMappingURL=startable.js.map

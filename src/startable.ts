@@ -1,6 +1,6 @@
-import { ManualPromise } from '@zimtsui/manual-promise';
 import { boundMethod } from 'autobind-decorator';
 import { catchThrow } from './catch-throw';
+import { AssertionError } from 'assert';
 
 
 export const enum ReadyState {
@@ -29,12 +29,16 @@ export abstract class Startable {
 	 */
 	public assertReadyState(
 		action: string,
-		states: ReadyState[] = [ReadyState.STARTED],
+		expected: ReadyState[] = [ReadyState.STARTED],
 	): void {
-		for (const state of states)
+		for (const state of expected)
 			if (this.getReadyState() === state)
 				return;
-		throw new IncorrectState(action, this.getReadyState());
+		throw new StateError(
+			action,
+			this.getReadyState(),
+			expected,
+		);
 	}
 
 	/**
@@ -42,8 +46,8 @@ export abstract class Startable {
 	 * @decorator `@boundMethod`
 	 */
 	@boundMethod
-	public skart(onStopping?: OnStopping): void {
-		this.state.skart(onStopping);
+	public skart(err?: Error): void {
+		this.state.skart(err);
 	}
 
 	/**
@@ -54,38 +58,12 @@ export abstract class Startable {
 	 * 1. Wait until STARTED.
 	 * @decorator `@boundMethod`
 	 * @decorator `@catchThrow()`
+	 * @throws ReferenceError
 	 */
 	@boundMethod
 	@catchThrow()
-	public async start(onStopping?: OnStopping): Promise<void> {
-		return await this.state.start(onStopping);
-	}
-
-	/**
-	 * 1. Assert it's STARTING or STARTED now.
-	 * 1. Wait until STARTED.
-	 * @decorator `@boundMethod`
-	 * @decorator `@catchThrow()`
-	 */
-	@boundMethod
-	@catchThrow()
-	public async assart(onStopping?: OnStopping): Promise<void> {
-		return await this.state.assart(onStopping);
-	}
-
-	/**
-	 * - If it's STARTED now, then
-	 * 1. Stop.
-	 * 1. Wait until STOPPED.
-	 * - If it's STOPPING or STOPPED now, then
-	 * 1. Wait until STOPPED.
-	 * @decorator `@boundMethod`
-	 * @decorator `@catchThrow()`
-	 */
-	@boundMethod
-	@catchThrow()
-	public async stop(err?: Error): Promise<void> {
-		return await this.state.stop(err);
+	public start(onStopping?: OnStopping): PromiseLike<void> {
+		return this.state.start(onStopping);
 	}
 
 	/**
@@ -102,10 +80,13 @@ export abstract class Startable {
 	 */
 	@boundMethod
 	@catchThrow()
-	public async starp(err?: Error): Promise<void> {
-		return await this.state.starp(err);
+	public async stop(err?: Error): Promise<void> {
+		return await this.state.stop(err);
 	}
 
+	/**
+	 * @throws ReferenceError
+	 */
 	public getRunningPromise(): PromiseLike<void> {
 		return this.state.getRunningPromise();
 	}
@@ -138,19 +119,22 @@ export abstract class State {
 
 	public abstract postActivate(): void;
 	public abstract getReadyState(): ReadyState;
-	public abstract skart(onStopping?: OnStopping): void;
-	public abstract start(onStopping?: OnStopping): Promise<void>;
-	public abstract assart(onStopping?: OnStopping): Promise<void>;
+	public abstract start(onStopping?: OnStopping): PromiseLike<void>;
+	public abstract skart(err?: Error): void;
 	public abstract stop(err?: Error): Promise<void>;
-	public abstract starp(err?: Error): Promise<void>;
 	public abstract getRunningPromise(): PromiseLike<void>;
 }
 
-export class IncorrectState extends Error {
+export class StateError extends AssertionError {
 	public constructor(
-		action: string,
-		state: ReadyState,
+		public action: string,
+		actualState: ReadyState,
+		expectedStates?: ReadyState[],
 	) {
-		super(`Cannot ${action} during ${state}.`);
+		super({
+			expected: expectedStates,
+			actual: actualState,
+			operator: 'in',
+		});
 	}
 }
