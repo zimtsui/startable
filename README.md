@@ -4,7 +4,7 @@ Startable 是一个 JavaScript 的 Daemon 生命周期管理器。初衷是为�
 
 [API](./docs/index.html)
 
-## 功能分类
+## 服务
 
 - 任务
 - 服务
@@ -14,7 +14,7 @@ Startable 是一个 JavaScript 的 Daemon 生命周期管理器。初衷是为�
 
 	- 轮询式
 
-		用户占有线程，服务被调用。
+		用户占有线程，服务被调用。俗称资源。
 
 		新开一个线程写个循环转换为事件触发式。
 
@@ -33,9 +33,9 @@ C 语言打开一个文件的过程由内核确保事务性，打开失败等于
 
 ![转换关系](./conversion.png)
 
-## Daemon
+### Resource
 
-服务有以下特点
+资源有以下特点
 
 - 有一个异步的启动和停止过程
 
@@ -45,7 +45,9 @@ C 语言打开一个文件的过程由内核确保事务性，打开失败等于
 
 	比如一个 TCP Socket 连接时就没连上。
 
-Daemon 在服务的基础上另有以下轮询式服务没有的特点
+### Daemon
+
+Daemon 比资源多出以下特点
 
 - 停止过程可能自发开始
 
@@ -55,6 +57,7 @@ Daemon 在服务的基础上另有以下轮询式服务没有的特点
 
 Startable 是 JavaScript 的 Daemon 生命周期管理器，有了他你就可以把心思花在业务逻辑上。
 
+当然 Startable 也可以管理资源，毕竟资源可以被看成永不自发停止的 Daemon。
 
 ## Best practices
 
@@ -201,14 +204,12 @@ console.log(daemon.getReadyState());
 
 ```ts
 class Daemon implements DaemonLike {
-	public constructor(
-		private dep: Dep,
-	) {}
+	private child: DaemonLike;
 
 	private async rawStart() {
-		await dep.$s.start(this.$s.stop);
+		await child.$s.start(this.$s.stop);
 		await somePromise;
-		dep.someMethod(); // dep may be STOPPING.
+		child.someMethod(); // child may be STOPPING.
 	}
 }
 ```
