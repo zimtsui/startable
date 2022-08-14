@@ -61,7 +61,7 @@ Startable 是 JavaScript 的 Daemon 生命周期管理器，有了他你就可�
 当自己发生内部错误时，就应当调用自己的 `.stop()`，因为在语义上，此时自己已经结束了「正常提供服务中」的状态。
 
 ```ts
-class Daemon {
+class Daemon implements DaemonLike {
 	public $s = createStartable(
 		this.rawStart.bind(this),
 		this.rawStop.bind(this),
@@ -100,7 +100,7 @@ function stopDaemon() {
 - 只要有一个儿子自发开始停止过程，即这个儿子运行了他自己的 `.stop()`，那么爸爸也必须立即开始停止过程。因为在语义上，只要有一个儿子离开了「正常提供服务中」的状态，爸爸就算不上「正常提供服务中」的状态了。
 
 ```ts
-class Parent {
+class Parent implements DaemonLike {
 	private child1: Daemon;
 	private child2: Daemon;
 
@@ -123,7 +123,7 @@ class Parent {
 一个 Startable 的依赖也可能是外部注入的 Startable。
 
 ```ts
-class Daemon {
+class Daemon implements DaemonLike {
 	public constructor(
 		dep: Startable,
 	) { }
@@ -162,7 +162,7 @@ function stopDaemon() {
 ---
 
 ```ts
-class Daemon {
+class Daemon implements DaemonLike {
 	public constructor() {
 		this.someComponent.on('some fatal error', err => {
 			this.$s.stop(err)
@@ -200,7 +200,7 @@ console.log(daemon.getReadyState());
 ## 健壮性
 
 ```ts
-class Daemon {
+class Daemon implements DaemonLike {
 	public constructor(
 		private dep: Dep,
 	) {}
