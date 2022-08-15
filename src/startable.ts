@@ -20,38 +20,39 @@ export abstract class Startable {
 	protected abstract rawStart: RawStart;
 	protected abstract rawStop: RawStop;
 
-	public getReadyState(): ReadyState {
-		return this.state.getReadyState();
+	public getState(): ReadyState {
+		return this.state.getState();
 	}
 
 	/**
-	 * @throws StateError
+	 * @throws {@link StateError}
+	 * @defaultValue `[ReadyState.STARTED]`
 	 */
-	public assertReadyState(
+	public assertState(
 		action: string,
 		expected: ReadyState[] = [ReadyState.STARTED],
 	): void {
 		for (const state of expected)
-			if (this.getReadyState() === state)
+			if (this.getState() === state)
 				return;
 		throw new StateError(
 			action,
-			this.getReadyState(),
+			this.getState(),
 			expected,
 		);
 	}
 
 	/**
-	 * Skip from READY to STARTED.
+	 * Skip from `READY` to `STARTED`.
 	 */
 	public skart(startingError?: Error): void {
 		this.state.skart(startingError);
 	}
 
 	/**
-	 * 1. If it's READY now, then
+	 * 1. If it's `READY` now, then
 	 * 	1. Start.
-	 * 1. Return the promise of STARTING.
+	 * 1. Return the promise of `STARTING`.
 	 * @decorator `@boundMethod`
 	 * @throws ReferenceError
 	 */
@@ -61,17 +62,17 @@ export abstract class Startable {
 	}
 
 	/**
-	 * - If it's READY now, then
-	 * 	1. Skip to STOPPED.
-	 * - If it's STARTING now and `err` is given, then
-	 * 	1. Make the STARTING process throw `err`.
+	 * - If it's `READY` now, then
+	 * 	1. Skip to `STOPPED`.
+	 * - If it's `STARTING` now and `err` is given, then
+	 * 	1. Make the `STARTING` process throw `err`.
 	 * - Otherwise,
-	 * 	1. If it's STARTING now and `err` is not given, then
-	 * 		1. Wait until STARTED.
-	 * 	1. If it's STARTED now, then
+	 * 	1. If it's `STARTING` now and `err` is not given, then
+	 * 		1. Wait until `STARTED`.
+	 * 	1. If it's `STARTED` now, then
 	 * 		1. Stop.
-	 * 	1. If it's STOPPING or STOPPED now, then
-	 * 		1. Return the promise of STOPPING.
+	 * 	1. If it's `STOPPING` or `STOPPED` now, then
+	 * 		1. Return the promise of `STOPPING`.
 	 * @decorator `@boundMethod`
 	 * @decorator `@catchThrow()`
 	 */
@@ -84,8 +85,8 @@ export abstract class Startable {
 	/**
 	 * @throws ReferenceError
 	 */
-	public getRunningPromise(): PromiseLike<void> {
-		return this.state.getRunningPromise();
+	public getRunning(): PromiseLike<void> {
+		return this.state.getRunning();
 	}
 }
 
@@ -115,22 +116,22 @@ export abstract class State {
 	protected abstract host: Startable;
 
 	public abstract postActivate(): void;
-	public abstract getReadyState(): ReadyState;
+	public abstract getState(): ReadyState;
 	public abstract start(onStopping?: OnStopping): PromiseLike<void>;
 	public abstract skart(err?: Error): void;
 	public abstract stop(err?: Error): Promise<void>;
-	public abstract getRunningPromise(): PromiseLike<void>;
+	public abstract getRunning(): PromiseLike<void>;
 }
 
 export class StateError extends AssertionError {
 	public constructor(
 		public action: string,
-		actualState: ReadyState,
-		expectedStates?: ReadyState[],
+		actual: ReadyState,
+		expected?: ReadyState[],
 	) {
 		super({
-			expected: expectedStates,
-			actual: actualState,
+			expected,
+			actual,
 			operator: 'in',
 		});
 	}

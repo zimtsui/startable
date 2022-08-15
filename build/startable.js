@@ -19,28 +19,29 @@ var ReadyState;
     ReadyState["STOPPED"] = "STOPPED";
 })(ReadyState = exports.ReadyState || (exports.ReadyState = {}));
 class Startable {
-    getReadyState() {
-        return this.state.getReadyState();
+    getState() {
+        return this.state.getState();
     }
     /**
-     * @throws StateError
+     * @throws {@link StateError}
+     * @defaultValue `[ReadyState.STARTED]`
      */
-    assertReadyState(action, expected = [ReadyState.STARTED]) {
+    assertState(action, expected = [ReadyState.STARTED]) {
         for (const state of expected)
-            if (this.getReadyState() === state)
+            if (this.getState() === state)
                 return;
-        throw new StateError(action, this.getReadyState(), expected);
+        throw new StateError(action, this.getState(), expected);
     }
     /**
-     * Skip from READY to STARTED.
+     * Skip from `READY` to `STARTED`.
      */
     skart(startingError) {
         this.state.skart(startingError);
     }
     /**
-     * 1. If it's READY now, then
+     * 1. If it's `READY` now, then
      * 	1. Start.
-     * 1. Return the promise of STARTING.
+     * 1. Return the promise of `STARTING`.
      * @decorator `@boundMethod`
      * @throws ReferenceError
      */
@@ -48,17 +49,17 @@ class Startable {
         return this.state.start(onStopping);
     }
     /**
-     * - If it's READY now, then
-     * 	1. Skip to STOPPED.
-     * - If it's STARTING now and `err` is given, then
-     * 	1. Make the STARTING process throw `err`.
+     * - If it's `READY` now, then
+     * 	1. Skip to `STOPPED`.
+     * - If it's `STARTING` now and `err` is given, then
+     * 	1. Make the `STARTING` process throw `err`.
      * - Otherwise,
-     * 	1. If it's STARTING now and `err` is not given, then
-     * 		1. Wait until STARTED.
-     * 	1. If it's STARTED now, then
+     * 	1. If it's `STARTING` now and `err` is not given, then
+     * 		1. Wait until `STARTED`.
+     * 	1. If it's `STARTED` now, then
      * 		1. Stop.
-     * 	1. If it's STOPPING or STOPPED now, then
-     * 		1. Return the promise of STOPPING.
+     * 	1. If it's `STOPPING` or `STOPPED` now, then
+     * 		1. Return the promise of `STOPPING`.
      * @decorator `@boundMethod`
      * @decorator `@catchThrow()`
      */
@@ -68,8 +69,8 @@ class Startable {
     /**
      * @throws ReferenceError
      */
-    getRunningPromise() {
-        return this.state.getRunningPromise();
+    getRunning() {
+        return this.state.getRunning();
     }
 }
 __decorate([
@@ -87,10 +88,10 @@ class State {
 }
 exports.State = State;
 class StateError extends assert_1.AssertionError {
-    constructor(action, actualState, expectedStates) {
+    constructor(action, actual, expected) {
         super({
-            expected: expectedStates,
-            actual: actualState,
+            expected,
+            actual,
             operator: 'in',
         });
         this.action = action;

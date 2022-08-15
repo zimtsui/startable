@@ -48,7 +48,7 @@ export class Ready extends State {
 		this.host.state.postActivate();
 	}
 
-	public getReadyState(): ReadyState {
+	public getState(): ReadyState {
 		return ReadyState.READY;
 	}
 
@@ -63,7 +63,7 @@ export class Ready extends State {
 		this.host.state.postActivate();
 	}
 
-	public getRunningPromise(): PromiseLike<void> {
+	public getRunning(): PromiseLike<void> {
 		throw new StateError(
 			'getRunningPromise', ReadyState.READY,
 		);
@@ -121,7 +121,7 @@ export class Starting extends State {
 		}
 	}
 
-	public getReadyState(): ReadyState {
+	public getState(): ReadyState {
 		return ReadyState.STARTING;
 	}
 
@@ -131,7 +131,7 @@ export class Starting extends State {
 		);
 	}
 
-	public getRunningPromise(): PromiseLike<void> {
+	public getRunning(): PromiseLike<void> {
 		throw new StateError(
 			'getRunningPromise', ReadyState.STARTING,
 		);
@@ -193,7 +193,7 @@ export class Started extends State {
 		await this.host.stop();
 	}
 
-	public getReadyState(): ReadyState {
+	public getState(): ReadyState {
 		return ReadyState.STARTED;
 	}
 
@@ -203,7 +203,7 @@ export class Started extends State {
 		);
 	}
 
-	public getRunningPromise(): PromiseLike<void> {
+	public getRunning(): PromiseLike<void> {
 		return this.running;
 	}
 }
@@ -269,7 +269,7 @@ export class Stopping extends State {
 		await this.stoppingPromise;
 	}
 
-	public getReadyState(): ReadyState {
+	public getState(): ReadyState {
 		return ReadyState.STOPPING;
 	}
 
@@ -279,7 +279,7 @@ export class Stopping extends State {
 		);
 	}
 
-	public getRunningPromise(): PromiseLike<void> {
+	public getRunning(): PromiseLike<void> {
 		return this.runningPromise;
 	}
 }
@@ -327,7 +327,7 @@ export class Stopped extends State {
 		await this.stoppingPromise;
 	}
 
-	public getReadyState(): ReadyState {
+	public getState(): ReadyState {
 		return ReadyState.STOPPED;
 	}
 
@@ -337,7 +337,7 @@ export class Stopped extends State {
 		)
 	}
 
-	public getRunningPromise(): PromiseLike<void> {
+	public getRunning(): PromiseLike<void> {
 		assert(
 			this.runningPromise !== null,
 			new ReferenceError(),

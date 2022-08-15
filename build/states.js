@@ -34,7 +34,7 @@ class Ready extends startable_1.State {
         });
         this.host.state.postActivate();
     }
-    getReadyState() {
+    getState() {
         return startable_1.ReadyState.READY;
     }
     skart(err) {
@@ -46,7 +46,7 @@ class Ready extends startable_1.State {
         });
         this.host.state.postActivate();
     }
-    getRunningPromise() {
+    getRunning() {
         throw new startable_1.StateError('getRunningPromise', startable_1.ReadyState.READY);
     }
 }
@@ -95,13 +95,13 @@ class Starting extends startable_1.State {
             await this.host.stop();
         }
     }
-    getReadyState() {
+    getState() {
         return startable_1.ReadyState.STARTING;
     }
     skart(err) {
         throw new startable_1.StateError('skart', startable_1.ReadyState.STARTING);
     }
-    getRunningPromise() {
+    getRunning() {
         throw new startable_1.StateError('getRunningPromise', startable_1.ReadyState.STARTING);
     }
 }
@@ -148,13 +148,13 @@ class Started extends startable_1.State {
         this.host.state.postActivate();
         await this.host.stop();
     }
-    getReadyState() {
+    getState() {
         return startable_1.ReadyState.STARTED;
     }
     skart(err) {
         throw new startable_1.StateError('skart', startable_1.ReadyState.STARTED);
     }
-    getRunningPromise() {
+    getRunning() {
         return this.running;
     }
 }
@@ -202,13 +202,13 @@ class Stopping extends startable_1.State {
     async stop(err) {
         await this.stoppingPromise;
     }
-    getReadyState() {
+    getState() {
         return startable_1.ReadyState.STOPPING;
     }
     skart(err) {
         throw new startable_1.StateError('skart', startable_1.ReadyState.STOPPING);
     }
-    getRunningPromise() {
+    getRunning() {
         return this.runningPromise;
     }
 }
@@ -240,13 +240,13 @@ class Stopped extends startable_1.State {
     async stop() {
         await this.stoppingPromise;
     }
-    getReadyState() {
+    getState() {
         return startable_1.ReadyState.STOPPED;
     }
     skart(err) {
         throw new startable_1.StateError('skart', startable_1.ReadyState.STOPPED);
     }
-    getRunningPromise() {
+    getRunning() {
         assert(this.runningPromise !== null, new ReferenceError());
         return this.runningPromise;
     }

@@ -6,9 +6,9 @@ export declare class Ready extends State {
     postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;
     stop(err?: Error): Promise<void>;
-    getReadyState(): ReadyState;
+    getState(): ReadyState;
     skart(err?: Error): void;
-    getRunningPromise(): PromiseLike<void>;
+    getRunning(): PromiseLike<void>;
 }
 export declare class Starting extends State {
     protected host: Friendly;
@@ -21,9 +21,9 @@ export declare class Starting extends State {
     postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;
     stop(err?: Error): Promise<void>;
-    getReadyState(): ReadyState;
+    getState(): ReadyState;
     skart(err?: Error): never;
-    getRunningPromise(): PromiseLike<void>;
+    getRunning(): PromiseLike<void>;
 }
 export declare class Started extends State {
     protected host: Friendly;
@@ -39,9 +39,9 @@ export declare class Started extends State {
     postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;
     stop(runningError?: Error): Promise<void>;
-    getReadyState(): ReadyState;
+    getState(): ReadyState;
     skart(err?: Error): never;
-    getRunningPromise(): PromiseLike<void>;
+    getRunning(): PromiseLike<void>;
 }
 export declare class Stopping extends State {
     protected host: Friendly;
@@ -60,9 +60,9 @@ export declare class Stopping extends State {
     postActivate(): void;
     start(onStopping?: OnStopping): Promise<void>;
     stop(err?: Error): Promise<void>;
-    getReadyState(): ReadyState;
+    getState(): ReadyState;
     skart(err?: Error): never;
-    getRunningPromise(): PromiseLike<void>;
+    getRunning(): PromiseLike<void>;
 }
 export declare class Stopped extends State {
     protected host: Friendly;
@@ -79,7 +79,7 @@ export declare class Stopped extends State {
     postActivate(): void;
     start(onStopping?: OnStopping): PromiseLike<void>;
     stop(): Promise<void>;
-    getReadyState(): ReadyState;
+    getState(): ReadyState;
     skart(err?: Error): void;
-    getRunningPromise(): PromiseLike<void>;
+    getRunning(): PromiseLike<void>;
 }
