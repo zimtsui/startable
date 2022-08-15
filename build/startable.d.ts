@@ -1,5 +1,5 @@
 import { AssertionError } from 'assert';
-export declare const enum ReadyState {
+export declare enum ReadyState {
     READY = "READY",
     STARTING = "STARTING",
     STARTED = "STARTED",
@@ -23,10 +23,8 @@ export declare abstract class Startable {
      */
     skart(startingError?: Error): void;
     /**
-     * - If it's READY now, then
-     * 1. Start.
-     * 1. Return the promise of STARTING.
-     * - Otherwise,
+     * 1. If it's READY now, then
+     * 	1. Start.
      * 1. Return the promise of STARTING.
      * @decorator `@boundMethod`
      * @throws ReferenceError
@@ -34,18 +32,16 @@ export declare abstract class Startable {
     start(onStopping?: OnStopping): PromiseLike<void>;
     /**
      * - If it's READY now, then
-     * 1. Skip to STOPPED.
+     * 	1. Skip to STOPPED.
      * - If it's STARTING now and `err` is given, then
-     * 1. Make the STARTING process throw `err`.
-     * - If it's STARTING now and `err` is not given, then
-     * 1. Wait until STARTED.
-     * 1. Stop.
-     * 1. Wait until STOPPED.
-     * - If it's STARTED now, then
-     * 1. Stop.
-     * 1. Wait until STOPPED.
-     * - If it's STOPPING or STOPPED now, then
-     * 1. Wait until STOPPED.
+     * 	1. Make the STARTING process throw `err`.
+     * - Otherwise,
+     * 	1. If it's STARTING now and `err` is not given, then
+     * 		1. Wait until STARTED.
+     * 	1. If it's STARTED now, then
+     * 		1. Stop.
+     * 	1. If it's STOPPING or STOPPED now, then
+     * 		1. Return the promise of STOPPING.
      * @decorator `@boundMethod`
      * @decorator `@catchThrow()`
      */

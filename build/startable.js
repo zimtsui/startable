@@ -6,10 +6,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StateError = exports.State = exports.Friendly = exports.Startable = void 0;
+exports.StateError = exports.State = exports.Friendly = exports.Startable = exports.ReadyState = void 0;
 const autobind_decorator_1 = require("autobind-decorator");
 const catch_throw_1 = require("./catch-throw");
 const assert_1 = require("assert");
+var ReadyState;
+(function (ReadyState) {
+    ReadyState["READY"] = "READY";
+    ReadyState["STARTING"] = "STARTING";
+    ReadyState["STARTED"] = "STARTED";
+    ReadyState["STOPPING"] = "STOPPING";
+    ReadyState["STOPPED"] = "STOPPED";
+})(ReadyState = exports.ReadyState || (exports.ReadyState = {}));
 class Startable {
     getReadyState() {
         return this.state.getReadyState();
@@ -17,7 +25,7 @@ class Startable {
     /**
      * @throws StateError
      */
-    assertReadyState(action, expected = ["STARTED" /* STARTED */]) {
+    assertReadyState(action, expected = [ReadyState.STARTED]) {
         for (const state of expected)
             if (this.getReadyState() === state)
                 return;
@@ -30,10 +38,8 @@ class Startable {
         this.state.skart(startingError);
     }
     /**
-     * - If it's READY now, then
-     * 1. Start.
-     * 1. Return the promise of STARTING.
-     * - Otherwise,
+     * 1. If it's READY now, then
+     * 	1. Start.
      * 1. Return the promise of STARTING.
      * @decorator `@boundMethod`
      * @throws ReferenceError
@@ -43,18 +49,16 @@ class Startable {
     }
     /**
      * - If it's READY now, then
-     * 1. Skip to STOPPED.
+     * 	1. Skip to STOPPED.
      * - If it's STARTING now and `err` is given, then
-     * 1. Make the STARTING process throw `err`.
-     * - If it's STARTING now and `err` is not given, then
-     * 1. Wait until STARTED.
-     * 1. Stop.
-     * 1. Wait until STOPPED.
-     * - If it's STARTED now, then
-     * 1. Stop.
-     * 1. Wait until STOPPED.
-     * - If it's STOPPING or STOPPED now, then
-     * 1. Wait until STOPPED.
+     * 	1. Make the STARTING process throw `err`.
+     * - Otherwise,
+     * 	1. If it's STARTING now and `err` is not given, then
+     * 		1. Wait until STARTED.
+     * 	1. If it's STARTED now, then
+     * 		1. Stop.
+     * 	1. If it's STOPPING or STOPPED now, then
+     * 		1. Return the promise of STOPPING.
      * @decorator `@boundMethod`
      * @decorator `@catchThrow()`
      */

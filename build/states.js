@@ -25,7 +25,7 @@ class Ready extends startable_1.State {
         await this.host.start();
     }
     async stop(err) {
-        assert(typeof err === 'undefined', new startable_1.StateError('stop with an exception', "READY" /* READY */));
+        assert(typeof err === 'undefined', new startable_1.StateError('stop with an exception', startable_1.ReadyState.READY));
         this.host.state = new Stopped(this.host, {
             startingPromise: null,
             runningPromise: null,
@@ -35,7 +35,7 @@ class Ready extends startable_1.State {
         this.host.state.postActivate();
     }
     getReadyState() {
-        return "READY" /* READY */;
+        return startable_1.ReadyState.READY;
     }
     skart(err) {
         const startingError = err || null;
@@ -47,7 +47,7 @@ class Ready extends startable_1.State {
         this.host.state.postActivate();
     }
     getRunningPromise() {
-        throw new startable_1.StateError('getRunningPromise', "READY" /* READY */);
+        throw new startable_1.StateError('getRunningPromise', startable_1.ReadyState.READY);
     }
 }
 __decorate([
@@ -88,7 +88,7 @@ class Starting extends startable_1.State {
     async stop(err) {
         if (err) {
             this.startingErrors.push(err);
-            throw new startable_1.StateError('stop', "STARTING" /* STARTING */);
+            throw new startable_1.StateError('stop', startable_1.ReadyState.STARTING);
         }
         else {
             await this.startingPromise.catch(() => { });
@@ -96,13 +96,13 @@ class Starting extends startable_1.State {
         }
     }
     getReadyState() {
-        return "STARTING" /* STARTING */;
+        return startable_1.ReadyState.STARTING;
     }
     skart(err) {
-        throw new startable_1.StateError('skart', "STARTING" /* STARTING */);
+        throw new startable_1.StateError('skart', startable_1.ReadyState.STARTING);
     }
     getRunningPromise() {
-        throw new startable_1.StateError('getRunningPromise', "STARTING" /* STARTING */);
+        throw new startable_1.StateError('getRunningPromise', startable_1.ReadyState.STARTING);
     }
 }
 __decorate([
@@ -149,10 +149,10 @@ class Started extends startable_1.State {
         await this.host.stop();
     }
     getReadyState() {
-        return "STARTED" /* STARTED */;
+        return startable_1.ReadyState.STARTED;
     }
     skart(err) {
-        throw new startable_1.StateError('skart', "STARTED" /* STARTED */);
+        throw new startable_1.StateError('skart', startable_1.ReadyState.STARTED);
     }
     getRunningPromise() {
         return this.running;
@@ -203,10 +203,10 @@ class Stopping extends startable_1.State {
         await this.stoppingPromise;
     }
     getReadyState() {
-        return "STOPPING" /* STOPPING */;
+        return startable_1.ReadyState.STOPPING;
     }
     skart(err) {
-        throw new startable_1.StateError('skart', "STOPPING" /* STOPPING */);
+        throw new startable_1.StateError('skart', startable_1.ReadyState.STOPPING);
     }
     getRunningPromise() {
         return this.runningPromise;
@@ -241,10 +241,10 @@ class Stopped extends startable_1.State {
         await this.stoppingPromise;
     }
     getReadyState() {
-        return "STOPPED" /* STOPPED */;
+        return startable_1.ReadyState.STOPPED;
     }
     skart(err) {
-        throw new startable_1.StateError('skart', "STOPPED" /* STOPPED */);
+        throw new startable_1.StateError('skart', startable_1.ReadyState.STOPPED);
     }
     getRunningPromise() {
         assert(this.runningPromise !== null, new ReferenceError());
