@@ -1,34 +1,29 @@
-import {
-    createStartable,
-    ReadyState,
-    StateError,
-} from '../..';
-import sinon = require('sinon');
-import test from 'ava';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const __1 = require("../..");
+const sinon = require("sinon");
+const ava_1 = require("ava");
 const { fake } = sinon;
-import assert = require('assert');
-
-
+const assert = require("assert");
 class StartError extends Error {
-    public constructor() {
+    constructor() {
         super('');
     }
 }
 class StopError extends Error {
-    public constructor() {
+    constructor() {
         super('');
     }
 }
-
-test('start succ stop succ', async t => {
+(0, ava_1.default)('start succ stop succ', async (t) => {
     const f = fake();
-    const s = createStartable(() => {
+    const s = (0, __1.createStartable)(() => {
         f();
-        assert(s.getReadyState() === ReadyState.STARTING);
+        assert(s.getReadyState() === __1.ReadyState.STARTING);
         return Promise.resolve();
     }, () => {
         f();
-        assert(s.getReadyState() === ReadyState.STOPPING);
+        assert(s.getReadyState() === __1.ReadyState.STOPPING);
         return Promise.resolve();
     });
     s.start();
@@ -38,10 +33,9 @@ test('start succ stop succ', async t => {
     await s.getRunningPromise();
     assert(f.callCount === 2);
 });
-
-test('start succ stop fail', async t => {
+(0, ava_1.default)('start succ stop fail', async (t) => {
     const f = fake();
-    const s = createStartable(() => {
+    const s = (0, __1.createStartable)(() => {
         f();
         return Promise.resolve();
     }, () => {
@@ -54,10 +48,9 @@ test('start succ stop fail', async t => {
     await s.getRunningPromise();
     assert(f.callCount === 2);
 });
-
-test('start fail stop succ', async t => {
+(0, ava_1.default)('start fail stop succ', async (t) => {
     const f = fake();
-    const s = createStartable(() => {
+    const s = (0, __1.createStartable)(() => {
         f();
         return Promise.reject(new StartError());
     }, () => {
@@ -71,10 +64,9 @@ test('start fail stop succ', async t => {
     await s.getRunningPromise();
     assert(f.callCount === 2);
 });
-
-test('start fail stop fail', async t => {
+(0, ava_1.default)('start fail stop fail', async (t) => {
     const f = fake();
-    const s = createStartable(() => {
+    const s = (0, __1.createStartable)(() => {
         f();
         return Promise.reject(new StartError());
     }, () => {
@@ -88,13 +80,12 @@ test('start fail stop fail', async t => {
     await s.getRunningPromise();
     assert(f.callCount === 2);
 });
-
-test('stop during starting', async t => {
+(0, ava_1.default)('stop during starting', async (t) => {
     const f = fake();
-    let resolveStart: () => void;
-    const s = createStartable(() => {
+    let resolveStart;
+    const s = (0, __1.createStartable)(() => {
         f();
-        return new Promise<void>(resolve => {
+        return new Promise(resolve => {
             resolveStart = resolve;
         });
     }, () => {
@@ -102,11 +93,13 @@ test('stop during starting', async t => {
         return Promise.resolve();
     });
     const pStart = Promise.resolve(s.start());
-    class StopCalledDuringStarting extends Error { }
+    class StopCalledDuringStarting extends Error {
+    }
     const pStop = s.stop(new StopCalledDuringStarting());
-    resolveStart!();
+    resolveStart();
     await assert.rejects(pStart, StopCalledDuringStarting);
-    await assert.rejects(pStop, StateError);
+    await assert.rejects(pStop, __1.StateError);
     await s.stop();
     assert(f.callCount === 2);
 });
+//# sourceMappingURL=test.js.map

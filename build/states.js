@@ -25,7 +25,7 @@ class Ready extends startable_1.State {
         await this.host.start();
     }
     async stop(err) {
-        assert(typeof err === 'undefined', new startable_1.StateError('stop with an exception', startable_1.ReadyState.READY));
+        assert(!(err instanceof Error), new startable_1.StateError('stop with an exception', startable_1.ReadyState.READY));
         this.host.state = new Stopped(this.host, {
             startingPromise: null,
             runningPromise: null,

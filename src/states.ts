@@ -32,7 +32,7 @@ export class Ready extends State {
 
 	public async stop(err?: Error): Promise<void> {
 		assert(
-			typeof err === 'undefined',
+			!(err instanceof Error),
 			new StateError(
 				'stop with an exception',
 				ReadyState.READY,
