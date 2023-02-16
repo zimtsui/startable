@@ -26,11 +26,11 @@ class Startable {
      * @throws {@link StateError}
      * @defaultValue `[ReadyState.STARTED]`
      */
-    assertState(action, expected = [ReadyState.STARTED]) {
+    assertState(expected = [ReadyState.STARTED]) {
         for (const state of expected)
             if (this.getState() === state)
                 return;
-        throw new StateError(action, this.getState(), expected);
+        throw new StateError(this.getState(), expected);
     }
     /**
      * Skip from `READY` to `STARTED`.
@@ -88,13 +88,12 @@ class State {
 }
 exports.State = State;
 class StateError extends assert_1.AssertionError {
-    constructor(action, actual, expected) {
+    constructor(actual, expected) {
         super({
             expected,
             actual,
             operator: 'in',
         });
-        this.action = action;
     }
 }
 exports.StateError = StateError;

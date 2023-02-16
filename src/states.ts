@@ -33,10 +33,7 @@ export class Ready extends State {
 	public async stop(err?: Error): Promise<void> {
 		assert(
 			!(err instanceof Error),
-			new StateError(
-				'stop with an exception',
-				ReadyState.READY,
-			),
+			new StateError(ReadyState.READY),
 		);
 		this.host.state = new Stopped(
 			this.host, {
@@ -64,9 +61,7 @@ export class Ready extends State {
 	}
 
 	public getRunning(): PromiseLike<void> {
-		throw new StateError(
-			'getRunningPromise', ReadyState.READY,
-		);
+		throw new StateError(ReadyState.READY);
 	}
 }
 
@@ -114,7 +109,7 @@ export class Starting extends State {
 	public async stop(err?: Error): Promise<void> {
 		if (err) {
 			this.startingErrors.push(err);
-			throw new StateError('stop', ReadyState.STARTING);
+			throw new StateError(ReadyState.STARTING);
 		} else {
 			await this.startingPromise.catch(() => { });
 			await this.host.stop();
@@ -126,15 +121,11 @@ export class Starting extends State {
 	}
 
 	public skart(err?: Error): never {
-		throw new StateError(
-			'skart', ReadyState.STARTING,
-		);
+		throw new StateError(ReadyState.STARTING);
 	}
 
 	public getRunning(): PromiseLike<void> {
-		throw new StateError(
-			'getRunningPromise', ReadyState.STARTING,
-		);
+		throw new StateError(ReadyState.STARTING);
 	}
 }
 
@@ -198,9 +189,7 @@ export class Started extends State {
 	}
 
 	public skart(err?: Error): never {
-		throw new StateError(
-			'skart', ReadyState.STARTED,
-		);
+		throw new StateError(ReadyState.STARTED);
 	}
 
 	public getRunning(): PromiseLike<void> {
@@ -274,9 +263,7 @@ export class Stopping extends State {
 	}
 
 	public skart(err?: Error): never {
-		throw new StateError(
-			'skart', ReadyState.STOPPING,
-		);
+		throw new StateError(ReadyState.STOPPING);
 	}
 
 	public getRunning(): PromiseLike<void> {
@@ -332,9 +319,7 @@ export class Stopped extends State {
 	}
 
 	public skart(err?: Error): void {
-		throw new StateError(
-			'skart', ReadyState.STOPPED,
-		)
+		throw new StateError(ReadyState.STOPPED);
 	}
 
 	public getRunning(): PromiseLike<void> {

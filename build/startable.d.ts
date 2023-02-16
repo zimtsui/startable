@@ -18,7 +18,7 @@ export declare abstract class Startable {
      * @throws {@link StateError}
      * @defaultValue `[ReadyState.STARTED]`
      */
-    assertState(action: string, expected?: ReadyState[]): void;
+    assertState(expected?: ReadyState[]): void;
     /**
      * Skip from `READY` to `STARTED`.
      */
@@ -79,6 +79,5 @@ export declare abstract class State {
     abstract getRunning(): PromiseLike<void>;
 }
 export declare class StateError extends AssertionError {
-    action: string;
-    constructor(action: string, actual: ReadyState, expected?: ReadyState[]);
+    constructor(actual: ReadyState, expected?: ReadyState[]);
 }

@@ -29,14 +29,12 @@ export abstract class Startable {
 	 * @defaultValue `[ReadyState.STARTED]`
 	 */
 	public assertState(
-		action: string,
 		expected: ReadyState[] = [ReadyState.STARTED],
 	): void {
 		for (const state of expected)
 			if (this.getState() === state)
 				return;
 		throw new StateError(
-			action,
 			this.getState(),
 			expected,
 		);
@@ -125,7 +123,6 @@ export abstract class State {
 
 export class StateError extends AssertionError {
 	public constructor(
-		public action: string,
 		actual: ReadyState,
 		expected?: ReadyState[],
 	) {
