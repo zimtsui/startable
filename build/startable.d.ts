@@ -14,7 +14,7 @@ export declare abstract class State implements StartableLike {
 export interface Startable extends StartableLike {
     getState(): ReadyState;
     /**
-     * @throws {@link StateError}
+     * @throws {@link Startable.StateError}
      * @defaultValue `[ReadyState.STARTED]`
      */
     assertState(expected: ReadyState[]): void;
@@ -52,12 +52,12 @@ export interface Startable extends StartableLike {
     getRunning(): PromiseLike<void>;
 }
 export declare namespace Startable {
-    function create(rawStart: RawStart, rawStop: RawStop): Startable;
     export import RawStart = Interfaces.RawStart;
     export import RawStop = Interfaces.RawStop;
     export import OnStopping = Interfaces.OnStopping;
     export import ReadyState = Interfaces.ReadyState;
     export import StateError = Interfaces.StateError;
+    function create(rawStart: RawStart, rawStop: RawStop): Startable;
 }
 export declare class Friendly implements Startable {
     rawStart: RawStart;
@@ -65,7 +65,7 @@ export declare class Friendly implements Startable {
     state: State;
     constructor(rawStart: RawStart, rawStop: RawStop);
     getState(): ReadyState;
-    assertState(expected: ReadyState[]): void;
+    assertState(expected?: ReadyState[]): void;
     skart(startingError?: Error): void;
     start(onStopping?: OnStopping): PromiseLike<void>;
     stop(err?: Error): Promise<void>;

@@ -18,12 +18,12 @@ class State {
 exports.State = State;
 var Startable;
 (function (Startable) {
+    Startable.ReadyState = Interfaces.ReadyState;
+    Startable.StateError = Interfaces.StateError;
     function create(rawStart, rawStop) {
         return new Friendly(rawStart, rawStop);
     }
     Startable.create = create;
-    Startable.ReadyState = Interfaces.ReadyState;
-    Startable.StateError = Interfaces.StateError;
 })(Startable = exports.Startable || (exports.Startable = {}));
 class Friendly {
     constructor(rawStart, rawStop) {
@@ -35,7 +35,7 @@ class Friendly {
     getState() {
         return this.state.getState();
     }
-    assertState(expected) {
+    assertState(expected = [interfaces_1.ReadyState.STARTED]) {
         this.state.assertState(expected);
     }
     skart(startingError) {

@@ -1,8 +1,5 @@
 # NodeJS
 /node_modules
 
-# dia
-*.dia~
-
-# libreoffce
-.~lock.*#
+# typedoc
+/typedoc.json

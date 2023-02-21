@@ -24,7 +24,7 @@ export interface Startable extends StartableLike {
 	getState(): ReadyState;
 
 	/**
-	 * @throws {@link StateError}
+	 * @throws {@link Startable.StateError}
 	 * @defaultValue `[ReadyState.STARTED]`
 	 */
 	assertState(expected: ReadyState[]): void;
@@ -66,6 +66,12 @@ export interface Startable extends StartableLike {
 	getRunning(): PromiseLike<void>;
 }
 export namespace Startable {
+	export import RawStart = Interfaces.RawStart;
+	export import RawStop = Interfaces.RawStop;
+	export import OnStopping = Interfaces.OnStopping;
+	export import ReadyState = Interfaces.ReadyState;
+	export import StateError = Interfaces.StateError;
+
 	export function create(
 		rawStart: RawStart,
 		rawStop: RawStop,
@@ -75,12 +81,6 @@ export namespace Startable {
 			rawStop,
 		);
 	}
-
-	export import RawStart = Interfaces.RawStart;
-	export import RawStop = Interfaces.RawStop;
-	export import OnStopping = Interfaces.OnStopping;
-	export import ReadyState = Interfaces.ReadyState;
-	export import StateError = Interfaces.StateError;
 }
 
 
@@ -100,7 +100,9 @@ export class Friendly implements Startable {
 		return this.state.getState();
 	}
 
-	public assertState(expected: ReadyState[]): void {
+	public assertState(
+		expected: ReadyState[] = [ReadyState.STARTED],
+	): void {
 		this.state.assertState(expected);
 	}
 
