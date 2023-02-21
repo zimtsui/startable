@@ -1,60 +1,103 @@
-<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>startable</title><meta name="description" content="Documentation for startable"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">startable</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>startable </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>startable</title><meta name="description" content="Documentation for startable"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base=".">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">startable</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-8 col-content">
+<div class="tsd-page-title">
+<h2>startable</h2></div>
+<div class="tsd-panel tsd-typography">
 <a href="#startable" id="startable" style="color: inherit; text-decoration: none;">
   <h1>Startable</h1>
 </a>
 <p>Startable 是一个 JavaScript 的 Daemon 生命周期管理器。初衷是为了适配阿里开源 Node.js 进程管理器 <a href="https://github.com/midwayjs/pandora">Pandora</a>。</p>
 <p><a href="./docs/index.html">API</a></p>
 
-<a href="#服务" id="服务" style="color: inherit; text-decoration: none;">
-  <h2>服务</h2>
+<a href="#任务和服务" id="任务和服务" style="color: inherit; text-decoration: none;">
+  <h2>任务和服务</h2>
 </a>
 <ul>
-<li>任务</li>
-<li>服务<ul>
-<li><p>事件触发式</p>
+<li><p>任务/Job/Task</p>
+<p>  运行时间与性能有关，性能越强，运行时间越短。</p>
+<p>  例如，批处理脚本。</p>
+</li>
+<li><p>服务</p>
+<ul>
+<li><p>事件触发式/回调式</p>
 <p>  服务占有线程，用户被调用。俗称 Daemon。</p>
+<p>  有可能自己挂掉。例如 Node.js 中一个 TCP 连接，就是一个事件触发式服务。他本身占用协程，如果底层连接断了，会触发事件。</p>
 </li>
 <li><p>轮询式</p>
-<p>  用户占有线程，服务被调用。俗称资源。</p>
-<p>  新开一个线程写个循环转换为事件触发式。</p>
+<p>  <strong>用户是一个任务</strong>，占有线程，服务被调用。俗称资源。</p>
+<p>  不会自己挂掉。例如 C 语言中一个文件描述符就是一个轮询式服务，向用户提供文件访问服务。他本身不占用线程，如果某时刻底层资源挂了，只要不去读这个文件描述符，用户态就永远不知道底层资源挂了。</p>
+</li>
+</ul>
+</li>
+</ul>
+
+<a href="#转换" id="转换" style="color: inherit; text-decoration: none;">
+  <h3>转换</h3>
+</a>
+<p>轮询式不可多路复用，将轮询式转换为事件触发式</p>
 <ul>
-<li>阻塞式读写单条消息（使用 libev 转换为回调式）</li>
-<li>回调式读写单条消息</li>
+<li>新开一个线程写一个循环</li>
+<li>libev</li>
 </ul>
-</li>
+<p>将事件触发式转换为轮询式</p>
+<ul>
+<li>Semaphore queue</li>
 </ul>
-</li>
+<p>将轮询任务，即轮询式服务的用户，转换为可启停的事件触发式服务</p>
+<ul>
+<li>Pollerloop</li>
 </ul>
-<p>C 语言中一个文件描述符就是一个轮询式服务，向用户提供文件访问服务。他本身不占用线程，如果某时刻底层资源挂了，只要不去读这个文件描述符，用户态就永远不知道底层资源挂了。</p>
-<p>绝大多数消息传递过程，消息汇的性能都远大于消息源。所以事件触发式消息汇很少见，否则消息源会不停地收到「需要消息」的事件。</p>
-<p>Nodejs 中一个 TCP 连接，就是一个事件触发式服务。他本身占用协程，如果底层连接断了，会触发事件。</p>
+<p>将轮询任务，即轮询式服务的用户，转换为可启停的轮询式服务</p>
+<ul>
+<li>Generator</li>
+</ul>
 <p>JavaScript 协程是协作式调度，与抢占式调度相比的优势在于状态切换的过程具有天然事务性。抢占式切换状态需要给状态加锁。</p>
-<p>C 语言打开一个文件的过程由内核确保事务性，打开失败等于梅开。而用户态服务的启动过程如果失败了，内部组件可能开了一半，处于不一致状态，因此打开失败后也必须关闭。</p>
-<p><img src="./conversion.png" alt="转换关系"></p>
 
-<a href="#resource" id="resource" style="color: inherit; text-decoration: none;">
-  <h3>Resource</h3>
+<a href="#服务之间的依赖性" id="服务之间的依赖性" style="color: inherit; text-decoration: none;">
+  <h3>服务之间的依赖性</h3>
 </a>
-<p>资源有以下特点</p>
-<ul>
-<li><p>有一个异步的启动和停止过程</p>
-<p>  比如一个 TCP Socket 有一个异步的握手和挥手的过程。</p>
-</li>
-<li><p>启停过程本身也可能发生异常而失败</p>
-<p>  比如一个 TCP Socket 连接时就没连上。</p>
-</li>
-</ul>
+<p>一个服务可能依赖多个其他服务，可以是聚合也可以是组合。只有子服务全部离开启动阶段，父服务才算离开启动阶段；只要有一个子服务进入停止阶段，父服务就算进入停止阶段。</p>
 
-<a href="#daemon" id="daemon" style="color: inherit; text-decoration: none;">
-  <h3>Daemon</h3>
+<a href="#服务启停的事务性" id="服务启停的事务性" style="color: inherit; text-decoration: none;">
+  <h3>服务启停的事务性</h3>
 </a>
-<p>Daemon 比资源多出以下特点</p>
+<p>启停过程本身可能发生异常而失败比如一个 TCP Socket 连接时就没连上。</p>
+<p>C 语言打开一个文件的过程由内核确保事务性，打开失败等于没开。而用户态服务的启动过程如果失败了，内部组件可能开了一半，处于不一致状态，因此打开失败后也必须关闭。</p>
+<!-- ![转换关系](./conversion.png) -->
+
+
+<a href="#服务启停的异步性" id="服务启停的异步性" style="color: inherit; text-decoration: none;">
+  <h3>服务启停的异步性</h3>
+</a>
+<p>服务可以有一个异步的启动和停止过程，用户需要等待启停过程结束。</p>
+<p>例如一个 TCP Socket 有一个异步的握手和挥手的过程。</p>
+
+<a href="#daemon-启停的自发性" id="daemon-启停的自发性" style="color: inherit; text-decoration: none;">
+  <h3>Daemon 启停的自发性</h3>
+</a>
+<p>Daemon 停止过程可能自发开始。</p>
+<p>例如比如一个 TCP Socket 可能因可能因网络中断而离开了「正常提供服务中」的状态，不得不自发开始停止过程。</p>
+<p>当然资源底层也可能随时挂掉，但接口层面不知道，挂掉之后继续使用会抛出定义的错误。而 Daemon 底层挂掉之后，接口层会被通知，挂掉之后继续使用会导致未定义的后果。</p>
+
+<a href="#daemon-的工程难度" id="daemon-的工程难度" style="color: inherit; text-decoration: none;">
+  <h3>Daemon 的工程难度</h3>
+</a>
+<p>写 Daemon 的麻烦之处在于</p>
 <ul>
-<li><p>停止过程可能自发开始</p>
-<p>  比如一个 TCP Socket 可能因可能因网络中断而离开了「正常提供服务中」的状态，不得不自发开始停止过程。</p>
-</li>
+<li>父服务处于启动阶段中时，某个已经离开启动阶段的子服务挂掉了，并调用了父服务的停止函数。最终导致父服务在启动阶段被调用了停止函数。</li>
+<li>父服务处于停止阶段中时，某个还未进入停止阶段的子服务挂掉了，并调用了父服务的停止函数。最终导致父服务在停止阶段被重复调用了停止函数。</li>
 </ul>
-<p>写 Daemon 的麻烦之处在于，底层资源可能在 Daemon 生命周期的任何阶段挂掉，可能在启动停止过程中挂掉。</p>
+<p>底层资源可能在 Daemon 生命周期的任何阶段挂掉，可能在启动停止过程中挂掉。</p>
 <p>Startable 是 JavaScript 的 Daemon 生命周期管理器，有了他你就可以把心思花在业务逻辑上。</p>
 <p>当然 Startable 也可以管理资源，毕竟资源可以被看成永不自发停止的 Daemon。</p>
 
@@ -118,4 +161,30 @@
 </code></pre>
 <p>因此 Daemon 的所有公共方法务必确保健壮性，要么返回正确结果，要么抛出，不能导致不一致的不可预料结果。</p>
 <p>所有 async 公共方法，如果过程中进入 STOPPING，同样要么返回正确结果，要么抛出。</p>
-</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-enum"><a href="enums/ReadyState.html" class="tsd-kind-icon">Ready<wbr/>State</a></li><li class="tsd-kind-class"><a href="classes/Startable.html" class="tsd-kind-icon">Startable</a></li><li class="tsd-kind-class"><a href="classes/StateError.html" class="tsd-kind-icon">State<wbr/>Error</a></li><li class="tsd-kind-interface"><a href="interfaces/DaemonLike.html" class="tsd-kind-icon">Daemon<wbr/>Like</a></li><li class="tsd-kind-interface"><a href="interfaces/OnStopping.html" class="tsd-kind-icon">On<wbr/>Stopping</a></li><li class="tsd-kind-interface"><a href="interfaces/RawStart.html" class="tsd-kind-icon">Raw<wbr/>Start</a></li><li class="tsd-kind-interface"><a href="interfaces/RawStop.html" class="tsd-kind-icon">Raw<wbr/>Stop</a></li><li class="tsd-kind-function"><a href="modules.html#createStartable" class="tsd-kind-icon">create<wbr/>Startable</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
+</div></div>
+<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<nav class="tsd-navigation primary">
+<details class="tsd-index-accordion" open><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Modules</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li class="current selected"><a href="modules.html">startable</a>
+<ul>
+<li class="tsd-kind-namespace"><a href="modules/Startable.html">Startable</a></li></ul></li></ul></div></details></nav>
+<nav class="tsd-navigation secondary menu-sticky">
+<ul>
+<li class="tsd-kind-interface"><a href="interfaces/Startable-1.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-256-path"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)" id="icon-256-text"></path></svg>Startable</a></li></ul></nav></div></div>
+<div class="container tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div><script src="assets/main.js"></script></body></html>

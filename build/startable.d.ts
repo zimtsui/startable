@@ -1,24 +1,23 @@
-import { AssertionError } from 'assert';
-export declare enum ReadyState {
-    READY = "READY",
-    STARTING = "STARTING",
-    STARTED = "STARTED",
-    STOPPING = "STOPPING",
-    STOPPED = "STOPPED"
+import { StartableLike, ReadyState, OnStopping, RawStart, RawStop } from './interfaces';
+import * as Interfaces from './interfaces';
+import { ManualPromise } from '@zimtsui/manual-promise';
+export declare abstract class State implements StartableLike {
+    protected abstract host: Friendly;
+    abstract activate(): void;
+    abstract getState(): ReadyState;
+    abstract start(onStopping?: OnStopping): PromiseLike<void>;
+    abstract skart(err?: Error): void;
+    abstract stop(err?: Error): Promise<void>;
+    abstract getRunning(): PromiseLike<void>;
+    abstract assertState(expected: ReadyState[]): void;
 }
-export interface OnStopping {
-    (err?: Error): void;
-}
-export declare abstract class Startable {
-    protected abstract state: State;
-    protected abstract rawStart: RawStart;
-    protected abstract rawStop: RawStop;
+export interface Startable extends StartableLike {
     getState(): ReadyState;
     /**
      * @throws {@link StateError}
      * @defaultValue `[ReadyState.STARTED]`
      */
-    assertState(expected?: ReadyState[]): void;
+    assertState(expected: ReadyState[]): void;
     /**
      * Skip from `READY` to `STARTED`.
      */
@@ -52,32 +51,111 @@ export declare abstract class Startable {
      */
     getRunning(): PromiseLike<void>;
 }
-export declare abstract class Friendly extends Startable {
-    abstract state: State;
-    abstract rawStart: RawStart;
-    abstract rawStop: RawStop;
+export declare namespace Startable {
+    function create(rawStart: RawStart, rawStop: RawStop): Startable;
+    export import RawStart = Interfaces.RawStart;
+    export import RawStop = Interfaces.RawStop;
+    export import OnStopping = Interfaces.OnStopping;
+    export import ReadyState = Interfaces.ReadyState;
+    export import StateError = Interfaces.StateError;
 }
-/**
- * @throws Error
- */
-export interface RawStart {
-    (): Promise<void>;
+export declare class Friendly implements Startable {
+    rawStart: RawStart;
+    rawStop: RawStop;
+    state: State;
+    constructor(rawStart: RawStart, rawStop: RawStop);
+    getState(): ReadyState;
+    assertState(expected: ReadyState[]): void;
+    skart(startingError?: Error): void;
+    start(onStopping?: OnStopping): PromiseLike<void>;
+    stop(err?: Error): Promise<void>;
+    getRunning(): PromiseLike<void>;
 }
-/**
- * @throws Error
- */
-export interface RawStop {
-    (err?: Error): Promise<void>;
+export declare class Ready extends State {
+    protected host: Friendly;
+    constructor(host: Friendly, options: {});
+    activate(): void;
+    assertState(expected: ReadyState[]): void;
+    start(onStopping?: OnStopping): Promise<void>;
+    stop(err?: Error): Promise<void>;
+    getState(): ReadyState;
+    skart(err?: Error): void;
+    getRunning(): PromiseLike<void>;
 }
-export declare abstract class State {
-    protected abstract host: Startable;
-    abstract postActivate(): void;
-    abstract getState(): ReadyState;
-    abstract start(onStopping?: OnStopping): PromiseLike<void>;
-    abstract skart(err?: Error): void;
-    abstract stop(err?: Error): Promise<void>;
-    abstract getRunning(): PromiseLike<void>;
+export declare class Starting extends State {
+    protected host: Friendly;
+    private startingPromise;
+    private onStoppings;
+    private startingErrors;
+    constructor(host: Friendly, options: {
+        onStopping: OnStopping | null;
+    });
+    assertState(expected: ReadyState[]): void;
+    activate(): void;
+    start(onStopping?: OnStopping): Promise<void>;
+    stop(err?: Error): Promise<void>;
+    getState(): ReadyState;
+    skart(err?: Error): never;
+    getRunning(): PromiseLike<void>;
 }
-export declare class StateError extends AssertionError {
-    constructor(actual: ReadyState, expected?: ReadyState[]);
+export declare class Started extends State {
+    protected host: Friendly;
+    private running;
+    private startingPromise;
+    private onStoppings;
+    private startingError;
+    constructor(host: Friendly, args: {
+        startingPromise: ManualPromise<void>;
+        onStoppings: OnStopping[];
+        startingError: Error | null;
+    });
+    assertState(expected: ReadyState[]): void;
+    activate(): void;
+    start(onStopping?: OnStopping): Promise<void>;
+    stop(runningError?: Error): Promise<void>;
+    getState(): ReadyState;
+    skart(err?: Error): never;
+    getRunning(): PromiseLike<void>;
+}
+export declare class Stopping extends State {
+    protected host: Friendly;
+    private startingPromise;
+    private runningPromise;
+    private stoppingPromise;
+    private onStoppings;
+    private runningError;
+    private stoppingError;
+    constructor(host: Friendly, args: {
+        startingPromise: PromiseLike<void>;
+        runningPromise: PromiseLike<void>;
+        onStoppings: OnStopping[];
+        runningError: Error | null;
+    });
+    assertState(expected: ReadyState[]): void;
+    activate(): void;
+    start(onStopping?: OnStopping): Promise<void>;
+    stop(err?: Error): Promise<void>;
+    getState(): ReadyState;
+    skart(err?: Error): never;
+    getRunning(): PromiseLike<void>;
+}
+export declare class Stopped extends State {
+    protected host: Friendly;
+    private startingPromise;
+    private runningPromise;
+    private stoppingPromise;
+    private stoppingError;
+    constructor(host: Friendly, args: {
+        startingPromise: PromiseLike<void> | null;
+        runningPromise: PromiseLike<void> | null;
+        stoppingPromise: ManualPromise<void>;
+        stoppingError: Error | null;
+    });
+    assertState(expected: ReadyState[]): void;
+    activate(): void;
+    start(onStopping?: OnStopping): PromiseLike<void>;
+    stop(): Promise<void>;
+    getState(): ReadyState;
+    skart(err?: Error): void;
+    getRunning(): PromiseLike<void>;
 }
