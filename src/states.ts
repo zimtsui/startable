@@ -2,7 +2,7 @@ import { ReadyState, OnStopping, StateError } from './startable-like';
 import assert = require('assert');
 import { ManualPromise } from '@zimtsui/manual-promise';
 import { AgentLike, State } from './state';
-import { $ } from './catch-throw';
+import { _ } from './catch-throw';
 
 
 
@@ -33,7 +33,7 @@ export class Ready extends State {
 			this.agent, {
 			starting: null,
 			running: null,
-			stopping: $(new ManualPromise<void>()),
+			stopping: _(new ManualPromise<void>()),
 			stoppingError: null,
 		});
 		this.agent.setState(newState);
@@ -64,7 +64,7 @@ export class Ready extends State {
 
 
 export class Starting extends State {
-	private starting = $(new ManualPromise<void>());
+	private starting = _(new ManualPromise<void>());
 	private onStoppings: OnStopping[] = [];
 	private startingError: Error | null = null;
 
@@ -143,8 +143,8 @@ export class Started extends State {
 		else
 			this.starting.resolve();
 
-		this.running = $(new Promise<void>((resolve, reject) => {
-			$(this.start(err => {
+		this.running = _(new Promise<void>((resolve, reject) => {
+			_(this.start(err => {
 				if (err) reject(err);
 				else resolve();
 			}));
@@ -159,7 +159,7 @@ export class Started extends State {
 	public async stop(runningError?: Error): Promise<void> {
 		const newState = new Stopping(
 			this.agent, {
-			starting: $(Promise.resolve(this.starting)),
+			starting: _(Promise.resolve(this.starting)),
 			running: this.running,
 			onStoppings: this.onStoppings,
 			runningError: runningError || null,
@@ -186,7 +186,7 @@ export class Started extends State {
 export class Stopping extends State {
 	private starting: Promise<void>;
 	private running: Promise<void>;
-	private stopping = $(new ManualPromise<void>());
+	private stopping = _(new ManualPromise<void>());
 	private onStoppings: OnStopping[];
 	private runningError: Error | null;
 	private stoppingError: Error | null = null;
