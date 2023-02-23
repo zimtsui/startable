@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.$ = exports.catchThrow = void 0;
+exports._ = exports.catchThrow = void 0;
 function catchThrow() {
     return function decorator(proto, name, descriptor) {
         const oldMethod = Reflect.get(proto, name);
         const newMethod = function (...args) {
-            return $(oldMethod.apply(this, args));
+            return _(oldMethod.apply(this, args));
         };
         return {
             value: newMethod,
@@ -13,9 +13,9 @@ function catchThrow() {
     };
 }
 exports.catchThrow = catchThrow;
-function $(p) {
+function _(p) {
     Promise.resolve(p).catch(() => { });
     return p;
 }
-exports.$ = $;
+exports._ = _;
 //# sourceMappingURL=catch-throw.js.map

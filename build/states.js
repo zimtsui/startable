@@ -25,7 +25,7 @@ class Ready extends state_1.State {
         const newState = new Stopped(this.agent, {
             starting: null,
             running: null,
-            stopping: (0, catch_throw_1.$)(new manual_promise_1.ManualPromise()),
+            stopping: (0, catch_throw_1._)(new manual_promise_1.ManualPromise()),
             stoppingError: null,
         });
         this.agent.setState(newState);
@@ -54,7 +54,7 @@ class Starting extends state_1.State {
     constructor(agent, options) {
         super();
         this.agent = agent;
-        this.starting = (0, catch_throw_1.$)(new manual_promise_1.ManualPromise());
+        this.starting = (0, catch_throw_1._)(new manual_promise_1.ManualPromise());
         this.onStoppings = [];
         this.startingError = null;
         if (options.onStopping)
@@ -106,8 +106,8 @@ class Started extends state_1.State {
             this.starting.reject(this.startingError);
         else
             this.starting.resolve();
-        this.running = (0, catch_throw_1.$)(new Promise((resolve, reject) => {
-            (0, catch_throw_1.$)(this.start(err => {
+        this.running = (0, catch_throw_1._)(new Promise((resolve, reject) => {
+            (0, catch_throw_1._)(this.start(err => {
                 if (err)
                     reject(err);
                 else
@@ -122,7 +122,7 @@ class Started extends state_1.State {
     }
     async stop(runningError) {
         const newState = new Stopping(this.agent, {
-            starting: (0, catch_throw_1.$)(Promise.resolve(this.starting)),
+            starting: (0, catch_throw_1._)(Promise.resolve(this.starting)),
             running: this.running,
             onStoppings: this.onStoppings,
             runningError: runningError || null,
@@ -146,7 +146,7 @@ class Stopping extends state_1.State {
     constructor(agent, args) {
         super();
         this.agent = agent;
-        this.stopping = (0, catch_throw_1.$)(new manual_promise_1.ManualPromise());
+        this.stopping = (0, catch_throw_1._)(new manual_promise_1.ManualPromise());
         this.stoppingError = null;
         this.starting = args.starting;
         this.running = args.running;

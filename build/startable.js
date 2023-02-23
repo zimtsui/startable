@@ -25,50 +25,51 @@ class Startable {
         return this.state.getReadyState();
     }
     /**
-     * @throws {@link StateError}
-     * @defaultValue `[ReadyState.STARTED]`
+     *  @throws {@link StateError}
+     *  @defaultValue `[ReadyState.STARTED]`
      */
     assertState(expected = [startable_like_1.ReadyState.STARTED]) {
         this.state.assertState(expected);
     }
     /**
-     * Skip from `READY` to `STARTED`.
+     *  Skip from `READY` to `STARTED`.
      */
     skart(startingError) {
         this.state.skart(startingError);
     }
     /**
-     * 	- If it's `READY` when invoked, then
-     * 		1. Start.
-     * 		1. Return the promise of the `STARTING` process.
-     *	- Otherwise,
-     *		1. Return the promise of the `STARTING` process.
-     * @throws ReferenceError
-     * @decorator `@catchThrow()`
+     *  - If it's `READY` when invoked, then
+     *  	1. Start.
+     *  	1. Return the promise of the `STARTING` process.
+     *  - Otherwise,
+     *  	1. Return the promise of the `STARTING` process.
+     *  @throws ReferenceError
+     *  @decorator `@catchThrow()`
      */
     async start(onStopping) {
         await this.state.start(onStopping);
     }
     /**
-     * 	- If it's `READY` now, then
-     * 		1. Skip to `STOPPED`.
-     * 	- If it's `STARTING` when invoked, then
-     * 		1. Wait until `STARTED`.
-     *		1. Stop.
-     *		1. Return the promise of `STOPPING` process.
-     * 	- If it's `STARTED` when invoked, then
-     * 		1. Stop.
-     *		1. Return the promise of `STOPPING` process.
-     * 	- If it's `STOPPING` or `STOPPED` when invoked, then
-     * 		1. Return the promise of `STOPPING` process.
-     * @decorator `@boundMethod`
-     * @decorator `@catchThrow()`
+     *  - If it's `READY` when invoked, then
+     *  	1. Skip to `STOPPED`.
+     *  - If it's `STARTING` when invoked, then
+     *  	1. Wait until `STARTED`.
+     *  	1. Stop.
+     *  	1. Return the promise of `STOPPING` process.
+     *  - If it's `STARTED` when invoked, then
+     *  	1. Stop.
+     *  	1. Return the promise of `STOPPING` process.
+     *  - If it's `STOPPING` or `STOPPED` when invoked, then
+     *  	1. Return the promise of `STOPPING` process.
+     *
+     *  @decorator `@boundMethod`
+     *  @decorator `@catchThrow()`
      */
     stop(err) {
         return this.state.stop(err);
     }
     /**
-     * @throws ReferenceError
+     *  @throws ReferenceError
      */
     getRunning() {
         return this.state.getRunning();

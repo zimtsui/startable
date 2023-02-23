@@ -1,2 +1,2 @@
 export declare function catchThrow(): MethodDecorator;
-export declare function $<P>(p: P): P;
+export declare function _<P>(p: P): P;

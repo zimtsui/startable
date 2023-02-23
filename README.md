@@ -90,15 +90,16 @@ Startable 是 JavaScript 的 Daemon 生命周期管理器，有了他你就可�
 当自己发生内部错误时，就应当调用自己的 `.stop()`，因为在语义上，此时自己已经结束了「正常提供服务中」的状态。
 
 ```ts
-class Daemon implements DaemonLike {
-	public $s = createStartable(
-		this.rawStart.bind(this),
-		this.rawStop.bind(this),
-	);
-
+class Daemon {
 	public constructor() {
-		this.someComponent.on('some fatal error', this.$s.stop);
+		this.someComponent.on('some fatal error', $(this).stop);
 	}
+
+	@AsRawStart()
+	rawStart() {}
+
+	@AsRawStop()
+	rawStop() {}
 }
 ```
 
@@ -111,13 +112,13 @@ class Daemon implements DaemonLike {
 
 const daemon = new Daemon();
 function startDaemon(){
-	daemon.$s.start(err => {
+	$(daemon).start(err => {
 		if (err) handleRunningException(err);
-		daemon.$s.stop().catch(handleStoppingException);
+		$(daemon).stop().catch(handleStoppingException);
 	}).catch(handleStartingException);
 }
 function stopDaemon() {
-	daemon.$s.stop();
+	$(daemon).stop();
 }
 ```
 
@@ -129,36 +130,36 @@ function stopDaemon() {
 - 只要有一个儿子自发开始停止过程，即这个儿子运行了他自己的 `.stop()`，那么爸爸也必须立即开始停止过程。因为在语义上，只要有一个儿子离开了「正常提供服务中」的状态，爸爸就算不上「正常提供服务中」的状态了。
 
 ```ts
-class Parent implements DaemonLike {
+class Parent {
 	private child1: Daemon;
 	private child2: Daemon;
 
 	protected async rawStart(): Promise<void> {
-		await child1.$s.start(this.$s.stop);
-		await child2.$s.start(this.$s.stop);
+		await $(child1).start($(this).stop);
+		await $(child2).start($(this).stop);
 	}
 	protected async rawStop(): Promise<void> {
-		await child2.$s.stop();
-		await child1.$s.stop();
+		await $(child2).stop();
+		await $(child1).stop();
 	}
 }
 ```
 
 - 如果在 child2 启动过程中，已经启动完成的 child1 开始自发停止，那么 child1 会通过 onStopping 回调调用 parent 的 `.stop()`，此时 parent 处于 STARTING 状态，导致 parent 的启动过程 rejected。在语义上，一个 Daemon 启动过程中，他依赖的儿子挂了，这个 Daemon 的启动过程也确实算不上成功，因此语义与实现是一致的。
-- 如果调用 `parent.stop()`，`parent.stop()` 会调用 `child.stop()`，`child.stop()` 会通过 onStopping 回调再次调用 `parent.stop()`，不过此时 parent 处于 STOPPING 状态，parent 内部的 `.rawStop` 实现不会被调用两次。
+- 如果调用 `$(parent).stop()`，`$(parent).stop()` 会调用 `$(child).stop()`，`$(child).stop()` 会通过 onStopping 回调再次调用 `$(parent).stop()`，不过此时 parent 处于 STOPPING 状态，parent 内部的 `.rawStop` 实现不会被调用两次。
 
 ### Aggregation
 
 一个 Startable 的依赖也可能是外部注入的 Startable。
 
 ```ts
-class Daemon implements DaemonLike {
+class Daemon {
 	public constructor(
-		dep: Startable,
+		dep: Daemon,
 	) { }
 
 	protected async rawStart() {
-		await this.dep.$s.start(this.stop);
+		await $(this.dep).start(this.stop);
 	}
 }
 ```
@@ -170,19 +171,19 @@ class Daemon {
 	public constructor() {
 		this.someComponent.on('some fatal error', err => {
 			handleRunningException(err); // don't do this.
-			this.$s.stop();
+			$(this).stop();
 		});
 	}
 }
 
 const daemon = new Daemon();
 function startDaemon() {
-	daemon.$s.start(() => {
-		daemon.$s.stop().catch(handleStoppingException)
+	$(daemon).start(() => {
+		$(daemon).stop().catch(handleStoppingException)
 	}).catch(handleStartingException);
 }
 function stopDaemon() {
-	daemon.$s.stop();
+	$(daemon).stop();
 }
 ```
 
@@ -191,10 +192,10 @@ function stopDaemon() {
 ---
 
 ```ts
-class Daemon implements DaemonLike {
+class Daemon {
 	public constructor() {
 		this.someComponent.on('some fatal error', err => {
-			this.$s.stop(err)
+			$(this).stop(err)
 				.catch(handleStoppingException); // don't do this.
 		});
 	}
@@ -202,12 +203,12 @@ class Daemon implements DaemonLike {
 
 const daemon = new Daemon();
 function startDaemon() {
-	daemon.$s.start(err => {
+	$(daemon).start(err => {
 		if (err) handleRunningException(err);
 	}).catch(handleStartingException);
 }
 function stopDaemon() {
-	daemon.$s.stop().catch(handleStoppingException); // don't do this.
+	$(daemon).stop().catch(handleStoppingException); // don't do this.
 }
 ```
 
@@ -220,8 +221,8 @@ function stopDaemon() {
 Startable 用 Promise 搞来搞去，必然存在协程同步问题。例如如果一个 Startable 被多个协程控制，那么在任意一个协程内
 
 ```ts
-await daemon.start();
-console.log(daemon.getReadyState());
+await $(daemon).start();
+console.log($(daemon).getReadyState());
 ```
 
 的结果不一定是 STARTED，完全有可能是 STOPPING 或 STOPPED。
@@ -229,11 +230,12 @@ console.log(daemon.getReadyState());
 ## 健壮性
 
 ```ts
-class Daemon implements DaemonLike {
-	private child: DaemonLike;
+class Daemon {
+	private child: Daemon;
 
+	@AsRawStart()
 	private async rawStart() {
-		await child.$s.start(this.$s.stop);
+		await $(child).start($(this).stop);
 		await somePromise;
 		child.someMethod(); // child may be STOPPING.
 	}
