@@ -20,4 +20,4 @@ class StateError extends assert_1.AssertionError {
     }
 }
 exports.StateError = StateError;
-//# sourceMappingURL=interfaces.js.map
+//# sourceMappingURL=startable-like.js.map

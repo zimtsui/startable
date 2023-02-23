@@ -1,31 +1,22 @@
-import assert = require('assert');
+import assert = require("assert");
 
-export function catchThrow(newError?: Error): MethodDecorator {
+export function catchThrow(): MethodDecorator {
 	return function decorator(
 		proto,
 		name,
 		descriptor: PropertyDescriptor,
 	): PropertyDescriptor {
-		assert(descriptor.value instanceof Function);
-		const oldMethod = <Function>descriptor.value;
-
-		function newMethod(this: any, ...args: any[]) {
-			try {
-				const p = oldMethod.apply(this, args);
-				if (p instanceof Promise) {
-					const q = p.catch(oldError => {
-						throw newError || oldError;
-					});
-					q.catch(() => { });
-					return q;
-				}
-				return p;
-			} catch (oldError) {
-				throw newError || oldError;
-			}
-		}
+		const oldMethod = <(this: any, ...args: any[]) => any>Reflect.get(proto, name);
+		const newMethod = function (this: any, ...args: any[]) {
+			return $(oldMethod.apply(this, args));
+		};
 		return {
 			value: newMethod,
-		}
+		};
 	}
+}
+
+export function $<P>(p: P): P {
+	Promise.resolve(p).catch(() => { });
+	return p;
 }

@@ -1,6 +1,5 @@
 import { AssertionError } from "assert";
 
-
 export enum ReadyState {
 	READY = 'READY',
 	STARTING = 'STARTING',
@@ -13,13 +12,11 @@ export interface OnStopping {
 	(err?: Error): void;
 }
 
-export interface StartableLike {
-	getState(): ReadyState;
-	assertState(expected: ReadyState[]): void;
-	skart(startingError?: Error): void;
-	start(onStopping?: OnStopping): PromiseLike<void>;
-	stop(err?: Error): Promise<void>;
-	getRunning(): PromiseLike<void>;
+export interface RawStart {
+	(): Promise<void>;
+}
+export interface RawStop {
+	(err?: Error): Promise<void>;
 }
 
 export class StateError extends AssertionError {
@@ -35,10 +32,9 @@ export class StateError extends AssertionError {
 	}
 }
 
-
-export interface RawStart {
-	(): Promise<void>;
-}
-export interface RawStop {
-	(err?: Error): Promise<void>;
+export interface StartableLike {
+	getReadyState(): ReadyState;
+	skart(startingError?: Error): void;
+	start(onStopping?: OnStopping): PromiseLike<void>;
+	stop(err?: Error): Promise<void>;
 }
