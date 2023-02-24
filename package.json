@@ -9,7 +9,7 @@
         "clean": "rm -rf ./build && rm -rf ./test/build",
         "rebuild": "npm run clean && npm run build",
         "test": "tsc -b ./test/src/tsconfig.json && ava",
-        "docs": "typedoc --tsconfig ./src/tsconfig.json --excludePrivate --excludeProtected --cleanOutputDir ./src/index.ts"
+        "docs": "typedoc --tsconfig ./src/tsconfig.json ./src/index.ts"
     },
     "repository": {
         "type": "git",
