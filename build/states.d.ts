@@ -1,5 +1,5 @@
 import { ReadyState, OnStopping } from './startable-like';
-import { ManualPromise } from '@zimtsui/manual-promise';
+import { ManualPromise } from '@zimtsui/coroutine-locks';
 import { AgentLike, State } from './state';
 export declare class Ready extends State {
     protected agent: AgentLike;

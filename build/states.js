@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stopped = exports.Stopping = exports.Started = exports.Starting = exports.Ready = void 0;
 const startable_like_1 = require("./startable-like");
 const assert = require("assert");
-const manual_promise_1 = require("@zimtsui/manual-promise");
+const coroutine_locks_1 = require("@zimtsui/coroutine-locks");
 const state_1 = require("./state");
 const catch_throw_1 = require("./catch-throw");
 class Ready extends state_1.State {
@@ -25,7 +25,7 @@ class Ready extends state_1.State {
         const newState = new Stopped(this.agent, {
             starting: null,
             running: null,
-            stopping: (0, catch_throw_1._)(new manual_promise_1.ManualPromise()),
+            stopping: (0, catch_throw_1._)(new coroutine_locks_1.ManualPromise()),
             rawStopping: Promise.resolve(),
         });
         this.agent.setState(newState);
@@ -36,7 +36,7 @@ class Ready extends state_1.State {
     }
     skart(err) {
         const rawStarting = err ? Promise.reject(err) : Promise.resolve();
-        const starting = new manual_promise_1.ManualPromise();
+        const starting = new coroutine_locks_1.ManualPromise();
         const newState = new Started(this.agent, {
             starting,
             onStoppings: [],
@@ -54,7 +54,7 @@ class Starting extends state_1.State {
     constructor(agent, options) {
         super();
         this.agent = agent;
-        this.starting = (0, catch_throw_1._)(new manual_promise_1.ManualPromise());
+        this.starting = (0, catch_throw_1._)(new coroutine_locks_1.ManualPromise());
         this.onStoppings = [];
         if (options.onStopping)
             this.onStoppings.push(options.onStopping);
@@ -141,7 +141,7 @@ class Stopping extends state_1.State {
     constructor(agent, options) {
         super();
         this.agent = agent;
-        this.stopping = (0, catch_throw_1._)(new manual_promise_1.ManualPromise());
+        this.stopping = (0, catch_throw_1._)(new coroutine_locks_1.ManualPromise());
         this.starting = options.starting;
         this.running = options.running;
         this.onStoppings = options.onStoppings;

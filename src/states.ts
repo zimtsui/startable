@@ -1,6 +1,6 @@
 import { ReadyState, OnStopping, StateError } from './startable-like';
 import assert = require('assert');
-import { ManualPromise } from '@zimtsui/manual-promise';
+import { ManualPromise } from '@zimtsui/coroutine-locks';
 import { AgentLike, State } from './state';
 import { _ } from './catch-throw';
 
