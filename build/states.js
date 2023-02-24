@@ -61,7 +61,7 @@ class Starting extends state_1.State {
     }
     activate() {
         const rawStarting = (0, catch_throw_1._)(this.agent.rawStart());
-        rawStarting.then(() => {
+        rawStarting.catch(() => { }).then(() => {
             const newState = new Started(this.agent, {
                 starting: this.starting,
                 onStoppings: this.onStoppings,
@@ -157,7 +157,7 @@ class Stopping extends state_1.State {
         const rawStopping = (0, catch_throw_1._)(this.runningError
             ? this.agent.rawStop(this.runningError)
             : this.agent.rawStop());
-        rawStopping.then(() => {
+        rawStopping.catch(() => { }).then(() => {
             const newState = new Stopped(this.agent, {
                 starting: this.starting,
                 running: this.running,

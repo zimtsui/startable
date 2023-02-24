@@ -79,7 +79,7 @@ export class Starting extends State {
 
 	public activate(): void {
 		const rawStarting = _(this.agent.rawStart());
-		rawStarting.then(() => {
+		rawStarting.catch(() => { }).then(() => {
 			const newState = new Started(
 				this.agent, {
 				starting: this.starting,
@@ -213,7 +213,7 @@ export class Stopping extends State {
 			? this.agent.rawStop(this.runningError)
 			: this.agent.rawStop());
 
-		rawStopping.then(() => {
+		rawStopping.catch(() => { }).then(() => {
 			const newState = new Stopped(
 				this.agent, {
 				starting: this.starting,
