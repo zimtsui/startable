@@ -15,7 +15,6 @@ export declare class Starting extends State {
     protected agent: AgentLike;
     private starting;
     private onStoppings;
-    private startingError;
     constructor(agent: AgentLike, options: {
         onStopping: OnStopping | null;
     });
@@ -31,11 +30,11 @@ export declare class Started extends State {
     private running;
     private starting;
     private onStoppings;
-    private startingError;
-    constructor(agent: AgentLike, args: {
+    private rawStarting;
+    constructor(agent: AgentLike, options: {
         starting: ManualPromise<void>;
         onStoppings: OnStopping[];
-        startingError: Error | null;
+        rawStarting: Promise<void>;
     });
     activate(): void;
     start(onStopping?: OnStopping): Promise<void>;
@@ -51,8 +50,7 @@ export declare class Stopping extends State {
     private stopping;
     private onStoppings;
     private runningError;
-    private stoppingError;
-    constructor(agent: AgentLike, args: {
+    constructor(agent: AgentLike, options: {
         starting: Promise<void>;
         running: Promise<void>;
         onStoppings: OnStopping[];
@@ -70,12 +68,12 @@ export declare class Stopped extends State {
     private starting;
     private running;
     private stopping;
-    private stoppingError;
-    constructor(agent: AgentLike, args: {
+    private rawStopping;
+    constructor(agent: AgentLike, options: {
         starting: Promise<void> | null;
         running: Promise<void> | null;
         stopping: ManualPromise<void>;
-        stoppingError: Error | null;
+        rawStopping: Promise<void>;
     });
     activate(): void;
     start(onStopping?: OnStopping): Promise<void>;

@@ -73,8 +73,6 @@
 </a>
 <p>启停过程本身可能发生异常而失败比如一个 TCP Socket 连接时就没连上。</p>
 <p>C 语言打开一个文件的过程由内核确保事务性，打开失败等于没开。而用户态服务的启动过程如果失败了，内部组件可能开了一半，处于不一致状态，因此打开失败后也必须关闭。</p>
-<!-- ![转换关系](./conversion.png) -->
-
 
 <a href="#服务启停的异步性" id="服务启停的异步性" style="color: inherit; text-decoration: none;">
   <h3>服务启停的异步性</h3>
@@ -105,7 +103,7 @@
   <h2>Best practices</h2>
 </a>
 <p>当自己发生内部错误时，就应当调用自己的 <code>.stop()</code>，因为在语义上，此时自己已经结束了「正常提供服务中」的状态。</p>
-<pre><code class="language-ts"><span class="hl-0">class</span><span class="hl-1"> </span><span class="hl-2">Daemon</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">public</span><span class="hl-1"> </span><span class="hl-0">constructor</span><span class="hl-1">() {</span><br/><span class="hl-1">        </span><span class="hl-0">this</span><span class="hl-1">.</span><span class="hl-3">someComponent</span><span class="hl-1">.</span><span class="hl-4">on</span><span class="hl-1">(</span><span class="hl-5">&#39;some fatal error&#39;</span><span class="hl-1">, </span><span class="hl-4">$</span><span class="hl-1">(</span><span class="hl-0">this</span><span class="hl-1">).</span><span class="hl-3">stop</span><span class="hl-1">);</span><br/><span class="hl-1">    }</span><br/><br/><span class="hl-1">    @</span><span class="hl-4">AsRawStart</span><span class="hl-1">()</span><br/><span class="hl-1">    </span><span class="hl-4">rawStart</span><span class="hl-1">() {}</span><br/><br/><span class="hl-1">    @</span><span class="hl-4">AsRawStop</span><span class="hl-1">()</span><br/><span class="hl-1">    </span><span class="hl-4">rawStop</span><span class="hl-1">() {}</span><br/><span class="hl-1">}</span>
+<pre><code class="language-ts"><span class="hl-0">class</span><span class="hl-1"> </span><span class="hl-2">Daemon</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">public</span><span class="hl-1"> </span><span class="hl-0">constructor</span><span class="hl-1">() {</span><br/><span class="hl-1">        </span><span class="hl-0">this</span><span class="hl-1">.</span><span class="hl-3">someComponent</span><span class="hl-1">.</span><span class="hl-4">on</span><span class="hl-1">(</span><span class="hl-5">&#39;some fatal error&#39;</span><span class="hl-1">, </span><span class="hl-4">$</span><span class="hl-1">(</span><span class="hl-0">this</span><span class="hl-1">).</span><span class="hl-3">stop</span><span class="hl-1">);</span><br/><span class="hl-1">    }</span><br/><br/><span class="hl-1">    @</span><span class="hl-4">AsRawStart</span><span class="hl-1">()</span><br/><span class="hl-1">    </span><span class="hl-0">private</span><span class="hl-1"> </span><span class="hl-4">rawStart</span><span class="hl-1">() {}</span><br/><br/><span class="hl-1">    @</span><span class="hl-4">AsRawStop</span><span class="hl-1">()</span><br/><span class="hl-1">    </span><span class="hl-0">private</span><span class="hl-1"> </span><span class="hl-4">rawStop</span><span class="hl-1">() {}</span><br/><span class="hl-1">}</span>
 </code></pre>
 <p><code>.start()</code> 可以接受一个 onStopping 钩子作为回调，用于在停止过程开始时通知外部。当停止过程开始时会先同步地调用这个回调，并将你填进 <code>.stop()</code> 的参数传递给这个回调。你可以自行定义这个 Error 参数的语义，然后在回调中根据参数判断停止的原因。</p>
 <p>如果是自发停止则传参，如果是从外部被动停止则不传参，这样就可以在回调中根据参数是否存在来判断是不是自发停止。</p>

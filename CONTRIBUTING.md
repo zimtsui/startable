@@ -1,5 +1,6 @@
 ```mermaid
 classDiagram
+	direction BT
 	StartableLike <|-- StateXInstance
 	State o-- AgentLike
 	Agent --|> AgentLike

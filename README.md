@@ -56,8 +56,6 @@ JavaScript 协程是协作式调度，与抢占式调度相比的优势在于状
 
 C 语言打开一个文件的过程由内核确保事务性，打开失败等于没开。而用户态服务的启动过程如果失败了，内部组件可能开了一半，处于不一致状态，因此打开失败后也必须关闭。
 
-<!-- ![转换关系](./conversion.png) -->
-
 ### 服务启停的异步性
 
 服务可以有一个异步的启动和停止过程，用户需要等待启停过程结束。
@@ -96,10 +94,10 @@ class Daemon {
 	}
 
 	@AsRawStart()
-	rawStart() {}
+	private rawStart() {}
 
 	@AsRawStop()
-	rawStop() {}
+	private rawStop() {}
 }
 ```
 

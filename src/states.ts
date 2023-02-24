@@ -34,7 +34,7 @@ export class Ready extends State {
 			starting: null,
 			running: null,
 			stopping: _(new ManualPromise<void>()),
-			stoppingError: null,
+			rawStopping: Promise.resolve(),
 		});
 		this.agent.setState(newState);
 		newState.activate();
@@ -45,13 +45,13 @@ export class Ready extends State {
 	}
 
 	public skart(err?: Error): void {
-		const startingError: Error | null = err || null;
+		const rawStarting = err ? Promise.reject(err) : Promise.resolve();
 		const starting = new ManualPromise<void>();
 		const newState = new Started(
 			this.agent, {
 			starting,
 			onStoppings: [],
-			startingError,
+			rawStarting,
 		});
 		this.agent.setState(newState);
 		newState.activate();
@@ -66,7 +66,6 @@ export class Ready extends State {
 export class Starting extends State {
 	private starting = _(new ManualPromise<void>());
 	private onStoppings: OnStopping[] = [];
-	private startingError: Error | null = null;
 
 	public constructor(
 		protected agent: AgentLike,
@@ -79,14 +78,13 @@ export class Starting extends State {
 	}
 
 	public activate(): void {
-		this.agent.rawStart().catch(err => {
-			this.startingError = err;
-		}).then(() => {
+		const rawStarting = _(this.agent.rawStart());
+		rawStarting.then(() => {
 			const newState = new Started(
 				this.agent, {
 				starting: this.starting,
 				onStoppings: this.onStoppings,
-				startingError: this.startingError,
+				rawStarting,
 			});
 			this.agent.setState(newState);
 			newState.activate();
@@ -121,27 +119,24 @@ export class Started extends State {
 	private running!: Promise<void>;
 	private starting: ManualPromise<void>;
 	private onStoppings: OnStopping[];
-	private startingError: Error | null;
+	private rawStarting: Promise<void>;
 
 	public constructor(
 		protected agent: AgentLike,
-		args: {
+		options: {
 			starting: ManualPromise<void>;
 			onStoppings: OnStopping[];
-			startingError: Error | null;
+			rawStarting: Promise<void>;
 		},
 	) {
 		super();
-		this.starting = args.starting;
-		this.onStoppings = args.onStoppings;
-		this.startingError = args.startingError;
+		this.starting = options.starting;
+		this.onStoppings = options.onStoppings;
+		this.rawStarting = options.rawStarting;
 	}
 
 	public activate(): void {
-		if (this.startingError)
-			this.starting.reject(this.startingError);
-		else
-			this.starting.resolve();
+		this.starting.resolve(this.rawStarting);
 
 		this.running = _(new Promise<void>((resolve, reject) => {
 			_(this.start(err => {
@@ -189,11 +184,10 @@ export class Stopping extends State {
 	private stopping = _(new ManualPromise<void>());
 	private onStoppings: OnStopping[];
 	private runningError: Error | null;
-	private stoppingError: Error | null = null;
 
 	public constructor(
 		protected agent: AgentLike,
-		args: {
+		options: {
 			starting: Promise<void>;
 			running: Promise<void>;
 			onStoppings: OnStopping[];
@@ -201,10 +195,10 @@ export class Stopping extends State {
 		},
 	) {
 		super();
-		this.starting = args.starting;
-		this.running = args.running;
-		this.onStoppings = args.onStoppings;
-		this.runningError = args.runningError;
+		this.starting = options.starting;
+		this.running = options.running;
+		this.onStoppings = options.onStoppings;
+		this.runningError = options.runningError;
 	}
 
 	public activate(): void {
@@ -215,19 +209,17 @@ export class Stopping extends State {
 			for (const onStopping of this.onStoppings)
 				onStopping();
 
-		(
-			this.runningError
-				? this.agent.rawStop(this.runningError)
-				: this.agent.rawStop()
-		).catch(err => {
-			this.stoppingError = err;
-		}).then(() => {
+		const rawStopping = _(this.runningError
+			? this.agent.rawStop(this.runningError)
+			: this.agent.rawStop());
+
+		rawStopping.then(() => {
 			const newState = new Stopped(
 				this.agent, {
 				starting: this.starting,
 				running: this.running,
 				stopping: this.stopping,
-				stoppingError: this.stoppingError,
+				rawStopping,
 			});
 			this.agent.setState(newState);
 			newState.activate();
@@ -261,29 +253,26 @@ export class Stopped extends State {
 	private starting: Promise<void> | null;
 	private running: Promise<void> | null;
 	private stopping: ManualPromise<void>;
-	private stoppingError: Error | null;
+	private rawStopping: Promise<void>;
 
 	public constructor(
 		protected agent: AgentLike,
-		args: {
+		options: {
 			starting: Promise<void> | null;
 			running: Promise<void> | null;
 			stopping: ManualPromise<void>;
-			stoppingError: Error | null;
+			rawStopping: Promise<void>;
 		},
 	) {
 		super();
-		this.starting = args.starting;
-		this.running = args.running;
-		this.stopping = args.stopping;
-		this.stoppingError = args.stoppingError;
+		this.starting = options.starting;
+		this.running = options.running;
+		this.stopping = options.stopping;
+		this.rawStopping = options.rawStopping;
 	}
 
 	public activate(): void {
-		if (this.stoppingError)
-			this.stopping.reject(this.stoppingError);
-		else
-			this.stopping.resolve();
+		this.stopping.resolve(this.rawStopping);
 	}
 
 	public start(onStopping?: OnStopping): Promise<void> {

@@ -26,7 +26,7 @@ class Ready extends state_1.State {
             starting: null,
             running: null,
             stopping: (0, catch_throw_1._)(new manual_promise_1.ManualPromise()),
-            stoppingError: null,
+            rawStopping: Promise.resolve(),
         });
         this.agent.setState(newState);
         newState.activate();
@@ -35,12 +35,12 @@ class Ready extends state_1.State {
         return startable_like_1.ReadyState.READY;
     }
     skart(err) {
-        const startingError = err || null;
+        const rawStarting = err ? Promise.reject(err) : Promise.resolve();
         const starting = new manual_promise_1.ManualPromise();
         const newState = new Started(this.agent, {
             starting,
             onStoppings: [],
-            startingError,
+            rawStarting,
         });
         this.agent.setState(newState);
         newState.activate();
@@ -56,18 +56,16 @@ class Starting extends state_1.State {
         this.agent = agent;
         this.starting = (0, catch_throw_1._)(new manual_promise_1.ManualPromise());
         this.onStoppings = [];
-        this.startingError = null;
         if (options.onStopping)
             this.onStoppings.push(options.onStopping);
     }
     activate() {
-        this.agent.rawStart().catch(err => {
-            this.startingError = err;
-        }).then(() => {
+        const rawStarting = (0, catch_throw_1._)(this.agent.rawStart());
+        rawStarting.then(() => {
             const newState = new Started(this.agent, {
                 starting: this.starting,
                 onStoppings: this.onStoppings,
-                startingError: this.startingError,
+                rawStarting,
             });
             this.agent.setState(newState);
             newState.activate();
@@ -94,18 +92,15 @@ class Starting extends state_1.State {
 }
 exports.Starting = Starting;
 class Started extends state_1.State {
-    constructor(agent, args) {
+    constructor(agent, options) {
         super();
         this.agent = agent;
-        this.starting = args.starting;
-        this.onStoppings = args.onStoppings;
-        this.startingError = args.startingError;
+        this.starting = options.starting;
+        this.onStoppings = options.onStoppings;
+        this.rawStarting = options.rawStarting;
     }
     activate() {
-        if (this.startingError)
-            this.starting.reject(this.startingError);
-        else
-            this.starting.resolve();
+        this.starting.resolve(this.rawStarting);
         this.running = (0, catch_throw_1._)(new Promise((resolve, reject) => {
             (0, catch_throw_1._)(this.start(err => {
                 if (err)
@@ -143,15 +138,14 @@ class Started extends state_1.State {
 }
 exports.Started = Started;
 class Stopping extends state_1.State {
-    constructor(agent, args) {
+    constructor(agent, options) {
         super();
         this.agent = agent;
         this.stopping = (0, catch_throw_1._)(new manual_promise_1.ManualPromise());
-        this.stoppingError = null;
-        this.starting = args.starting;
-        this.running = args.running;
-        this.onStoppings = args.onStoppings;
-        this.runningError = args.runningError;
+        this.starting = options.starting;
+        this.running = options.running;
+        this.onStoppings = options.onStoppings;
+        this.runningError = options.runningError;
     }
     activate() {
         if (this.runningError)
@@ -160,16 +154,15 @@ class Stopping extends state_1.State {
         else
             for (const onStopping of this.onStoppings)
                 onStopping();
-        (this.runningError
+        const rawStopping = (0, catch_throw_1._)(this.runningError
             ? this.agent.rawStop(this.runningError)
-            : this.agent.rawStop()).catch(err => {
-            this.stoppingError = err;
-        }).then(() => {
+            : this.agent.rawStop());
+        rawStopping.then(() => {
             const newState = new Stopped(this.agent, {
                 starting: this.starting,
                 running: this.running,
                 stopping: this.stopping,
-                stoppingError: this.stoppingError,
+                rawStopping,
             });
             this.agent.setState(newState);
             newState.activate();
@@ -195,19 +188,16 @@ class Stopping extends state_1.State {
 }
 exports.Stopping = Stopping;
 class Stopped extends state_1.State {
-    constructor(agent, args) {
+    constructor(agent, options) {
         super();
         this.agent = agent;
-        this.starting = args.starting;
-        this.running = args.running;
-        this.stopping = args.stopping;
-        this.stoppingError = args.stoppingError;
+        this.starting = options.starting;
+        this.running = options.running;
+        this.stopping = options.stopping;
+        this.rawStopping = options.rawStopping;
     }
     activate() {
-        if (this.stoppingError)
-            this.stopping.reject(this.stoppingError);
-        else
-            this.stopping.resolve();
+        this.stopping.resolve(this.rawStopping);
     }
     start(onStopping) {
         assert(this.starting !== null, new ReferenceError());
