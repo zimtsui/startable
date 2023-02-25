@@ -12,7 +12,13 @@ function $(target) {
     if (!Reflect.has(target, rawStopSym))
         Reflect.set(target, rawStopSym, () => { });
     if (!Reflect.has(target, startableSym))
-        Reflect.set(target, startableSym, new startable_1.Startable(() => Promise.resolve(Reflect.get(target, rawStartSym)()), () => Promise.resolve(Reflect.get(target, rawStopSym)())));
+        Reflect.set(target, startableSym, new startable_1.Startable(async (...args) => {
+            const rawStart = Reflect.get(target, rawStartSym);
+            return rawStart.apply(target, args);
+        }, async (...args) => {
+            const rawStop = Reflect.get(target, rawStopSym);
+            return rawStop.apply(target, args);
+        }));
     return Reflect.get(target, startableSym);
 }
 exports.$ = $;

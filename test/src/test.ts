@@ -132,3 +132,15 @@ test('assert state', async t => {
     await $(s).start();
     await $(s).stop();
 });
+
+test('raw start bind', async t => {
+    class A {
+        public x = false;
+        @AsRawStart()
+        public async start() { this.x = true; }
+    }
+    const s = new A();
+    await $(s).start();
+    assert(s.x);
+    await $(s).stop();
+});

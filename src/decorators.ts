@@ -1,5 +1,5 @@
 import { Startable } from "./startable";
-import { ReadyState } from "./startable-like";
+import { RawStart, RawStop, ReadyState } from "./startable-like";
 
 const rawStartSym = Symbol();
 const rawStopSym = Symbol();
@@ -13,8 +13,14 @@ export function $(target: {}): Startable {
 
 	if (!Reflect.has(target, startableSym))
 		Reflect.set(target, startableSym, new Startable(
-			() => Promise.resolve(Reflect.get(target, rawStartSym)!()),
-			() => Promise.resolve(Reflect.get(target, rawStopSym)!()),
+			async (...args: any[]): Promise<any> => {
+				const rawStart = Reflect.get(target, rawStartSym)!;
+				return rawStart.apply(target, args);
+			},
+			async (...args: any[]): Promise<any> => {
+				const rawStop = Reflect.get(target, rawStopSym)!;
+				return rawStop.apply(target, args);
+			}
 		));
 
 	return Reflect.get(target, startableSym);

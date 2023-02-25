@@ -134,4 +134,19 @@ class StopError extends Error {
     await (0, __1.$)(s).start();
     await (0, __1.$)(s).stop();
 });
+(0, ava_1.default)('raw start bind', async (t) => {
+    class A {
+        constructor() {
+            this.x = false;
+        }
+        async start() { this.x = true; }
+    }
+    __decorate([
+        (0, __1.AsRawStart)()
+    ], A.prototype, "start", null);
+    const s = new A();
+    await (0, __1.$)(s).start();
+    assert(s.x);
+    await (0, __1.$)(s).stop();
+});
 //# sourceMappingURL=test.js.map
