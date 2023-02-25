@@ -3,36 +3,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetStateSync = exports.AssetStateAsync = exports.AsRawStop = exports.AsRawStart = exports.$ = void 0;
 const startable_1 = require("./startable");
 const startable_like_1 = require("./startable-like");
-const rawStartSym = Symbol();
-const rawStopSym = Symbol();
+const rawStartName = Symbol();
+const rawStopName = Symbol();
 const startableSym = Symbol();
 function $(target) {
-    if (!Reflect.has(target, rawStartSym))
-        Reflect.set(target, rawStartSym, () => { });
-    if (!Reflect.has(target, rawStopSym))
-        Reflect.set(target, rawStopSym, () => { });
-    if (!Reflect.has(target, startableSym))
+    if (!Reflect.has(target, startableSym)) {
+        const rawStart = Reflect.has(target, rawStartName)
+            ? Reflect.get(target, Reflect.get(target, rawStartName))
+            : () => { };
+        const rawStop = Reflect.has(target, rawStopName)
+            ? Reflect.get(target, Reflect.get(target, rawStopName))
+            : () => { };
         Reflect.set(target, startableSym, new startable_1.Startable(async (...args) => {
-            const rawStart = Reflect.get(target, rawStartSym);
             return rawStart.apply(target, args);
         }, async (...args) => {
-            const rawStop = Reflect.get(target, rawStopSym);
             return rawStop.apply(target, args);
         }));
+    }
     return Reflect.get(target, startableSym);
 }
 exports.$ = $;
 function AsRawStart() {
     return (proto, name, propDesc) => {
-        const rawStart = Reflect.get(proto, name);
-        Reflect.set(proto, rawStartSym, rawStart);
+        Reflect.set(proto, rawStartName, name);
     };
 }
 exports.AsRawStart = AsRawStart;
 function AsRawStop() {
     return (proto, name, propDesc) => {
-        const rawStop = Reflect.get(proto, name);
-        Reflect.set(proto, rawStopSym, rawStop);
+        Reflect.set(proto, rawStopName, name);
     };
 }
 exports.AsRawStop = AsRawStop;

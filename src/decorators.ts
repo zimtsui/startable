@@ -1,42 +1,41 @@
 import { Startable } from "./startable";
-import { RawStart, RawStop, ReadyState } from "./startable-like";
+import { ReadyState } from "./startable-like";
 
-const rawStartSym = Symbol();
-const rawStopSym = Symbol();
+const rawStartName = Symbol();
+const rawStopName = Symbol();
 const startableSym = Symbol();
 
 export function $(target: {}): Startable {
-	if (!Reflect.has(target, rawStartSym))
-		Reflect.set(target, rawStartSym, () => { });
-	if (!Reflect.has(target, rawStopSym))
-		Reflect.set(target, rawStopSym, () => { });
+	if (!Reflect.has(target, startableSym)) {
+		const rawStart = Reflect.has(target, rawStartName)
+			? Reflect.get(target, Reflect.get(target, rawStartName)!)
+			: () => { };
+		const rawStop = Reflect.has(target, rawStopName)
+			? Reflect.get(target, Reflect.get(target, rawStopName)!)
+			: () => { };
 
-	if (!Reflect.has(target, startableSym))
 		Reflect.set(target, startableSym, new Startable(
 			async (...args: any[]): Promise<any> => {
-				const rawStart = Reflect.get(target, rawStartSym)!;
 				return rawStart.apply(target, args);
 			},
 			async (...args: any[]): Promise<any> => {
-				const rawStop = Reflect.get(target, rawStopSym)!;
 				return rawStop.apply(target, args);
 			}
 		));
+	}
 
 	return Reflect.get(target, startableSym);
 }
 
 export function AsRawStart(): MethodDecorator {
 	return (proto, name, propDesc) => {
-		const rawStart = Reflect.get(proto, name);
-		Reflect.set(proto, rawStartSym, rawStart);
+		Reflect.set(proto, rawStartName, name);
 	}
 }
 
 export function AsRawStop(): MethodDecorator {
 	return (proto, name, propDesc) => {
-		const rawStop = Reflect.get(proto, name);
-		Reflect.set(proto, rawStopSym, rawStop);
+		Reflect.set(proto, rawStopName, name);
 	}
 }
 
