@@ -121,4 +121,17 @@ class StopError extends Error {
     await (0, __1.$)(a).stop();
     await pStart;
 });
+(0, ava_1.default)('assert state', async (t) => {
+    class A {
+        async f() { }
+    }
+    __decorate([
+        (0, __1.AssetStateAsync)()
+    ], A.prototype, "f", null);
+    const s = new A();
+    (0, __1.$)(s).start();
+    await assert.rejects(s.f(), __1.StateError);
+    await (0, __1.$)(s).start();
+    await (0, __1.$)(s).stop();
+});
 //# sourceMappingURL=test.js.map

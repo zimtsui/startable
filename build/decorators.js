@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AsRawStop = exports.AsRawStart = exports.$ = void 0;
+exports.AssetStateSync = exports.AssetStateAsync = exports.AsRawStop = exports.AsRawStart = exports.$ = void 0;
 const startable_1 = require("./startable");
+const startable_like_1 = require("./startable-like");
 const rawStartSym = Symbol();
 const rawStopSym = Symbol();
 const startableSym = Symbol();
@@ -29,4 +30,28 @@ function AsRawStop() {
     };
 }
 exports.AsRawStop = AsRawStop;
+function AssetStateAsync(expected = [startable_like_1.ReadyState.STARTED]) {
+    return (proto, name, propDesc) => {
+        const method = Reflect.get(proto, name);
+        return {
+            value: async function (...args) {
+                $(this).assertState(expected);
+                return await method.apply(this, args);
+            }
+        };
+    };
+}
+exports.AssetStateAsync = AssetStateAsync;
+function AssetStateSync(expected = [startable_like_1.ReadyState.STARTED]) {
+    return (proto, name, propDesc) => {
+        const method = Reflect.get(proto, name);
+        return {
+            value: function (...args) {
+                $(this).assertState(expected);
+                return method.apply(this, args);
+            }
+        };
+    };
+}
+exports.AssetStateSync = AssetStateSync;
 //# sourceMappingURL=decorators.js.map
