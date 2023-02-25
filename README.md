@@ -1,8 +1,8 @@
 # Startable
 
-Startable 是一个 JavaScript 的 Daemon 生命周期管理器。初衷是为了适配阿里开源 Node.js 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
+[![Npm package version](https://img.shields.io/npm/v/@zimtsui/package-name?style=flat-square)](https://www.npmjs.com/package/@zimtsui/package-name)
 
-[API](./docs/index.html)
+Startable 是一个 JavaScript 的 Daemon 生命周期管理器。初衷是为了适配阿里开源 Node.js 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
 
 ## 任务和服务
 
@@ -76,12 +76,37 @@ Daemon 停止过程可能自发开始。
 
 - 父服务处于启动阶段中时，某个已经离开启动阶段的子服务挂掉了，并调用了父服务的停止函数。最终导致父服务在启动阶段被调用了停止函数。
 - 父服务处于停止阶段中时，某个还未进入停止阶段的子服务挂掉了，并调用了父服务的停止函数。最终导致父服务在停止阶段被重复调用了停止函数。
+- 父服务处于启动阶段中时，某个已经离开启动阶段的子服务使用了另一个已经挂掉的子服务，详见下文《健壮性》章节。
+
+总之，Daemon 间的复杂状态一致性问题是最麻烦的事。
 
 底层资源可能在 Daemon 生命周期的任何阶段挂掉，可能在启动停止过程中挂掉。
 
 Startable 是 JavaScript 的 Daemon 生命周期管理器，有了他你就可以把心思花在业务逻辑上。
 
 当然 Startable 也可以管理资源，毕竟资源可以被看成永不自发停止的 Daemon。
+
+## Startable
+
+将 Daemon 类用 Startable 套一层，让 Startable 替你解决所有状态一致性问题，你就可以把精力全部投入业务逻辑上。
+
+```ts
+class Daemon {
+	@AsRawStart()
+	private async rawStart() {}
+
+	@AsRawStop()
+	private async rawStop() {}
+
+	@AssertStateSync()
+	public someMethod() {}
+}
+
+const daemon = new Daemon();
+await $(daemon).start();
+daemon.someMethod();
+await $(daemon).stop();
+```
 
 ## Best practices
 
