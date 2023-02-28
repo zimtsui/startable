@@ -1,6 +1,6 @@
 # Startable
 
-[![Npm package version](https://img.shields.io/npm/v/@zimtsui/package-name?style=flat-square)](https://www.npmjs.com/package/@zimtsui/package-name)
+[![Npm package version](https://img.shields.io/npm/v/@zimtsui/startable?style=flat-square)](https://www.npmjs.com/package/@zimtsui/startable)
 
 Startable 是一个 JavaScript 的服务生命周期管理器。初衷是为了适配阿里开源 Node.js 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
 
