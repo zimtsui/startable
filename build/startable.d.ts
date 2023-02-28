@@ -1,4 +1,4 @@
-import { OnStopping, RawStart, RawStop, ReadyState, StartableLike } from "./startable-like";
+import { OnStopping, AsyncRawStart, AsyncRawStop, ReadyState, StartableLike, RawStart, RawStop } from "./startable-like";
 import { AgentLike, State } from "./state";
 export declare class Startable implements StartableLike {
     private state;
@@ -49,13 +49,13 @@ export declare class Agent implements AgentLike {
     private target;
     getState: () => State;
     setState: (newState: State) => void;
-    rawStart: RawStart;
-    rawStop: RawStop;
+    asyncRawStart: AsyncRawStart;
+    asyncRawStop: AsyncRawStop;
     constructor(target: Startable, options: {
         getState: () => State;
         setState: (newState: State) => void;
-        rawStart: RawStart;
-        rawStop: RawStop;
+        asyncRawStart: AsyncRawStart;
+        asyncRawStop: AsyncRawStop;
     });
     getReadyState(): ReadyState;
     assertState(expected: ReadyState[]): void;

@@ -1,5 +1,5 @@
 import assert = require("assert");
-import { StartableLike, ReadyState, OnStopping, RawStart, RawStop, StateError } from "./startable-like";
+import { StartableLike, ReadyState, OnStopping, AsyncRawStart, AsyncRawStop, StateError } from "./startable-like";
 
 
 export abstract class State implements StartableLike {
@@ -23,6 +23,6 @@ export abstract class State implements StartableLike {
 export interface AgentLike extends StartableLike {
 	setState(newState: State): void;
 	getState(): State;
-	readonly rawStart: RawStart;
-	readonly rawStop: RawStop;
+	readonly asyncRawStart: AsyncRawStart;
+	readonly asyncRawStop: AsyncRawStop;
 }

@@ -1,6 +1,6 @@
 import { boundMethod } from "autobind-decorator";
 import { catchThrow } from "./catch-throw";
-import { OnStopping, RawStart, RawStop, ReadyState, StartableLike, StateError } from "./startable-like";
+import { OnStopping, AsyncRawStart, AsyncRawStop, ReadyState, StartableLike, StateError, RawStart, RawStop } from "./startable-like";
 import { AgentLike, State } from "./state";
 import { Ready } from "./states";
 
@@ -13,13 +13,15 @@ export class Startable implements StartableLike {
 		rawStart: RawStart,
 		rawStop: RawStop,
 	) {
+		const asyncRawStart: AsyncRawStart = async () => await rawStart();
+		const asyncRawStop: AsyncRawStop = async (err?: Error) => await rawStop(err);
 		this.state = new Ready(
 			new Agent(
 				this, {
 				getState: () => this.state,
 				setState: (newState: State) => { this.state = newState; },
-				rawStart,
-				rawStop,
+				asyncRawStart,
+				asyncRawStop,
 			}), {},
 		);
 		this.state.activate();
@@ -95,23 +97,23 @@ export class Startable implements StartableLike {
 export class Agent implements AgentLike {
 	public getState: () => State;
 	public setState: (newState: State) => void;
-	public rawStart: RawStart;
-	public rawStop: RawStop;
+	public asyncRawStart: AsyncRawStart;
+	public asyncRawStop: AsyncRawStop;
 
 	public constructor(
 		private target: Startable,
 		options: {
 			getState: () => State,
 			setState: (newState: State) => void,
-			rawStart: RawStart,
-			rawStop: RawStop,
+			asyncRawStart: AsyncRawStart,
+			asyncRawStop: AsyncRawStop,
 		},
 	) {
 		({
 			getState: this.getState,
 			setState: this.setState,
-			rawStart: this.rawStart,
-			rawStop: this.rawStop,
+			asyncRawStart: this.asyncRawStart,
+			asyncRawStop: this.asyncRawStop,
 		} = options);
 	}
 

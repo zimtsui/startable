@@ -13,11 +13,13 @@ const startable_like_1 = require("./startable-like");
 const states_1 = require("./states");
 class Startable {
     constructor(rawStart, rawStop) {
+        const asyncRawStart = async () => await rawStart();
+        const asyncRawStop = async (err) => await rawStop(err);
         this.state = new states_1.Ready(new Agent(this, {
             getState: () => this.state,
             setState: (newState) => { this.state = newState; },
-            rawStart,
-            rawStop,
+            asyncRawStart,
+            asyncRawStop,
         }), {});
         this.state.activate();
     }
@@ -89,8 +91,8 @@ class Agent {
         ({
             getState: this.getState,
             setState: this.setState,
-            rawStart: this.rawStart,
-            rawStop: this.rawStop,
+            asyncRawStart: this.asyncRawStart,
+            asyncRawStop: this.asyncRawStop,
         } = options);
     }
     getReadyState() {

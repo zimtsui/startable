@@ -9,11 +9,17 @@ export declare enum ReadyState {
 export interface OnStopping {
     (err?: Error): void;
 }
-export interface RawStart {
+export interface AsyncRawStart {
     (): Promise<void>;
 }
-export interface RawStop {
+export interface AsyncRawStop {
     (err?: Error): Promise<void>;
+}
+export interface RawStart {
+    (): Promise<void> | void;
+}
+export interface RawStop {
+    (err?: Error): Promise<void> | void;
 }
 export declare class StateError extends AssertionError {
     constructor(actual: ReadyState, expected?: ReadyState[]);

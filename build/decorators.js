@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AssetStateSync = exports.AssetStateAsync = exports.AsRawStop = exports.AsRawStart = exports.$ = void 0;
+exports.AssertStateSync = exports.AssertStateAsync = exports.AsRawStop = exports.AsRawStart = exports.$ = void 0;
 const startable_1 = require("./startable");
 const startable_like_1 = require("./startable-like");
 const rawStartName = Symbol();
@@ -35,7 +35,7 @@ function AsRawStop() {
     };
 }
 exports.AsRawStop = AsRawStop;
-function AssetStateAsync(expected = [startable_like_1.ReadyState.STARTED]) {
+function AssertStateAsync(expected = [startable_like_1.ReadyState.STARTED]) {
     return (proto, name, propDesc) => {
         const method = Reflect.get(proto, name);
         return {
@@ -46,8 +46,8 @@ function AssetStateAsync(expected = [startable_like_1.ReadyState.STARTED]) {
         };
     };
 }
-exports.AssetStateAsync = AssetStateAsync;
-function AssetStateSync(expected = [startable_like_1.ReadyState.STARTED]) {
+exports.AssertStateAsync = AssertStateAsync;
+function AssertStateSync(expected = [startable_like_1.ReadyState.STARTED]) {
     return (proto, name, propDesc) => {
         const method = Reflect.get(proto, name);
         return {
@@ -58,5 +58,5 @@ function AssetStateSync(expected = [startable_like_1.ReadyState.STARTED]) {
         };
     };
 }
-exports.AssetStateSync = AssetStateSync;
+exports.AssertStateSync = AssertStateSync;
 //# sourceMappingURL=decorators.js.map

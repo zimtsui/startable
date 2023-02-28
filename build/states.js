@@ -60,7 +60,7 @@ class Starting extends state_1.State {
             this.onStoppings.push(options.onStopping);
     }
     activate() {
-        const rawStarting = (0, catch_throw_1._)(this.agent.rawStart());
+        const rawStarting = (0, catch_throw_1._)(this.agent.asyncRawStart());
         rawStarting.catch(() => { }).then(() => {
             const newState = new Started(this.agent, {
                 starting: this.starting,
@@ -155,8 +155,8 @@ class Stopping extends state_1.State {
             for (const onStopping of this.onStoppings)
                 onStopping();
         const rawStopping = (0, catch_throw_1._)(this.runningError
-            ? this.agent.rawStop(this.runningError)
-            : this.agent.rawStop());
+            ? this.agent.asyncRawStop(this.runningError)
+            : this.agent.asyncRawStop());
         rawStopping.catch(() => { }).then(() => {
             const newState = new Stopped(this.agent, {
                 starting: this.starting,

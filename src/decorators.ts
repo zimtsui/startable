@@ -40,7 +40,7 @@ export function AsRawStop(): MethodDecorator {
 }
 
 
-export function AssetStateAsync(
+export function AssertStateAsync(
 	expected: ReadyState[] = [ReadyState.STARTED],
 ): MethodDecorator {
 	return (proto, name, propDesc): PropertyDescriptor => {
@@ -54,7 +54,7 @@ export function AssetStateAsync(
 	}
 }
 
-export function AssetStateSync(
+export function AssertStateSync(
 	expected: ReadyState[] = [ReadyState.STARTED],
 ): MethodDecorator {
 	return (proto, name, propDesc): PropertyDescriptor => {

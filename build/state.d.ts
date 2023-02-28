@@ -1,4 +1,4 @@
-import { StartableLike, ReadyState, OnStopping, RawStart, RawStop } from "./startable-like";
+import { StartableLike, ReadyState, OnStopping, AsyncRawStart, AsyncRawStop } from "./startable-like";
 export declare abstract class State implements StartableLike {
     abstract getReadyState(): ReadyState;
     abstract skart(startingError?: Error): void;
@@ -12,6 +12,6 @@ export declare abstract class State implements StartableLike {
 export interface AgentLike extends StartableLike {
     setState(newState: State): void;
     getState(): State;
-    readonly rawStart: RawStart;
-    readonly rawStop: RawStop;
+    readonly asyncRawStart: AsyncRawStart;
+    readonly asyncRawStop: AsyncRawStop;
 }
