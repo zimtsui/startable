@@ -135,6 +135,17 @@
   <h2>Startable</h2>
 </a>
 <p>将服务类用 Startable 提供的装饰器套一下，让 Startable 替你解决所有启停一致性问题，你就可以把精力全部投入业务逻辑上。</p>
+
+<a href="#安装" id="安装" style="color: inherit; text-decoration: none;">
+  <h3>安装</h3>
+</a>
+<pre><code class="language-shell"><span class="hl-1">npm </span><span class="hl-5">install</span><span class="hl-1"> </span><span class="hl-5">--save-peer</span><span class="hl-1"> </span><span class="hl-5">@zimtsui/startable</span>
+</code></pre>
+<p>什么是 <a href="https://nodejs.org/es/blog/npm/peer-dependencies/">peer dependency</a>？</p>
+
+<a href="#基本用法" id="基本用法" style="color: inherit; text-decoration: none;">
+  <h3>基本用法</h3>
+</a>
 <p>Startable 将一个服务的生命周期分为以下阶段</p>
 <ul>
 <li>READY</li>
@@ -143,10 +154,6 @@
 <li>STOPPING</li>
 <li>STOPPED</li>
 </ul>
-
-<a href="#基本用法" id="基本用法" style="color: inherit; text-decoration: none;">
-  <h3>基本用法</h3>
-</a>
 <p>使用 <code>$</code> 获取一个服务对象所对应的 Startable。这个 Startable 上有一个 start 方法和一个 stop 方法，这两个方法内部会调用你自己定义的 rawStart 方法和 rawStop 方法。</p>
 <pre><code class="language-ts"><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-0">class</span><span class="hl-1"> </span><span class="hl-2">Service</span><span class="hl-1"> {</span><br/><span class="hl-1">    @</span><span class="hl-4">AsRawStart</span><span class="hl-1">()</span><br/><span class="hl-1">    </span><span class="hl-0">private</span><span class="hl-1"> </span><span class="hl-0">async</span><span class="hl-1"> </span><span class="hl-4">rawStart</span><span class="hl-1">() {}</span><br/><br/><span class="hl-1">    @</span><span class="hl-4">AsRawStop</span><span class="hl-1">()</span><br/><span class="hl-1">    </span><span class="hl-0">private</span><span class="hl-1"> </span><span class="hl-0">async</span><span class="hl-1"> </span><span class="hl-4">rawStop</span><span class="hl-1">() {}</span><br/><br/><span class="hl-1">    @</span><span class="hl-4">AssertStateAsync</span><span class="hl-1">()</span><br/><span class="hl-1">    </span><span class="hl-0">public</span><span class="hl-1"> </span><span class="hl-0">async</span><span class="hl-1"> </span><span class="hl-4">someAsyncMethod</span><span class="hl-1">() {}</span><br/><span class="hl-1">}</span><br/><br/><span class="hl-7">// declare function $(service): Startable;</span><br/><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-0">async</span><span class="hl-1"> </span><span class="hl-0">function</span><span class="hl-1"> </span><span class="hl-4">StartService</span><span class="hl-1">(</span><span class="hl-3">service</span><span class="hl-1">: </span><span class="hl-2">Service</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-4">$</span><span class="hl-1">(</span><span class="hl-3">service</span><span class="hl-1">).</span><span class="hl-4">start</span><span class="hl-1">();</span><br/><span class="hl-1">}</span><br/><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-0">async</span><span class="hl-1"> </span><span class="hl-0">function</span><span class="hl-1"> </span><span class="hl-4">StopService</span><span class="hl-1">(</span><span class="hl-3">service</span><span class="hl-1">: </span><span class="hl-2">Service</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-4">$</span><span class="hl-1">(</span><span class="hl-3">service</span><span class="hl-1">).</span><span class="hl-4">stop</span><span class="hl-1">();</span><br/><span class="hl-1">}</span>
 </code></pre>
