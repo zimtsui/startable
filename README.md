@@ -2,59 +2,58 @@
 
 [![Npm package version](https://img.shields.io/npm/v/@zimtsui/package-name?style=flat-square)](https://www.npmjs.com/package/@zimtsui/package-name)
 
-Startable 是一个 JavaScript 的 Daemon 生命周期管理器。初衷是为了适配阿里开源 Node.js 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
+Startable 是一个 JavaScript 的服务生命周期管理器。初衷是为了适配阿里开源 Node.js 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
 
-## 任务和服务
+## 预备概念
 
 - 任务/Job/Task
 
-	运行时间与性能有关，性能越强，运行时间越短。
+	任务是占有线程的有限时间复杂度算法。任务运行时间与性能有关，性能越强，运行时间越短。
 
-	例如，批处理脚本。
+	例如，批处理脚本、异步函数。
 
 - 服务
-	- 事件触发式/回调式
 
-		服务占有线程，用户被调用。俗称 Daemon。
+	服务自己占有线程，俗称 Daemon，有可能自己挂掉，通过事件触发的方式通知用户用户。服务挂掉之后如果继续访问会导致未定义的后果。
 
-		有可能自己挂掉。例如 Node.js 中一个 TCP 连接，就是一个事件触发式服务。他本身占用协程，如果底层连接断了，会触发事件。
+	例如 Node.js 中一个 TCP 连接，就是一个服务。他本身占有协程，如果底层连接断了，这个协程会触发事件。
 
-	- 轮询式
+- 资源
 
-		**用户是一个任务**，占有线程，服务被调用。俗称资源。
+	资源自己不占线程，被任务调用。
 
-		不会自己挂掉。例如 C 语言中一个文件描述符就是一个轮询式服务，向用户提供文件访问服务。他本身不占用线程，如果某时刻底层资源挂了，只要不去读这个文件描述符，用户态就永远不知道底层资源挂了。
+	资源在用户视角里不会自己挂掉。例如 C 语言中一个文件描述符就是一个资源，向用户提供文件访问功能。他本身不占用线程，如果某时刻底层资源挂了，只要用户不去读这个文件描述符，用户态就永远不知道底层资源挂了。如果挂掉之后继续访问会抛出定义好的错误。
 
 ### 转换
 
-轮询式不可多路复用，将轮询式转换为事件触发式
+#### 资源 -> 服务
 
-- 新开一个线程写一个循环
-- libev
+如果一个资源可以产生多种消息，那么同时轮询这些消息需要自己实现多路复用。
 
-将事件触发式转换为轮询式
+- 给每一种消息开一个轮询线程
+- libuv
 
-- Semaphore queue
+#### 服务 -> 资源
 
-将轮询任务，即轮询式服务的用户，转换为可启停的事件触发式服务
+- 信号量队列
 
-- Pollerloop
+#### 任务 -> 服务
 
-将轮询任务，即轮询式服务的用户，转换为可启停的轮询式服务
+- [Pollerloop](https://github.com/zimtsui/pollerloop)
+
+#### 任务 -> 资源
 
 - Generator
 
+### 注意事项
+
+「回调」与「事件触发」不是平行概念。回调是实现事件触发的方法，回调不止用来实现事件触发，也用来实现异步任务的结果返回。
+
+任务和 Daemon 都占有线程，区别不在于实现，而在于语义。一个可取消的异步任务，也可以理解成一个会自动结束的服务。
+
 JavaScript 协程是协作式调度，与抢占式调度相比的优势在于状态切换的过程具有天然事务性。抢占式切换状态需要给状态加锁。
 
-### 服务之间的依赖性
-
-一个服务可能依赖多个其他服务，可以是聚合也可以是组合。只有子服务全部离开启动阶段，父服务才算离开启动阶段；只要有一个子服务进入停止阶段，父服务就算进入停止阶段。
-
-### 服务启停的事务性
-
-启停过程本身可能发生异常而失败比如一个 TCP Socket 连接时就没连上。
-
-C 语言打开一个文件的过程由内核确保事务性，打开失败等于没开。而用户态服务的启动过程如果失败了，内部组件可能开了一半，处于不一致状态，因此打开失败后也必须关闭。
+## 服务的特征
 
 ### 服务启停的异步性
 
@@ -62,127 +61,285 @@ C 语言打开一个文件的过程由内核确保事务性，打开失败等于
 
 例如一个 TCP Socket 有一个异步的握手和挥手的过程。
 
-### Daemon 启停的自发性
+### 服务启停的事务性
 
-Daemon 停止过程可能自发开始。
+启停过程本身可能发生异常而失败比如一个 TCP Socket 连接时就没连上。
+
+C 语言打开一个文件的过程由内核确保事务性，打开失败等于没开，打开失败后不需要关闭。而用户态服务的启动过程如果失败了，内部组件可能处于半开不开的不一致状态，因此打开失败后也必须手动关闭。
+
+### 服务之间的依赖性
+
+一个服务可能依赖多个其他服务，这种依赖可以是聚合也可以是组合。只有子服务全部离开启动阶段，父服务才算离开启动阶段；只要有一个子服务进入停止阶段，父服务就算进入停止阶段。
+
+### 服务启停的自发性
+
+服务停止过程可能自发开始。
 
 例如比如一个 TCP Socket 可能因可能因网络中断而离开了「正常提供服务中」的状态，不得不自发开始停止过程。
 
-当然资源底层也可能随时挂掉，但接口层面不知道，挂掉之后继续使用会抛出定义的错误。而 Daemon 底层挂掉之后，接口层会被通知，挂掉之后继续使用会导致未定义的后果。
+## 用 EventEmitter 实现服务
 
-### Daemon 的工程难度
+EventEmitter 是 Node.js 中传统的服务实现方法。
 
-写 Daemon 的麻烦之处在于
+假设有一个服务 parent，有三个子服务
 
-- 父服务处于启动阶段中时，某个已经离开启动阶段的子服务挂掉了，并调用了父服务的停止函数。最终导致父服务在启动阶段被调用了停止函数。
-- 父服务处于停止阶段中时，某个还未进入停止阶段的子服务挂掉了，并调用了父服务的停止函数。最终导致父服务在停止阶段被重复调用了停止函数。
-- 父服务处于启动阶段中时，某个已经离开启动阶段的子服务使用了另一个已经挂掉的子服务，详见下文《健壮性》章节。
+- tcp
+- child1
+- child2
 
-总之，Daemon 间的复杂状态一致性问题是最麻烦的事。
+任何一个子服务挂掉之后，父服务从语义上说也进入了不可用的状态，因此也应该自己挂掉。于是你不得不这么写：
 
-底层资源可能在 Daemon 生命周期的任何阶段挂掉，可能在启动停止过程中挂掉。
+```ts
+class Parent extends EventEmitter {
+	private tcp = new net.Socket();
+	private child1 = new Child1();
+	private child2 = new Child2();
 
-Startable 是 JavaScript 的 Daemon 生命周期管理器，有了他你就可以把心思花在业务逻辑上。
+	public constructor() {
+		this.tcp.on('close', () => void this.close());
+		this.child1.on('closing', () => void this.close());
+		this.child2.on('closing', () => void this.close());
 
-当然 Startable 也可以管理资源，毕竟资源可以被看成永不自发停止的 Daemon。
+		(async () => {
+			await Promise.all([
+				once(this.tcp, 'connect'),
+				once(this.child1, 'open'),
+				once(this.child2, 'open'),
+			]);
+			this.emit('open');
+		})().catch(err => void this.emit('error', err));
+	}
+
+	public async close() {
+		try{
+			this.readyState = 'closing';
+			this.emit('closing');
+
+			this.child2.close();
+			this.child1.close();
+			this.tcp.end();
+			await Promise.all([
+				this.tcp.readyState === 'readOnly' ? once(this.tcp, 'end') : Promise.resolve<void>(),
+				this.child1.readyState !== 'closed' ? once(this.child1, 'closed') : Promise.resolve<void>(),
+				this.child2.readyState !== 'closed' ? once(this.child2, 'closed') : Promise.resolve<void>(),
+			]);
+
+			this.readyState = 'closed';
+			this.emit('closed');
+		} catch (err) {
+			this.emit('error', err);
+		}
+	}
+}
+```
+
+虽然已经不得不写得这么复杂了，但依然存在以下问题
+
+- 假设在 parent 启动过程中，child1 比 child2 先启动好。在 child1 已启动好而 child2 还未启动好的这段间隙里，child1 挂了，child1 触发 `closing` 事件。`parent.close` 作为 child1 的 `closing` 事件的回调函数被运行。然而此时 parent 正处于启动中的状态。一个启动中的 parent 被人调用了 close，后果是未定义的。
+- 假设 child2 的某个启动参数，需要从 child1 处获得。即先把 child1 启动好，访问 child1 获取 child2 的启动参数，然后用这个参数启动 child2。那么你得这么写：
+
+	```ts
+	class Parent extends EventEmitter {
+		private tcp = new net.Socket();
+		private child1 = new Child1();
+		private child2?: Child2;
+
+		public constructor() {
+			this.tcp.on('close', () => void this.close());
+			this.child1.on('closing', () => void this.close());
+
+			(async () => {
+				await Promise.all([
+					once(this.tcp, 'connect'),
+					once(this.child1, 'open'),
+				]);
+
+				this.child2 = new Child2(await this.child1.getParamOfChild2());
+				this.child2.on('closing', () => void this.close());
+				await once(this.child2, 'open');
+
+				this.emit('open');
+			})().catch(err => void this.emit('error', err));
+		}
+
+		public async close() {
+		try{
+			this.readyState = 'closing';
+			this.emit('closing');
+
+			if (this.child2) {
+				this.child2.close();
+				this.child1.close();
+				this.tcp.end();
+			}
+			await Promise.all([
+				this.tcp.readyState === 'readOnly' ? once(this.tcp, 'end') : Promise.resolve<void>(),
+				this.child1.readyState !== 'closed' ? once(this.child1, 'closed') : Promise.resolve<void>(),
+				this.child2.readyState !== 'closed' ? once(this.child2, 'closed') : Promise.resolve<void>(),
+			]);
+
+			this.readyState = 'closed';
+			this.emit('closed');
+		} catch (err) {
+			this.emit('error', err);
+		}
+	}
+	}
+	```
+
+	现在问题来了，假设 chil1 最先启动好，tcp 第二个启动好，在 child1 已启动好而 tcp 还为启动好的这个间隙里，child1 挂了。那么之后找 child1 获取 child2 的启动参数时，将访问到一个已经不可用的 child1，导致未定义的后果。
+
+
+总之，使用 EventEmitter 写服务，存在数不清的状态一致性的问题。根本原因是内部使用的系统服务或子服务可能在 parent 生命周期的任何阶段挂掉。想要解决这些问题，你不得不花费大量精力严格仔细地设计整个启停过程，你的精力将无法集中到业务逻辑上。
+
+于是 Startable 应运而生。Startable 是 JavaScript 的服务生命周期管理框架，有了他你就可以把心思花在业务逻辑上。当然 Startable 也可以用于启停资源，毕竟资源可以被看成永不自发停止的服务。
 
 ## Startable
 
-将 Daemon 类用 Startable 套一层，让 Startable 替你解决所有状态一致性问题，你就可以把精力全部投入业务逻辑上。
+将服务类用 Startable 提供的装时期套一下，让 Startable 替你解决所有状态一致性问题，你就可以把精力全部投入业务逻辑上。
+
+### 基本用法
+
+使用 `$` 获取一个服务对象所对应的 Startable。这个 Startable 上有一个 start 方法和一个 stop 方法，这两个方法内部会调用你自己定义的 rawStart 方法和 rawStop 方法。
 
 ```ts
-class Daemon {
+class Service {
 	@AsRawStart()
 	private async rawStart() {}
 
 	@AsRawStop()
 	private async rawStop() {}
 
-	@AssertStateSync()
-	public someMethod() {}
+	@AssertStateAsync()
+	public async someAsyncMethod() {}
 }
 
-const daemon = new Daemon();
-await $(daemon).start();
-daemon.someMethod();
-await $(daemon).stop();
-```
-
-## Best practices
-
-当自己发生内部错误时，就应当调用自己的 `.stop()`，因为在语义上，此时自己已经结束了「正常提供服务中」的状态。
-
-```ts
-class Daemon {
-	public constructor() {
-		this.someComponent.on('some fatal error', $(this).stop);
-	}
-
-	@AsRawStart()
-	private rawStart() {}
-
-	@AsRawStop()
-	private rawStop() {}
+// declare function $(service): Startable;
+export async function StartService(service: Service) {
+	await $(service).start();
+}
+export async function StopService(service: Service) {
+	await $(service).stop();
 }
 ```
 
-`.start()` 可以接受一个 onStopping 钩子作为回调，用于在停止过程开始时通知外部。当停止过程开始时会先同步地调用这个回调，并将你填进 `.stop()` 的参数传递给这个回调。你可以自行定义这个 Error 参数的语义，然后在回调中根据参数判断停止的原因。
+Startable 会自动处理好状态一致性问题。例如
 
-如果是自发停止则传参，如果是从外部被动停止则不传参，这样就可以在回调中根据参数是否存在来判断是不是自发停止。
+- 如果你在启动过程中调用了 `$(service).stop`，那么 Startable 会等你的 rawStart 运行方法结束后（无论 rawStart 成败）再调用你的 rawStop。
+- 如果你在启动过程中重复调用了 `$(service).start`，那么 Startable 不会重复调用你的 rawStart，而是会直接等待正在进行那次的 rawStart 返回。
+- 如果你在启停过程中调用了 `service.someAsyncMethod`，那么会抛出错误，而不会执行你定义 someAsyncMethod 代码。
 
-```ts
-// main coroutine
+### 子服务
 
-const daemon = new Daemon();
-function startDaemon(){
-	$(daemon).start(err => {
-		if (err) handleRunningException(err);
-		$(daemon).stop().catch(handleStoppingException);
-	}).catch(handleStartingException);
-}
-function stopDaemon() {
-	$(daemon).stop();
-}
-```
-
-### Composition
-
-如果一个 Startable 依赖于其内部的其他 Startable，即
-
-- 当所有儿子的 `.start()` 都 fulfilled 后，爸爸的 `.start()` 才能 fulfilled。因为在语义上，只有当所有儿子都进入「正常提供服务中」的状态时，爸爸才算进入「正常提供服务中」的状态。
-- 只要有一个儿子自发开始停止过程，即这个儿子运行了他自己的 `.stop()`，那么爸爸也必须立即开始停止过程。因为在语义上，只要有一个儿子离开了「正常提供服务中」的状态，爸爸就算不上「正常提供服务中」的状态了。
+#### 组合
 
 ```ts
 class Parent {
-	private child1: Daemon;
-	private child2: Daemon;
+	private child1 = new Child1();
+	private child2 = new Child2();
 
-	protected async rawStart(): Promise<void> {
-		await $(child1).start($(this).stop);
-		await $(child2).start($(this).stop);
+	@AsRawStart()
+	private async rawStart() {
+		await $(this.child1).start($(this).stop);
+		await $(this.child2).start($(this).stop);
 	}
-	protected async rawStop(): Promise<void> {
-		await $(child2).stop();
-		await $(child1).stop();
+
+	@AsRawStop()
+	private async rawStop(err?: Error) {
+		await $(this.child2).stop();
+		await $(this.child1).stop();
 	}
 }
 ```
 
-- 如果在 child2 启动过程中，已经启动完成的 child1 开始自发停止，那么 child1 会通过 onStopping 回调调用 parent 的 `.stop()`，此时 parent 处于 STARTING 状态，导致 parent 的启动过程 rejected。在语义上，一个 Daemon 启动过程中，他依赖的儿子挂了，这个 Daemon 的启动过程也确实算不上成功，因此语义与实现是一致的。
-- 如果调用 `$(parent).stop()`，`$(parent).stop()` 会调用 `$(child).stop()`，`$(child).stop()` 会通过 onStopping 回调再次调用 `$(parent).stop()`，不过此时 parent 处于 STOPPING 状态，parent 内部的 `.rawStop` 实现不会被调用两次。
+`$(service).stop` 方法可以传入一个可选的 Error 参数用于表示停止原因。
 
-### Aggregation
+`$(service).start` 方法可以传入一个 onStopping 钩子作为可选回调，用于在停止过程开始时通知外部。当停止过程开始时会先当前事件循环内调用这个回调，并将你填进 `$(service).stop` 的表示停止原因的 Error 参数传递给这个钩子。你可以自行定义这个 Error 参数的语义，然后在 onStopping 钩子中根据参数判断停止的原因。
 
-一个 Startable 的依赖也可能是外部注入的 Startable。
+#### 聚合
+
+一个 Startable 的子服务也可能是外部注入的。
 
 ```ts
-class Daemon {
+class Parent {
 	public constructor(
-		dep: Daemon,
+		child: Child,
 	) { }
 
-	protected async rawStart() {
-		await $(this.dep).start(this.stop);
+	@AsRawStart()
+	private async rawStart() {
+		await $(this.child).start($(this).stop);
+	}
+}
+```
+
+### 自发停止
+
+当自己发生致命内部错误时，就应当调用自己的 `.stop()`，因为在语义上，此时自己已经结束了「正常提供服务中」的状态。
+
+```ts
+class Service {
+	public constructor() {
+		this.someComponent.on('error', $(this).stop);
+	}
+}
+```
+
+如果是自发停止则给 `$(service).stop` 传参，如果是从外部被动停止则不传参，这样就可以在 onStopping 钩子中根据参数是否存在来判断是不是自发停止。
+
+```ts
+const service = new Service();
+function startService(){
+	$(service).start(err => {
+		if (err) handleRunningException(err);
+		$(service).stop().catch(handleStoppingException);
+	}).catch(handleStartingException);
+}
+function stopService() {
+	$(service).stop();
+}
+```
+
+## 用 Startable 写服务
+
+现在来看看用 Startable 解决上文 EventEmitter 面临的问题有多优雅。
+
+假设有一个服务 parent，有三个子服务
+
+- child1
+- child2
+- tcp
+
+child2 的某个启动参数，需要从 child1 处获得。即先把 child1 启动好，访问 child1 获取 child2 的启动参数，然后用这个参数启动 child2。
+
+```ts
+class Parent {
+	private tcp?: net.Socket;
+	private child1 = new Child1();
+	private child2?: Child2;
+
+	@AsRawStart()
+	private async rawStart() {
+		this.tcp = new net.Socket();
+		this.tcp.on('end', () => void $(this).stop());
+		await once(this.tcp, 'connect');
+
+		await $(this.child1).start($(this).stop);
+
+		this.child2 = new Child2(await this.child1.getParamOfChild2());
+		await $(this.child2).start($(this).stop);
+	}
+
+	@AsRawStop()
+	private async rawStop() {
+		if (this.child2) await $(this.child2).stop();
+
+		await $(this.child1).stop();
+
+		if (this.tcp) {
+			this.tcp.end();
+			await once(this.tcp, 'end');
+		}
 	}
 }
 ```
@@ -190,7 +347,7 @@ class Daemon {
 ## Bad practices
 
 ```ts
-class Daemon {
+class Service {
 	public constructor() {
 		this.someComponent.on('some fatal error', err => {
 			handleRunningException(err); // don't do this.
@@ -199,23 +356,23 @@ class Daemon {
 	}
 }
 
-const daemon = new Daemon();
-function startDaemon() {
-	$(daemon).start(() => {
-		$(daemon).stop().catch(handleStoppingException)
+const service = new Service();
+function startService() {
+	$(service).start(() => {
+		$(service).stop().catch(handleStoppingException)
 	}).catch(handleStartingException);
 }
-function stopDaemon() {
-	$(daemon).stop();
+function stopService() {
+	$(service).stop();
 }
 ```
 
-这个例子的问题在于，一个 Daemon 中出现的一个让你不得不自发停止的致命错误，那么对这个异常的 handle 代码不应写在类定义的里面，因为这个 handle 过程在语义上不属于这个对象的职责，不是你的职责却非要越俎代庖，违反了迪米特法则。
+这个例子的问题在于，一个 Service 中出现的一个让你不得不自发停止的致命错误，那么对这个异常的 handle 代码不应写在类定义的里面，因为这个 handle 过程在语义上不属于这个对象的职责，不是你的职责却非要越俎代庖，违反了 OOD 迪米特法则。
 
 ---
 
 ```ts
-class Daemon {
+class Service {
 	public constructor() {
 		this.someComponent.on('some fatal error', err => {
 			$(this).stop(err)
@@ -223,48 +380,39 @@ class Daemon {
 		});
 	}
 }
+```
 
-const daemon = new Daemon();
-function startDaemon() {
-	$(daemon).start(err => {
+这个例子的问题在于，一个 Service 的自发停止过程发生异常而失败，Service 的作者决定了如何 handle 这个异常，这违反了 OOD 迪米特法则。
+
+从语义上说，Service 自己只负责应挂尽挂，如何 handle 这个 Service 停止过程的失败是 Service 的用户的职责。
+
+---
+
+```ts
+const service = new Service();
+function startService() {
+	$(service).start(err => {
 		if (err) handleRunningException(err);
 	}).catch(handleStartingException);
 }
-function stopDaemon() {
-	$(daemon).stop().catch(handleStoppingException); // don't do this.
+function stopService() {
+	$(service).stop().catch(handleStoppingException); // don't do this.
 }
 ```
 
-这个例子的问题在于，一个 Daemon 的自发停止过程发生异常而失败，这个异常的 handle 代码不应写在 `.stop()` 的 caller 中，因为 caller 有很多个，不得不写很多遍。
+这个例子的问题在于，一个 Service 的自发停止过程发生异常而失败，这个异常的 handle 代码不应写在 `stopService` 中，因为 `$(service).stop` 除了在 `stopService` 中之外还可能在很多地方被调用，不得不写很多遍。
 
 ## 协程安全
 
 写多线程要考虑线程同步问题，一个线程内的连续代码并不一定在连续时间片中运行，他们之间可能插入了其他时间片跑着其他线程的代码。同理，写多协程也要考虑协程同步问题，一个协程内的 await 两侧的连续代码并不一定在连续的事件循环中运行，他们之间可能插入了其他事件循环跑着其他协程的代码。
 
-Startable 用 Promise 搞来搞去，必然存在协程同步问题。例如如果一个 Startable 被多个协程控制，那么在任意一个协程内
+Startable 内部实现无非是用 Promise 搞来搞去，必然存在协程同步问题。例如如果一个 Startable 被多个协程控制，那么在任意一个协程内
 
 ```ts
-await $(daemon).start();
-console.log($(daemon).getReadyState());
+await $(service).start();
+console.log($(service).getReadyState());
 ```
 
 的结果不一定是 STARTED，完全有可能是 STOPPING 或 STOPPED。
 
-## 健壮性
-
-```ts
-class Daemon {
-	private child: Daemon;
-
-	@AsRawStart()
-	private async rawStart() {
-		await $(child).start($(this).stop);
-		await somePromise;
-		child.someMethod(); // child may be STOPPING.
-	}
-}
-```
-
-因此 Daemon 的所有公共方法务必确保健壮性，要么返回正确结果，要么抛出，不能导致不一致的不可预料结果。
-
-所有 async 公共方法，如果过程中进入 STOPPING，同样要么返回正确结果，要么抛出。
+因此想要确保协程安全，需要明确每一个服务的生命周期由谁控制，正如 C++/Rust 中需要明确指定一个对象的 Owner 才能确保内存安全。
