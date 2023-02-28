@@ -198,6 +198,16 @@ class Parent extends EventEmitter {
 
 将服务类用 Startable 提供的装饰器套一下，让 Startable 替你解决所有启停一致性问题，你就可以把精力全部投入业务逻辑上。
 
+### 安装
+
+```shell
+npm install --save-peer @zimtsui/startable
+```
+
+什么是 [peer dependency](https://nodejs.org/es/blog/npm/peer-dependencies/)？
+
+### 基本用法
+
 Startable 将一个服务的生命周期分为以下阶段
 
 - READY
@@ -205,8 +215,6 @@ Startable 将一个服务的生命周期分为以下阶段
 - STARTED
 - STOPPING
 - STOPPED
-
-### 基本用法
 
 使用 `$` 获取一个服务对象所对应的 Startable。这个 Startable 上有一个 start 方法和一个 stop 方法，这两个方法内部会调用你自己定义的 rawStart 方法和 rawStop 方法。
 
