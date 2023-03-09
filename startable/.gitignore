@@ -6,3 +6,6 @@
 
 # build
 /build
+
+# test
+/test/build

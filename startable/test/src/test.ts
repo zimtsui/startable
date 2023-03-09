@@ -1,4 +1,4 @@
-import { $, AsRawStart, AssetStateAsync, ReadyState, Startable, StateError } from '../..';
+import { $, AsRawStart, AssertStateAsync, ReadyState, Startable, StateError } from '../..';
 import sinon = require('sinon');
 import test from 'ava';
 const { fake } = sinon;
@@ -123,7 +123,7 @@ test('class', async t => {
 
 test('assert state', async t => {
     class A {
-        @AssetStateAsync()
+        @AssertStateAsync()
         public async f() { }
     }
     const s = new A();

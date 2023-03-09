@@ -4,9 +4,6 @@
 # source
 /src
 
-# typedoc
-/docs
-
 # test
 /test
 /ava.config.mjs
