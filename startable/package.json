@@ -8,8 +8,7 @@
         "build": "tsc -b ./src/tsconfig.json",
         "clean": "rm -rf ./build && rm -rf ./test/build",
         "rebuild": "npm run clean && npm run build",
-        "test": "tsc -b ./test/src/tsconfig.json && ava",
-        "docs": "typedoc --tsconfig ./src/tsconfig.json ./src/index.ts"
+        "test": "tsc -b ./test/src/tsconfig.json && ava"
     },
     "repository": {
         "type": "git",

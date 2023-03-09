@@ -4,6 +4,9 @@
         "./startable-adaptor"
     ],
     "name": "startable",
+    "scripts": {
+        "docs": "typedoc --tsconfig ./startable/src/tsconfig.json ./startable/src/index.ts"
+    },
     "devDependencies": {
         "lerna": "^6.5.1"
     }
