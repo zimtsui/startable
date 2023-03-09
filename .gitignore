@@ -1,9 +1,1 @@
-# NodeJS
-/node_modules
-
-# typedoc
-/typedoc.json
-
-# build
-/build
-/startable/build
+node_modules/
