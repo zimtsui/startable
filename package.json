@@ -3,7 +3,7 @@
         "./startable",
         "./startable-adaptor"
     ],
-    "name": "startable",
+    "name": "monorepo",
     "scripts": {
         "docs": "typedoc --tsconfig ./startable/src/tsconfig.json ./startable/src/index.ts"
     },
