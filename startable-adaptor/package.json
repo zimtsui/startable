@@ -1,6 +1,6 @@
 {
   "name": "@zimtsui/startable-adaptor",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "main": "./build/adaptor.js",
   "types": "./build/adaptor.d.ts",
   "engines": {
