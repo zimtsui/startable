@@ -3,3 +3,7 @@
 
 # typedoc
 /typedoc.json
+
+# build
+/build
+/startable/build

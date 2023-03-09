@@ -1,0 +1,26 @@
+{
+  "name": "@zimtsui/startable-adaptor",
+  "version": "0.0.1",
+  "main": "./build/adaptor.js",
+  "types": "./build/adaptor.d.ts",
+  "engines": {
+    "node": ">=14"
+  },
+  "os": [
+    "!win32"
+  ],
+  "scripts": {
+    "build": "tsc -b ./src/tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf ./build",
+    "rebuild": "npm run clean && npm run build"
+  },
+  "author": "Zim",
+  "dependencies": {
+    "@types/node": "^14.18.36"
+  },
+  "peerDependencies": {
+    "@zimtsui/startable": "^0.0.5"
+  },
+  "license": "Unlicense"
+}

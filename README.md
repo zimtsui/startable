@@ -2,7 +2,7 @@
 
 [![Npm package version](https://img.shields.io/npm/v/@zimtsui/startable?style=flat-square)](https://www.npmjs.com/package/@zimtsui/startable)
 
-Startable 是一个 JavaScript 的服务生命周期管理器。初衷是为了适配阿里开源 Node.js 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
+Startable 是一个 JavaScript 的服务启停框架。初衷是为了适配阿里开源 Node.js 进程管理器 [Pandora](https://github.com/midwayjs/pandora)。
 
 ## 预备概念
 
@@ -192,7 +192,7 @@ class Parent extends EventEmitter {
 
 总之，使用 EventEmitter 写服务，存在数不清的启停一致性的问题。根本原因是服务内部使用的系统服务或子服务可能在 parent 生命周期的任何阶段挂掉。想要解决这些问题实现启停强一致，你不得不花费大量精力严格仔细地设计整个启停过程，代码量起码是上文的两倍，你的精力将无法集中到业务逻辑上。
 
-于是 Startable 应运而生。Startable 是 JavaScript 的服务生命周期管理框架，有了他你就可以把心思花在业务逻辑上。当然 Startable 也可以用于启停资源，毕竟资源可以被看成永不自发停止的服务。
+于是 Startable 应运而生。Startable 是 JavaScript 的服务启停框架，有了他你就可以把心思花在业务逻辑上。当然 Startable 也可以用于启停资源，毕竟资源可以被看成永不自发停止的服务。
 
 ## Startable
 
@@ -431,4 +431,4 @@ console.log($(service).getReadyState());
 
 的结果不一定是 STARTED，完全有可能是 STOPPING。因为在 await 之后完全有可能被切到别的协程，而那个协程又调用了 `$(service).stop`。
 
-因此想要确保协程安全，需要明确每一个服务的生命周期由谁控制，正如 C++/Rust 中需要明确指定一个对象的 Owner 才能确保内存安全。
+因此想要确保协程安全，需要明确每一个服务的启停由谁控制，正如 C++/Rust 中需要明确指定一个对象的 Owner 才能确保内存安全。
