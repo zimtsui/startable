@@ -1,6 +1,6 @@
 {
     "name": "@zimtsui/startable",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "",
     "main": "./build/index.js",
     "types": "./build/index.d.ts",
@@ -9,7 +9,7 @@
         "clean": "rm -rf ./build && rm -rf ./test/build",
         "rebuild": "npm run clean && npm run build",
         "test": "tsc -b ./test/src/tsconfig.json && ava",
-	"prepublishOnly": "npm run rebuild"
+        "prepublishOnly": "npm run rebuild"
     },
     "repository": {
         "type": "git",
