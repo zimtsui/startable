@@ -1,50 +1,46 @@
 import { Startable } from "./startable";
 import { ReadyState } from "./startable-like";
+import 'reflect-metadata';
 
-const rawStartName = Symbol();
-const rawStopName = Symbol();
+const rawStartNameSym = Symbol();
+const rawStopNameSym = Symbol();
 const startableSym = Symbol();
 
 export function $(target: {}): Startable {
-	if (!Reflect.has(target, startableSym)) {
-		const rawStart = Reflect.has(target, rawStartName)
-			? Reflect.get(target, Reflect.get(target, rawStartName)!)
+	if (!Reflect.hasMetadata(startableSym, target)) {
+		const rawStart = Reflect.hasMetadata(rawStartNameSym, target)
+			? Reflect.get(target, Reflect.getMetadata(rawStartNameSym, target)!)
 			: () => { };
-		const rawStop = Reflect.has(target, rawStopName)
-			? Reflect.get(target, Reflect.get(target, rawStopName)!)
+		const rawStop = Reflect.hasMetadata(rawStopNameSym, target)
+			? Reflect.get(target, Reflect.getMetadata(rawStopNameSym, target)!)
 			: () => { };
-
-		Reflect.set(target, startableSym, new Startable(
-			async (...args: any[]): Promise<any> => {
-				return rawStart.apply(target, args);
-			},
-			async (...args: any[]): Promise<any> => {
-				return rawStop.apply(target, args);
-			}
-		));
+		const startable = new Startable(
+			rawStart.bind(target),
+			rawStop.bind(target),
+		);
+		Reflect.defineMetadata(startableSym, startable, target);
 	}
 
-	return Reflect.get(target, startableSym);
+	return Reflect.getMetadata(startableSym, target);
 }
 
 export function AsRawStart(): MethodDecorator {
 	return (proto, name, propDesc) => {
-		Reflect.set(proto, rawStartName, name);
+		Reflect.defineMetadata(rawStartNameSym, name, proto);
 	}
 }
 
 export function AsRawStop(): MethodDecorator {
 	return (proto, name, propDesc) => {
-		Reflect.set(proto, rawStopName, name);
+		Reflect.defineMetadata(rawStopNameSym, name, proto);
 	}
 }
-
 
 export function AssertStateAsync(
 	expected: ReadyState[] = [ReadyState.STARTED],
 ): MethodDecorator {
 	return (proto, name, propDesc): PropertyDescriptor => {
-		const method = <(...args: any[]) => Promise<any>>Reflect.get(proto, name);
+		const method = Reflect.get(proto, name) as (...args: any[]) => Promise<any>;
 		return {
 			value: async function (...args: any[]): Promise<any> {
 				$(this).assertState(expected);
@@ -58,7 +54,7 @@ export function AssertStateSync(
 	expected: ReadyState[] = [ReadyState.STARTED],
 ): MethodDecorator {
 	return (proto, name, propDesc): PropertyDescriptor => {
-		const method = <(...args: any[]) => any>Reflect.get(proto, name);
+		const method = Reflect.get(proto, name) as (...args: any[]) => any;
 		return {
 			value: function (...args: any[]): any {
 				$(this).assertState(expected);
