@@ -1,6 +1,6 @@
 {
   "name": "@zimtsui/startable-adaptor",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "main": "./build/adaptor.js",
   "types": "./build/adaptor.d.ts",
   "engines": {
@@ -25,7 +25,7 @@
     "@types/node": "^14.18.36"
   },
   "peerDependencies": {
-    "@zimtsui/startable": "^0.0.8"
+    "@zimtsui/startable": "^0.0.9"
   },
   "license": "Unlicense"
 }
